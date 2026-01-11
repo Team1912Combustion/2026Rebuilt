@@ -7,35 +7,75 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
+import frc.robot.Constants.SensorIDs;
 
 public class Turret extends SubsystemBase {
   TalonFX turret;
 
   ProfiledPIDController pid;
 
-  double targetPosition, currentPosition, error;
+  double targetPosition, currentPosition, error, upperLimit, lowerLimit;
+
+  Rotation2d turretAngle;
+
+  DigitalInput leftLimitSwitch, rightLimitSwitch;
+  Timer limitSwitchTimer; 
   /** Creates a new Turret. */
   public Turret() {
     turret = new TalonFX(MotorIDs.TURRET, "1912CANivore");
     turret.setPosition(0);
 
     pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
-    pid.enableContinuousInput(0, 36);
 
     targetPosition = 0;
     currentPosition = 0;
     error = 0;
+    upperLimit = 18;
+    lowerLimit = -18;
+    turretAngle = new Rotation2d(0);
+
+    leftLimitSwitch = new DigitalInput(SensorIDs.TURRET_LEFT_LIMIT_SWITCH);
+    rightLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
+
+    limitSwitchTimer = new Timer();
   }
 
   @Override
   public void periodic() {
+    if (leftLimitSwitch.get() || rightLimitSwitch.get()) {
+      limitSwitchTimer.start();
+      if (limitSwitchTimer.get() > 0.5 && leftLimitSwitch.get()) {
+        turret.setPosition(lowerLimit);
+      }
+      if (limitSwitchTimer.get() > 0.5 && rightLimitSwitch.get()) {
+        turret.setPosition(upperLimit);
+      }
+    } else {
+      limitSwitchTimer.stop();
+      limitSwitchTimer.reset();
+    }
+
+    turretAngle =  new Rotation2d((currentPosition / upperLimit) / Math.PI);
+
     currentPosition = turret.getPosition().getValueAsDouble();
+    targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);
     error = currentPosition - targetPosition;
 
     turret.set(pid.calculate(currentPosition, targetPosition));
     // This method will be called once per scheduler run
+  }
+
+  public void setTurretAngle(double angle) {
+    targetPosition = (angle / Math.PI);
+  }
+
+  public double getTurretAngle() {
+    return turretAngle.getDegrees();
   }
 }

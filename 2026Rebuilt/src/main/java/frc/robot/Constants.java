@@ -22,4 +22,11 @@ public final class Constants {
     public static final int TURRET = 1;
 
   }
+
+  public static class SensorIDs {
+    
+    public static final int TURRET_LEFT_LIMIT_SWITCH = 1;
+    public static final int TURRET_RIGHT_LIMIT_SWITCH = 1;
+
+  }
 }
