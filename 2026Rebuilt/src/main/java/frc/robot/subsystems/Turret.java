@@ -8,12 +8,14 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.SensorIDs;
+import frc.robot.FieldZone;
 
 public class Turret extends SubsystemBase {
   TalonFX turret;
@@ -26,6 +28,8 @@ public class Turret extends SubsystemBase {
 
   DigitalInput leftLimitSwitch, rightLimitSwitch;
   Timer limitSwitchTimer; 
+
+  FieldZone allianceZone;
   /** Creates a new Turret. */
   public Turret() {
     turret = new TalonFX(MotorIDs.TURRET, "1912CANivore");
@@ -44,6 +48,8 @@ public class Turret extends SubsystemBase {
     rightLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
 
     limitSwitchTimer = new Timer();
+
+    allianceZone = new FieldZone(new Translation2d(0, 0), new Translation2d(0, 0));
   }
 
   @Override
