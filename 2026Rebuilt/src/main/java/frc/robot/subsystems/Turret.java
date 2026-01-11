@@ -29,7 +29,7 @@ public class Turret extends SubsystemBase {
   DigitalInput leftLimitSwitch, rightLimitSwitch;
   Timer limitSwitchTimer; 
 
-  FieldZone allianceZone;
+  FieldZone allianceZone, neutralZoneLeft, neutralZoneRight;
   /** Creates a new Turret. */
   public Turret() {
     turret = new TalonFX(MotorIDs.TURRET, "1912CANivore");
@@ -49,7 +49,12 @@ public class Turret extends SubsystemBase {
 
     limitSwitchTimer = new Timer();
 
-    allianceZone = new FieldZone(new Translation2d(0, 0), new Translation2d(0, 0));
+    allianceZone = new FieldZone(new Translation2d(0, 8.1), new Translation2d(4.6, 0));
+    allianceZone.setShotPoint(new Translation2d(4.65, 4.08));
+    neutralZoneLeft = new FieldZone(new Translation2d(4.6, 8.1), new Translation2d(12, 4.1));
+    neutralZoneLeft.setShotPoint(new Translation2d(4.3, 5.3));
+    neutralZoneRight = new FieldZone(new Translation2d(4.6, 4.06), new Translation2d(12, 0));
+    neutralZoneRight.setShotPoint(new Translation2d(4.3, 2.4));
   }
 
   @Override
@@ -77,10 +82,18 @@ public class Turret extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  /**
+   * Sets the turret's target position to a certain field-relative angle.
+   * @param angle The angle, in degrees, to set the turret to
+   */
   public void setTurretAngle(double angle) {
     targetPosition = (angle / Math.PI);
   }
 
+  /**
+   * Gets the turret's current angle relative to the field.
+   * @return The angle, in degrees, of the turret relative to the field
+   */
   public double getTurretAngle() {
     return turretAngle.getDegrees();
   }
