@@ -6,7 +6,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -19,6 +21,8 @@ import frc.robot.Constants.SensorIDs;
 import frc.robot.FieldZone;
 
 public class Turret extends SubsystemBase {
+  DriveTrain driveTrain;
+
   TalonFX turret;
 
   ProfiledPIDController pid;
@@ -26,12 +30,16 @@ public class Turret extends SubsystemBase {
   double targetPosition, currentPosition, error, upperLimit, lowerLimit;
 
   Rotation2d turretAngle;
+  Pose2d turretPose;
+  Translation2d turretOffset;
 
   DigitalInput leftLimitSwitch, rightLimitSwitch;
   Timer limitSwitchTimer; 
   
   /** Creates a new Turret. */
-  public Turret() {
+  public Turret(DriveTrain dt) {
+    driveTrain = dt;
+
     turret = new TalonFX(MotorIDs.TURRET, "1912CANivore");
     turret.setPosition(0);
 
@@ -43,6 +51,8 @@ public class Turret extends SubsystemBase {
     upperLimit = 18;
     lowerLimit = -18;
     turretAngle = new Rotation2d(0);
+    turretPose = new Pose2d(driveTrain.getPose().getTranslation(), turretAngle);
+    turretOffset = new Translation2d();
 
     leftLimitSwitch = new DigitalInput(SensorIDs.TURRET_LEFT_LIMIT_SWITCH);
     rightLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
@@ -55,7 +65,10 @@ public class Turret extends SubsystemBase {
   public void periodic() {
     checkLimitSwitches();
 
-    turretAngle =  new Rotation2d((currentPosition / upperLimit) / Math.PI);
+    turretAngle = new Rotation2d((currentPosition / upperLimit) / Math.PI);
+    turretAngle = new Rotation2d(Math.toRadians(turretAngle.getDegrees() - MathUtil.inputModulus(driveTrain.getHeading(), -180, 180)));
+
+    turretPose = new Pose2d(driveTrain.getPose().getTranslation().minus(turretOffset), turretAngle);
 
     currentPosition = turret.getPosition().getValueAsDouble();
     targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);
