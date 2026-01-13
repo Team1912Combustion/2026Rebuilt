@@ -4,16 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.util.Units;
-import frc.lib.util.COTSTalonFXSwerveConstants;
-import frc.lib.util.SwerveModuleConstants;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -43,6 +33,57 @@ public final class Constants {
     
     public static final int TURRET_LEFT_LIMIT_SWITCH = 1;
     public static final int TURRET_RIGHT_LIMIT_SWITCH = 1;
+
+  }
+
+  public static class FieldZoneConstants {
+
+    // TL is Top Left, BR is Bottom Right
+
+    // BLUE ZONES //
+    public static final Translation2d BLUE_DEPOT_ZONE_TL = new Translation2d();
+    public static final Translation2d BLUE_DEPOT_ZONE_BR = new Translation2d();
+
+    public static final Translation2d BLUE_OUTPOST_ZONE_TL = new Translation2d();
+    public static final Translation2d BLUE_OUTPOST_ZONE_BR = new Translation2d();
+
+    // BLUE SHOT POINTS //
+    public static final Translation2d BLUE_HUB_SHOT_POINT = new Translation2d();
+    public static final Translation2d BLUE_DEPOT_SHOT_POINT = new Translation2d();
+    public static final Translation2d BLUE_OUTPOST_SHOT_POINT = new Translation2d();
+
+    // RED ZONES // 
+    public static final Translation2d RED_DEPOT_ZONE_TL = new Translation2d();
+    public static final Translation2d RED_DEPOT_ZONE_BR = new Translation2d();
+
+    public static final Translation2d RED_OUTPOST_ZONE_TL = new Translation2d();
+    public static final Translation2d RED_OUTPOST_ZONE_BR = new Translation2d();
+
+    // RED SHOT POINTS //
+    public static final Translation2d RED_HUB_SHOT_POINT = new Translation2d();
+    public static final Translation2d RED_DEPOT_SHOT_POINT = new Translation2d();
+    public static final Translation2d RED_OUTPOST_SHOT_POINT = new Translation2d();
+
+    // NEUTRAL ZONES //
+    public static final Translation2d TOP_NEUTRAL_ZONE_TL = new Translation2d();
+    public static final Translation2d TOP_NEUTRAL_ZONE_BR = new Translation2d();
+
+    public static final Translation2d BOTTOM_NEUTRAL_ZONE_TL = new Translation2d();
+    public static final Translation2d BOTTOM_NEUTRAL_ZONE_BR = new Translation2d();
+
+    // NEUTRAL SHOT POINTS //
+    public static final Translation2d TOP_NEUTRAL_ZONE_BLUE_SHOT_POINT = new Translation2d();
+    public static final Translation2d TOP_NEUTRAL_ZONE_RED_SHOT_POINT = new Translation2d();
+    public static final Translation2d BOTTOM_NEUTRAL_ZONE_BLUE_SHOT_POINT = new Translation2d();
+    public static final Translation2d BOTTOM_NEUTRAL_ZONE_REDE_SHOT_POINT = new Translation2d();
+
+    // CONSTRUCTED FIELD ZONES //
+    public static final FieldZone BLUE_DEPOT_ZONE = new FieldZone(BLUE_DEPOT_ZONE_TL, BLUE_DEPOT_ZONE_BR);
+    public static final FieldZone BLUE_OUTPOST_ZONE = new FieldZone(BLUE_OUTPOST_ZONE_TL, BLUE_OUTPOST_ZONE_BR);
+    public static final FieldZone RED_DEPOT_ZONE = new FieldZone(RED_DEPOT_ZONE_TL, RED_DEPOT_ZONE_BR);
+    public static final FieldZone RED_OUTPOST_ZONE = new FieldZone(RED_OUTPOST_ZONE_TL, RED_OUTPOST_ZONE_BR);
+    public static final FieldZone TOP_NEUTRAL_ZONE = new FieldZone(TOP_NEUTRAL_ZONE_TL, TOP_NEUTRAL_ZONE_BR);
+    public static final FieldZone BOTTOM_NEUTRAL_ZONE = new FieldZone(BOTTOM_NEUTRAL_ZONE_TL, BOTTOM_NEUTRAL_ZONE_BR);
 
   }
 

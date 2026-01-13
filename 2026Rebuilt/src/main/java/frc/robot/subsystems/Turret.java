@@ -13,6 +13,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.SensorIDs;
 import frc.robot.FieldZone;
@@ -28,8 +29,7 @@ public class Turret extends SubsystemBase {
 
   DigitalInput leftLimitSwitch, rightLimitSwitch;
   Timer limitSwitchTimer; 
-
-  FieldZone allianceZone, neutralZoneLeft, neutralZoneRight;
+  
   /** Creates a new Turret. */
   public Turret() {
     turret = new TalonFX(MotorIDs.TURRET, "1912CANivore");
@@ -49,28 +49,12 @@ public class Turret extends SubsystemBase {
 
     limitSwitchTimer = new Timer();
 
-    allianceZone = new FieldZone(new Translation2d(0, 8.1), new Translation2d(4.6, 0));
-    allianceZone.setShotPoint(new Translation2d(4.65, 4.08));
-    neutralZoneLeft = new FieldZone(new Translation2d(4.6, 8.1), new Translation2d(12, 4.1));
-    neutralZoneLeft.setShotPoint(new Translation2d(4.3, 5.3));
-    neutralZoneRight = new FieldZone(new Translation2d(4.6, 4.06), new Translation2d(12, 0));
-    neutralZoneRight.setShotPoint(new Translation2d(4.3, 2.4));
+    
   }
 
   @Override
   public void periodic() {
-    if (leftLimitSwitch.get() || rightLimitSwitch.get()) {
-      limitSwitchTimer.start();
-      if (limitSwitchTimer.get() > 0.5 && leftLimitSwitch.get()) {
-        turret.setPosition(lowerLimit);
-      }
-      if (limitSwitchTimer.get() > 0.5 && rightLimitSwitch.get()) {
-        turret.setPosition(upperLimit);
-      }
-    } else {
-      limitSwitchTimer.stop();
-      limitSwitchTimer.reset();
-    }
+    checkLimitSwitches();
 
     turretAngle =  new Rotation2d((currentPosition / upperLimit) / Math.PI);
 
@@ -96,5 +80,20 @@ public class Turret extends SubsystemBase {
    */
   public double getTurretAngle() {
     return turretAngle.getDegrees();
+  }
+
+  public void checkLimitSwitches() {
+    if (leftLimitSwitch.get() || rightLimitSwitch.get()) {
+      limitSwitchTimer.start();
+      if (limitSwitchTimer.get() > 0.5 && leftLimitSwitch.get()) {
+        turret.setPosition(lowerLimit);
+      }
+      if (limitSwitchTimer.get() > 0.5 && rightLimitSwitch.get()) {
+        turret.setPosition(upperLimit);
+      }
+    } else {
+      limitSwitchTimer.stop();
+      limitSwitchTimer.reset();
+    }
   }
 }
