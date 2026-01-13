@@ -49,7 +49,6 @@ public class Turret extends SubsystemBase {
 
     limitSwitchTimer = new Timer();
 
-    
   }
 
   @Override

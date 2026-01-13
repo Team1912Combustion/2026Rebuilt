@@ -4,8 +4,8 @@
 
 package frc.robot.subsystems;
 
-public class LimelightRear extends LimelightFrontLeft {
-  /** Creates a new LimelightRear. */
+public class LimelightTurret extends LimelightFrontLeft {
+  /** Creates a new LimelightTurret. */
   @Override
     // IP IS - 10.19.12.13:5801 //
 
@@ -14,7 +14,7 @@ public class LimelightRear extends LimelightFrontLeft {
     * @return The name of the limelight as a string
     */
     public String getName() {
-        return "limelight-r";
+        return "limelight-t";
     }
     
     @Override
@@ -24,6 +24,6 @@ public class LimelightRear extends LimelightFrontLeft {
     * @return The position of the limelight as a string
     */
     public String getPosition() {
-        return "rear";
+        return "turret";
     }
 }

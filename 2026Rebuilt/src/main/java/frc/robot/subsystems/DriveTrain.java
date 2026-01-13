@@ -60,15 +60,11 @@ public class DriveTrain extends SubsystemBase {
 
   LimelightFrontLeft limelightFrontLeft;
   LimelightFrontRight limelightFrontRight;
-  LimelightRear limelightRear;
+  LimelightTurret limelightTurret;
 
   MedianFilter limelightXFilter;
   MedianFilter limelightYFilter;
   MedianFilter limelightYawFilter;
-
-  MedianFilter targetSpaceXFilter;
-  MedianFilter targetSpaceYFilter;
-  MedianFilter targetSpaceYawFilter;
 
   public SwerveDrivePoseEstimator poseEstimator;
 
@@ -81,10 +77,8 @@ public class DriveTrain extends SubsystemBase {
 
   double compositeLatency;
   Pose2d compositeVisionPose;
-  Pose2d compositeTargetSpacePose;
 
   boolean isVisionValid;
-  boolean isTargetSpacePoseValid;
 
   SlewRateLimiter xRateLimiter, yRateLimiter;
 
@@ -94,17 +88,6 @@ public class DriveTrain extends SubsystemBase {
 
   public final double DISTANCE_ERROR_FRACTION = 0.1;
 
-  public boolean isAimingReef;
-  public boolean isAimedReef;
-  public boolean isAimingSource;
-  public boolean isAimedSource;
-
-  Integer[] reefTagArray = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
-  Integer[] sourceTagArray = {1, 2, 12, 13};
-
-  List<Integer> reefTagIDs = Arrays.asList(reefTagArray);
-  List<Integer> sourceTagIDs = Arrays.asList(sourceTagArray);
-
   Field2d field;
 
   boolean autoBuilderConfigured;
@@ -112,7 +95,7 @@ public class DriveTrain extends SubsystemBase {
   RobotConfig cfg;
 
   /** Creates a new DriveTrain. */
-  public DriveTrain(LimelightRear lr) {
+  public DriveTrain(LimelightTurret lr) {
     fieldRelative = true;
 
     driveYaw = 0;
@@ -123,15 +106,11 @@ public class DriveTrain extends SubsystemBase {
 
     limelightFrontLeft = new LimelightFrontLeft();
     limelightFrontRight = new LimelightFrontRight();
-    limelightRear = lr;
+    limelightTurret = lr;
 
     limelightXFilter = new MedianFilter(3);
     limelightYFilter = new MedianFilter(3);
     limelightYawFilter = new MedianFilter(3);
-
-    targetSpaceXFilter = new MedianFilter(3);
-    targetSpaceYFilter = new MedianFilter(3);
-    targetSpaceYawFilter = new MedianFilter(3);
 
     autoChooser = new SendableChooser<>();
 
@@ -150,10 +129,8 @@ public class DriveTrain extends SubsystemBase {
 
     compositeLatency = 0;
     compositeVisionPose = new Pose2d();
-    compositeTargetSpacePose = new Pose2d();
 
     isVisionValid = false;
-    isTargetSpacePoseValid = true;
 
     xRateLimiter = new SlewRateLimiter(1 / DriveConstants.RAMP_TIME);
     yRateLimiter = new SlewRateLimiter(1 / DriveConstants.RAMP_TIME);
@@ -182,11 +159,6 @@ public class DriveTrain extends SubsystemBase {
       this::flipPath, 
       this
     );
-
-    isAimingReef = false;
-    isAimedReef = false;
-    isAimingSource = false;
-    isAimedSource = false;
 
     autoBuilderConfigured = false;
 
@@ -223,7 +195,6 @@ public class DriveTrain extends SubsystemBase {
     
     // calculate composite poses
     processFrame();
-    calculateFrameTargetSpace();
 
     // add pose to pose estimator
     if (isVisionValid) {
@@ -241,11 +212,6 @@ public class DriveTrain extends SubsystemBase {
     // print to smart dashboard
     SmartDashboard.putData(field);
     SmartDashboard.putNumber("Drive yaw", driveYaw);
-
-    SmartDashboard.putNumber("Target space x", getPose2dTargetSpace().getX());
-    SmartDashboard.putNumber("Target space y", getPose2dTargetSpace().getY());
-    SmartDashboard.putNumber("Target space yaw", getPose2dTargetSpace().getRotation().getDegrees());
-    SmartDashboard.putBoolean("reef tag?", isTargetSpacePoseValid);
 
     SmartDashboard.putData("Auto?:", autoChooser);
 
@@ -473,16 +439,6 @@ public class DriveTrain extends SubsystemBase {
       }
     }
 
-    if (limelightRear.getTagId() > 0) {
-      if (limelightRear.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
-        totalArea += limelightRear.getTargetArea();
-        x += limelightRear.getBotPose2d().getX() * limelightRear.getTargetArea();
-        y += limelightRear.getBotPose2d().getY() * limelightRear.getTargetArea();
-        yaw += limelightRear.getBotPose2d().getRotation().getDegrees() * limelightRear.getTargetArea();
-        compositeLatency += limelightRear.getLatency();
-      }
-    }
-
     if (totalArea < VisionConstants.TOTAL_TARGET_AREA_THRESHHOLD) {
       isVisionValid = false;
       compositeLatency = 0;
@@ -501,79 +457,5 @@ public class DriveTrain extends SubsystemBase {
     }
 
   }
-  /**
-   * Compiles all limelight target space measurements into a single pose called CompositeTargetSpacePose.
-   * Measurements are weighted based on target area.
-   */
-  public void calculateFrameTargetSpace() {
-    double x = 0;
-    double y = 0;
-    double yaw = 0;
-    double totalArea = 0;
-    isTargetSpacePoseValid = false;
-
-    if (reefTagIDs.contains(limelightFrontLeft.getTagId())) {
-      totalArea += limelightFrontLeft.getTargetArea();
-      x += limelightFrontLeft.getBotPose2dTargetSpace().getX() * limelightFrontLeft.getTargetArea();
-      y += limelightFrontLeft.getBotPose2dTargetSpace().getY() * limelightFrontLeft.getTargetArea();
-      yaw += limelightFrontLeft.getBotPose2dTargetSpace().getRotation().getDegrees() * limelightFrontLeft.getTargetArea();
-      compositeLatency += limelightFrontLeft.getLatency();
-    }
-
-    if (reefTagIDs.contains(limelightFrontRight.getTagId())) {
-      totalArea += limelightFrontRight.getTargetArea();
-      x += limelightFrontRight.getBotPose2dTargetSpace().getX() * limelightFrontRight.getTargetArea();
-      y += limelightFrontRight.getBotPose2dTargetSpace().getY() * limelightFrontRight.getTargetArea();
-      yaw += limelightFrontRight.getBotPose2dTargetSpace().getRotation().getDegrees() * limelightFrontRight.getTargetArea();
-      compositeLatency += limelightFrontRight.getLatency();
-    } 
-
-    if (totalArea < VisionConstants.TOTAL_TARGET_AREA_THRESHHOLD) {
-      isTargetSpacePoseValid = false;
-      compositeLatency = 0;
-    } else {
-      isTargetSpacePoseValid = true;
-      x /= totalArea;
-      y /= totalArea;
-      yaw /= totalArea;
-      compositeLatency /= totalArea;
-
-      compositeTargetSpacePose = new Pose2d(
-        targetSpaceXFilter.calculate(x),
-        targetSpaceYFilter.calculate(y),
-        Rotation2d.fromDegrees(targetSpaceYawFilter.calculate(yaw))
-      );
-    }
-
-  }
-  /**
-   * Gets the target space pose as a Pose2d.
-   * @return The target space pose
-   */
-  public Pose2d getPose2dTargetSpace() {
-    return compositeTargetSpacePose;
-  }
-  /**
-   * Get whether or not the target space pose is available.
-   * @return Whether or not the target space pose is available
-   */
-  public boolean isTargetSpacePoseValid() {
-    return isTargetSpacePoseValid;
-  }
-  /**
-   * Get whether or not the robot is ready to aim on the source.
-   * @return Whether or not the rear limelight can see source tags
-   */
-  public boolean sourceReadyToAim() {
-    return (sourceTagIDs.contains(limelightRear.getTagId()));
-  }
-  /**
-   * Get whether or not the robot is ready to aim on the reef.
-   * @return Whether or not the front limelights can see an AprilTag
-   */
-  public boolean reefReadyToAim() {
-    return (isTargetSpacePoseValid);
-  }
-
 
 }
