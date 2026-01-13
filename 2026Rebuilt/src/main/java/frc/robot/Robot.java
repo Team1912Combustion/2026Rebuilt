@@ -4,28 +4,64 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+//import org.littletonrobotics.urcl.URCL;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj.DataLogManager;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
+  public static final CTREConfigs ctreConfigs = new CTREConfigs();
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+
+  private final UsbCamera camera;
+
+  // if URCL REV hardware logging is currently active
+  public Boolean urcl_is_logging = false;
 
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   public Robot() {
+    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+
+    if (isReal()) {
+      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+    } else {
+      setUseTiming(false); // Run as fast as possible
+      String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+      Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+      Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+    }
+
+Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+
+    camera = CameraServer.startAutomaticCapture(0);
+    camera.setResolution(240, 120);
+    // camera.setFPS(45)//////////////////////////////////////////;
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+
     m_robotContainer = new RobotContainer();
+    DataLogManager.start();
+    start_rev_log();
   }
 
   /**
@@ -44,9 +80,9 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
   }
 
-  /** This function is called once each time the robot enters Disabled mode. */
+  // housekeeping
   @Override
-  public void disabledInit() {}
+  public void disabledInit() { System.gc(); }
 
   @Override
   public void disabledPeriodic() {}
@@ -58,7 +94,7 @@ public class Robot extends TimedRobot {
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+      m_autonomousCommand.schedule();
     }
   }
 
@@ -98,4 +134,14 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  /**
+   * Begins logging REV hardware to NetworkTables using URCL
+   * (see docs.advantagescope.org/more-features/urcl)
+   */
+  private void start_rev_log() {
+    if (this.urcl_is_logging) { return; }
+    this.urcl_is_logging = true;
+    //URCL.start();
+  }
 }
