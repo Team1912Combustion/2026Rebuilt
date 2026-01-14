@@ -34,10 +34,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DeviceIDs;
 import frc.robot.Constants.DriveConstants;
@@ -69,7 +71,7 @@ public class DriveTrain extends SubsystemBase {
   public SwerveDrivePoseEstimator poseEstimator;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(.1));
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1., 1., Units.degreesToRadians(5));
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
 
   public SendableChooser<Command> autoChooser;
 
@@ -195,6 +197,8 @@ public class DriveTrain extends SubsystemBase {
     
     // calculate composite poses
     processFrame();
+
+
 
     // add pose to pose estimator
     if (isVisionValid) {
@@ -419,7 +423,7 @@ public class DriveTrain extends SubsystemBase {
     double totalArea = 0;
     isVisionValid = false;
 
-    if (limelightFrontLeft.getTagId() > 0) {
+    if (limelightFrontLeft.acceptPose()) {
       if (limelightFrontLeft.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
         totalArea += limelightFrontLeft.getTargetArea();
         x += limelightFrontLeft.getBotPose2d().getX() * limelightFrontLeft.getTargetArea();
@@ -429,7 +433,7 @@ public class DriveTrain extends SubsystemBase {
       }
     } 
 
-    if (limelightFrontRight.getTagId() > 0) {
+    if (limelightFrontRight.acceptPose()) {
       if (limelightFrontRight.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
         totalArea += limelightFrontRight.getTargetArea();
         x += limelightFrontRight.getBotPose2d().getX() * limelightFrontRight.getTargetArea();

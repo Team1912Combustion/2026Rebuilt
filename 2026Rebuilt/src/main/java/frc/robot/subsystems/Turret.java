@@ -114,6 +114,9 @@ public class Turret extends SubsystemBase {
     return turretAngle.getDegrees();
   }
 
+  /**
+   * Resets the turret to -180 or 180 degrees when a certain limit switch is pressed for greater than 0.5 seconds.
+   */
   public void checkLimitSwitches() {
     if (leftLimitSwitch.get() || rightLimitSwitch.get()) {
       limitSwitchTimer.start();
@@ -129,6 +132,12 @@ public class Turret extends SubsystemBase {
     }
   }
 
+  /**
+   * Gets the angle from one Translation2d to another.
+   * @param origin The Translation2d to start from
+   * @param goal The Translation2d to point to
+   * @return The angle as a Rotation2d
+   */
   public Rotation2d getDirection(Translation2d origin, Translation2d goal) {
     return Rotation2d.fromRadians(Math.atan2(
       turretPose.relativeTo(new Pose2d(blueDepotZone.getShotPoint(), new Rotation2d())).getY(), 
@@ -137,6 +146,9 @@ public class Turret extends SubsystemBase {
     
   }
 
+  /**
+   * Sets all shot points for each FieldZone based on the current alliance.
+   */
   public void setShotPoints() {
     if (DriverStation.isDSAttached()) {
       if (DriverStation.getAlliance().get() == Alliance.Blue) {
@@ -154,6 +166,24 @@ public class Turret extends SubsystemBase {
         redDepotZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT);
         redOutpostZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT);
       }
+    }
+  }
+
+  public FieldZone getCurrentFieldZone() {
+    if (blueDepotZone.isInZone(driveTrain.getPose())) {
+      return blueDepotZone;
+    } else if (blueOutpostZone.isInZone(driveTrain.getPose())) {
+      return blueOutpostZone; 
+    } else if (neutralTopZone.isInZone(driveTrain.getPose())) {
+      return neutralTopZone;
+    } else if (neutralBottomZone.isInZone(driveTrain.getPose())) {
+      return neutralBottomZone;
+    } else if (redDepotZone.isInZone(driveTrain.getPose())) {
+      return redDepotZone;
+    } else if (redOutpostZone.isInZone(driveTrain.getPose())) {
+      return redOutpostZone;
+    } else {
+      return null;
     }
   }
 }

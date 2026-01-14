@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.apriltag.AprilTagPoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -11,6 +15,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.VisionConstants;
 
 public class LimelightFrontLeft extends SubsystemBase {
   private final NetworkTable table =
@@ -23,6 +28,7 @@ public class LimelightFrontLeft extends SubsystemBase {
   private final NetworkTableEntry botPose = table.getEntry("botpose_wpiblue");
   private final NetworkTableEntry tagId = table.getEntry("tid");
   private final NetworkTableEntry targetArea = table.getEntry("ta");
+  private final NetworkTableEntry json = table.getEntry("json");
   private double[] lastBotPose = new double[6];
   private int currentPipeline = 0;
   private int currentTagId = 0;
@@ -120,6 +126,48 @@ public class LimelightFrontLeft extends SubsystemBase {
    */
   public int getTagId() {
     return (int)tagId.getInteger(0);
+  }
+  /**
+   * Gets the number of tags that the limelight can see.
+   * @return The number of tags
+   */
+  public int getTagCount() {
+    return countSubstringOccurrences(json.getString(""), "pts");
+  }
+  /**
+   * Gets the number of times a string appears in a larger string.
+   * @param mainString The string to search
+   * @param subString The string to search for
+   * @return The number of times the string occurred 
+   */
+  public int countSubstringOccurrences(String mainString, String subString) {
+    int count = 0;
+    int lastIndex = 0;
+    while (lastIndex != -1) {
+        lastIndex = mainString.indexOf(subString, lastIndex);
+        if (lastIndex != -1) {
+            count++;
+            lastIndex += subString.length(); // Move past the found occurrence
+        }
+    }
+    return count;
+  }
+  public boolean acceptPose() {
+    if (getTagId() == -1) {
+      return false;
+    } else if (Math.abs(getBotPose()[3]) > 1) {
+      return false;
+    } else if (getBotPose2d().getY() < 0) {
+      return false;
+    } else if (getBotPose2d().getX() < 0) {
+      return false;
+    } else if (getBotPose2d().getY() > VisionConstants.aprilTagLayout.getFieldWidth()) {
+      return false;
+    } else if (getBotPose2d().getX() > VisionConstants.aprilTagLayout.getFieldLength()) {
+      return false;
+    } else {
+      return true;
+    }
   }
   /**
    * Gets the X Offset of the tag from the center of the frame.
