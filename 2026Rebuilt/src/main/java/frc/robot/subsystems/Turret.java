@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldZoneConstants;
@@ -34,7 +36,14 @@ public class Turret extends SubsystemBase {
   Translation2d turretOffset;
 
   DigitalInput leftLimitSwitch, rightLimitSwitch;
-  Timer limitSwitchTimer; 
+  Timer limitSwitchTimer;
+
+  FieldZone blueDepotZone;
+  FieldZone blueOutpostZone;
+  FieldZone redDepotZone;
+  FieldZone redOutpostZone;
+  FieldZone neutralTopZone;
+  FieldZone neutralBottomZone;
   
   /** Creates a new Turret. */
   public Turret(DriveTrain dt) {
@@ -59,14 +68,25 @@ public class Turret extends SubsystemBase {
 
     limitSwitchTimer = new Timer();
 
+    blueDepotZone = FieldZoneConstants.BLUE_DEPOT_ZONE;
+    blueOutpostZone = FieldZoneConstants.BLUE_OUTPOST_ZONE;
+    redDepotZone = FieldZoneConstants.RED_DEPOT_ZONE;
+    redOutpostZone = FieldZoneConstants.RED_OUTPOST_ZONE;
+    neutralTopZone = FieldZoneConstants.NEUTRAL_TOP_ZONE;
+    neutralBottomZone = FieldZoneConstants.NEUTRAL_BOTTOM_ZONE;
+
   }
 
   @Override
   public void periodic() {
     checkLimitSwitches();
 
-    turretAngle = new Rotation2d((currentPosition / upperLimit) / Math.PI);
-    turretAngle = new Rotation2d(Math.toRadians(turretAngle.getDegrees() - MathUtil.inputModulus(driveTrain.getHeading(), -180, 180)));
+    if (DriverStation.isDisabled()) {
+      setShotPoints();
+    }
+
+    turretAngle = Rotation2d.fromDegrees((currentPosition / upperLimit) * 180);
+    turretAngle = Rotation2d.fromDegrees(turretAngle.getDegrees() - MathUtil.inputModulus(driveTrain.getHeading(), -180, 180));
 
     turretPose = new Pose2d(driveTrain.getPose().getTranslation().minus(turretOffset), turretAngle);
 
@@ -83,7 +103,7 @@ public class Turret extends SubsystemBase {
    * @param angle The angle, in degrees, to set the turret to
    */
   public void setTurretAngle(double angle) {
-    targetPosition = (angle / Math.PI);
+    targetPosition = ((turretAngle.getDegrees() + MathUtil.inputModulus(driveTrain.getHeading(), -180, 180)) / 180) * upperLimit;
   }
 
   /**
@@ -106,6 +126,34 @@ public class Turret extends SubsystemBase {
     } else {
       limitSwitchTimer.stop();
       limitSwitchTimer.reset();
+    }
+  }
+
+  public Rotation2d getDirection(Translation2d origin, Translation2d goal) {
+    return Rotation2d.fromRadians(Math.atan2(
+      turretPose.relativeTo(new Pose2d(blueDepotZone.getShotPoint(), new Rotation2d())).getY(), 
+      turretPose.relativeTo(new Pose2d(blueDepotZone.getShotPoint(), new Rotation2d())).getX()
+      ));
+    
+  }
+
+  public void setShotPoints() {
+    if (DriverStation.isDSAttached()) {
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        blueDepotZone.setShotPoint(FieldZoneConstants.BLUE_HUB_SHOT_POINT);
+        blueOutpostZone.setShotPoint(FieldZoneConstants.BLUE_HUB_SHOT_POINT);
+        neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT);
+        neutralBottomZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT);
+        redDepotZone.setShotPoint(FieldZoneConstants.RED_DEPOT_SHOT_POINT);
+        redOutpostZone.setShotPoint(FieldZoneConstants.RED_OUTPOST_SHOT_POINT);
+      } else {
+        blueDepotZone.setShotPoint(FieldZoneConstants.BLUE_DEPOT_SHOT_POINT);
+        blueOutpostZone.setShotPoint(FieldZoneConstants.BLUE_OUTPOST_SHOT_POINT);
+        neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_RED_SHOT_POINT);
+        neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT);
+        redDepotZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT);
+        redOutpostZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT);
+      }
     }
   }
 }

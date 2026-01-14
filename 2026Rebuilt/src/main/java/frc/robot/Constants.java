@@ -7,6 +7,8 @@ package frc.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -75,25 +77,25 @@ public final class Constants {
     public static final Translation2d RED_OUTPOST_SHOT_POINT = new Translation2d();
 
     // NEUTRAL ZONES //
-    public static final Translation2d TOP_NEUTRAL_ZONE_TL = new Translation2d();
-    public static final Translation2d TOP_NEUTRAL_ZONE_BR = new Translation2d();
+    public static final Translation2d NEUTRAL_TOP_ZONE_TL = new Translation2d();
+    public static final Translation2d NEUTRAL_TOP_ZONE_BR = new Translation2d();
 
-    public static final Translation2d BOTTOM_NEUTRAL_ZONE_TL = new Translation2d();
-    public static final Translation2d BOTTOM_NEUTRAL_ZONE_BR = new Translation2d();
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_TL = new Translation2d();
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_BR = new Translation2d();
 
     // NEUTRAL SHOT POINTS //
-    public static final Translation2d TOP_NEUTRAL_ZONE_BLUE_SHOT_POINT = new Translation2d();
-    public static final Translation2d TOP_NEUTRAL_ZONE_RED_SHOT_POINT = new Translation2d();
-    public static final Translation2d BOTTOM_NEUTRAL_ZONE_BLUE_SHOT_POINT = new Translation2d();
-    public static final Translation2d BOTTOM_NEUTRAL_ZONE_REDE_SHOT_POINT = new Translation2d();
+    public static final Translation2d NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT = new Translation2d();
+    public static final Translation2d NEUTRAL_TOP_ZONE_RED_SHOT_POINT = new Translation2d();
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT = new Translation2d();
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT = new Translation2d();
 
     // CONSTRUCTED FIELD ZONES //
     public static final FieldZone BLUE_DEPOT_ZONE = new FieldZone(BLUE_DEPOT_ZONE_TL, BLUE_DEPOT_ZONE_BR);
     public static final FieldZone BLUE_OUTPOST_ZONE = new FieldZone(BLUE_OUTPOST_ZONE_TL, BLUE_OUTPOST_ZONE_BR);
     public static final FieldZone RED_DEPOT_ZONE = new FieldZone(RED_DEPOT_ZONE_TL, RED_DEPOT_ZONE_BR);
     public static final FieldZone RED_OUTPOST_ZONE = new FieldZone(RED_OUTPOST_ZONE_TL, RED_OUTPOST_ZONE_BR);
-    public static final FieldZone TOP_NEUTRAL_ZONE = new FieldZone(TOP_NEUTRAL_ZONE_TL, TOP_NEUTRAL_ZONE_BR);
-    public static final FieldZone BOTTOM_NEUTRAL_ZONE = new FieldZone(BOTTOM_NEUTRAL_ZONE_TL, BOTTOM_NEUTRAL_ZONE_BR);
+    public static final FieldZone NEUTRAL_TOP_ZONE = new FieldZone(NEUTRAL_TOP_ZONE_TL, NEUTRAL_TOP_ZONE_BR);
+    public static final FieldZone NEUTRAL_BOTTOM_ZONE = new FieldZone(NEUTRAL_BOTTOM_ZONE_TL, NEUTRAL_BOTTOM_ZONE_BR);
 
   }
 
@@ -101,6 +103,9 @@ public final class Constants {
 
     public static final double TARGET_AREA_THRESHHOLD = 0.15;
     public static final double TOTAL_TARGET_AREA_THRESHHOLD = 0.25;
+
+    public static AprilTagFieldLayout aprilTagLayout = 
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   }
 
