@@ -32,6 +32,7 @@ public final class Constants {
   public static class MotorIDs {
 
     public static final int TURRET = 1;
+    public static final int TURRET_HOOD = 2;
 
   }
 
