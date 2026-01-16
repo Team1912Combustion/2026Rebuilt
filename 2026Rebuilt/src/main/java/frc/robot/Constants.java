@@ -99,6 +99,21 @@ public final class Constants {
 
   }
 
+  public static class TurretConstants {
+
+    public static final double[][] DISTANCES = { {0.0, 1.5}, {1.51, 3.0}, {3.01, 4.5}, {4.51, 6.0}, {6.01, 7.5}, {7.51, 9.0} };
+    public static final double[] SPEEDS = { 500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0 };
+    public static final double[] HOOD_ANGLES = { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0 };
+    
+    /*public static final Double[] DISTANCE1 = {0.0, 1.5};
+    public static final Double[] DISTANCE2 = {1.51, 3.0};
+    public static final Double[] DISTANCE3 = {3.01, 4.5};
+    public static final Double[] DISTANCE4 = {4.51, 6.0};
+    public static final Double[] DISTANCE5 = {6.01, 7.5};
+    public static final Double[] DISTANCE6 = {7.51, 9.0};*/
+
+  }
+
   public static class VisionConstants {
 
     public static final double TARGET_AREA_THRESHHOLD = 0.15;
