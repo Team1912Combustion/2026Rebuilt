@@ -97,7 +97,7 @@ public class DriveTrain extends SubsystemBase {
   RobotConfig cfg;
 
   /** Creates a new DriveTrain. */
-  public DriveTrain(LimelightTurret lr) {
+  public DriveTrain(LimelightTurret lt) {
     fieldRelative = true;
 
     driveYaw = 0;
@@ -108,7 +108,7 @@ public class DriveTrain extends SubsystemBase {
 
     limelightFrontLeft = new LimelightFrontLeft();
     limelightFrontRight = new LimelightFrontRight();
-    limelightTurret = lr;
+    limelightTurret = lt;
 
     limelightXFilter = new MedianFilter(3);
     limelightYFilter = new MedianFilter(3);

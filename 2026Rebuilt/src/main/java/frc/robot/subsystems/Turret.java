@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
 
@@ -46,6 +49,10 @@ public class Turret extends SubsystemBase {
   FieldZone redOutpostZone;
   FieldZone neutralTopZone;
   FieldZone neutralBottomZone;
+
+  Integer[] hubTagsArray = {8, 10, 11, 24, 26, 27};
+
+  List<Integer> hubTags = Arrays.asList(hubTagsArray);
   
   /** Creates a new Turret. */
   public Turret(DriveTrain dt) {
@@ -114,6 +121,14 @@ public class Turret extends SubsystemBase {
    */
   public double getTurretAngle() {
     return turretAngle.getDegrees();
+  }
+
+  /**
+   * Gets the pose of the turret on the field. This is different than the robot's pose. The Rotation2d component is the turret's current angle.
+   * @return The pose of the turret
+   */
+  public Pose2d getTurretPose() {
+    return turretPose;
   }
 
   /**

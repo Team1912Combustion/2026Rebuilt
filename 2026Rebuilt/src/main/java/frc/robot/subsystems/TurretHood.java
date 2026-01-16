@@ -65,4 +65,8 @@ public class TurretHood extends SubsystemBase {
 
     return angle;
   }
+
+  public void setPosition(double target) {
+    targetPosition = target;
+  }
 }
