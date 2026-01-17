@@ -84,6 +84,9 @@ public class Shooter extends SubsystemBase {
     return speed;
   }
 
+  /**
+   * Adds a count of 1 to shotCount if a ball passes through the shooter.
+   */
   public void countShot() {
     if (previousBeambreakState == false && beambreak.get() == true) {
       shotCount += 1;

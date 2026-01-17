@@ -27,6 +27,7 @@ public class TurretHood extends SubsystemBase {
     hood = new SparkMax(MotorIDs.TURRET_HOOD, MotorType.kBrushless);
 
     pid = new PIDController(0, 0, 0);
+    pid.setTolerance(1);
 
     upperLimit = 5;
     lowerLimit = 0;
@@ -66,7 +67,19 @@ public class TurretHood extends SubsystemBase {
     return angle;
   }
 
+  /**
+   * Sets a target position for the PID controller.
+   * @param target The position to go to
+   */
   public void setPosition(double target) {
     targetPosition = target;
+  }
+
+  /**
+   * Gets whether or not the turret hood is aligned.
+   * @return Whether or not the hood is within tolerance for the PID controller
+   */
+  public boolean isInPosiiton() {
+    return pid.atSetpoint();
   }
 }

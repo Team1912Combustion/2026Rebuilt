@@ -7,15 +7,21 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.TurretHood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootFuel extends Command {
   Shooter shooter;
   DriveTrain driveTrain;
+  Turret turret;
+  TurretHood turretHood;
   /** Creates a new ShootFuel. */
-  public ShootFuel(Shooter s, DriveTrain dt) {
+  public ShootFuel(Shooter s, DriveTrain dt, Turret t, TurretHood th) {
     shooter = s;
     driveTrain = dt;
+    turret = t;
+    turretHood = th;
     addRequirements(shooter);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -27,7 +33,9 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setSpeed(shooter.calculateSpeed(driveTrain.getPose()));
+    if (turret.isAimed() && turretHood.isInPosiiton()) {
+      shooter.setSpeed(shooter.calculateSpeed(driveTrain.getPose()));
+    }
   }
 
   // Called once the command ends or is interrupted.

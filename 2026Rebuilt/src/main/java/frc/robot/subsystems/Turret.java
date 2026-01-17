@@ -64,6 +64,7 @@ public class Turret extends SubsystemBase {
     turret.setPosition(0);
 
     pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
+    pid.setTolerance(1);
 
     targetPosition = 0;
     currentPosition = 0;
@@ -158,6 +159,14 @@ public class Turret extends SubsystemBase {
    */
   public String getTargetMode() {
     return targetMode;
+  }
+
+  /**
+   * Gets whether or not the turret is within the tolerance for the PID controller.
+   * @return Whether or not the turret is within tolerance
+   */
+  public boolean isAimed() {
+    return pid.atSetpoint();
   }
 
   /**
