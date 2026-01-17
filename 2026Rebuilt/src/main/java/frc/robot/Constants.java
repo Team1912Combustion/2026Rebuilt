@@ -39,10 +39,7 @@ public final class Constants {
   public static class SensorIDs {
     public static final int GYRO = 1;
     
-    public static final int ELEVATOR_LIMIT_SWITCH = 7;
-
-    public static final int BEAMBREAK_FRONT = 9;
-    public static final int BEAMBREAK_BACK = 8;
+    public static final int TURRET_BEAMBREAK = 1;
     
     public static final int TURRET_LEFT_LIMIT_SWITCH = 1;
     public static final int TURRET_RIGHT_LIMIT_SWITCH = 1;

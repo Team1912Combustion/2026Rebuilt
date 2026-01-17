@@ -14,13 +14,20 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.SensorIDs;
 import frc.robot.Constants.TurretConstants;
 
 public class Shooter extends SubsystemBase {
   Turret turret;
   TalonFX shooter;
   TalonFXConfiguration config;
+
+  DigitalInput beambreak;
+
+  double shotCount;
+  boolean previousBeambreakState;
 
   double[] ranges;
   /** Creates a new Shooter. */
@@ -35,10 +42,16 @@ public class Shooter extends SubsystemBase {
 
     shooter.getConfigurator().apply(config);
 
+    beambreak = new DigitalInput(SensorIDs.TURRET_BEAMBREAK);
+
+    shotCount = 0;
+    previousBeambreakState = true;
+
   }
 
   @Override
   public void periodic() {
+    countShot();
     // This method will be called once per scheduler run
   }
 
@@ -69,6 +82,14 @@ public class Shooter extends SubsystemBase {
     }
 
     return speed;
+  }
+
+  public void countShot() {
+    if (previousBeambreakState == false && beambreak.get() == true) {
+      shotCount += 1;
+    }
+
+    previousBeambreakState = beambreak.get();
   }
 
   /**
