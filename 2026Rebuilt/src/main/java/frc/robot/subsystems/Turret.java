@@ -50,6 +50,8 @@ public class Turret extends SubsystemBase {
   FieldZone neutralTopZone;
   FieldZone neutralBottomZone;
 
+  String targetMode;
+
   Integer[] hubTagsArray = {8, 10, 11, 24, 26, 27};
 
   List<Integer> hubTags = Arrays.asList(hubTagsArray);
@@ -83,6 +85,8 @@ public class Turret extends SubsystemBase {
     redOutpostZone = FieldZoneConstants.RED_OUTPOST_ZONE;
     neutralTopZone = FieldZoneConstants.NEUTRAL_TOP_ZONE;
     neutralBottomZone = FieldZoneConstants.NEUTRAL_BOTTOM_ZONE;
+
+    targetMode = "pose";
 
   }
 
@@ -124,11 +128,36 @@ public class Turret extends SubsystemBase {
   }
 
   /**
+   * Aims the turret at a tag using the x offset from center.
+   * @param xOffset The x offset reported by the limelight
+   */
+  public void aimAtTag(double xOffset) {
+    if (xOffset < TurretConstants.X_OFFSET_THRESHHOLD) {
+      targetPosition += (xOffset * 0.001);
+    }
+  }
+
+  /**
    * Gets the pose of the turret on the field. This is different than the robot's pose. The Rotation2d component is the turret's current angle.
    * @return The pose of the turret
    */
   public Pose2d getTurretPose() {
     return turretPose;
+  }
+
+  /**
+   * Used to set the target mode to either 'pose' or 'tag'. 'pose' and 'tag' are the only valid arguments.
+   */
+  public void setTargetMode(String mode) {
+    targetMode = mode;
+  }
+
+  /**
+   * Gets the current target mode of the turret.
+   * @return The target mode of the turret, either 'pose' or 'tag'
+   */
+  public String getTargetMode() {
+    return targetMode;
   }
 
   /**
