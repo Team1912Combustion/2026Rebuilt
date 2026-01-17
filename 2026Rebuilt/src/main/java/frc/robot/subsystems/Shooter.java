@@ -16,13 +16,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.SensorIDs;
 import frc.robot.Constants.TurretConstants;
 
 public class Shooter extends SubsystemBase {
   Turret turret;
   TalonFX shooter;
-  TalonFXConfiguration config;
+  TalonFX kicker;
+  TalonFXConfiguration shooterConfig, kickerConfig;
 
   DigitalInput beambreak;
 
@@ -34,13 +36,19 @@ public class Shooter extends SubsystemBase {
   public Shooter(Turret t) {
     turret = t;
 
-    shooter = new TalonFX(0, "1912CANivore");
-    config = new TalonFXConfiguration();
-    config.Slot0.kS = 0.1;
-    config.Slot0.kV = 0.12;
-    config.Slot0.kP = 0;
+    shooter = new TalonFX(MotorIDs.SHOOTER, "1912CANivore");
+    kicker = new TalonFX(MotorIDs.KICKER, "1912CANivore");
+    shooterConfig = new TalonFXConfiguration();
+    kickerConfig = new TalonFXConfiguration();
+    shooterConfig.Slot0.kS = 0.1;
+    shooterConfig.Slot0.kV = 0.12;
+    shooterConfig.Slot0.kP = 0;
+    kickerConfig.Slot0.kS = 0.1;
+    kickerConfig.Slot0.kV = 0.12;
+    kickerConfig.Slot0.kP = 0;
 
-    shooter.getConfigurator().apply(config);
+    shooter.getConfigurator().apply(shooterConfig);
+    kicker.getConfigurator().apply(kickerConfig);
 
     beambreak = new DigitalInput(SensorIDs.TURRET_BEAMBREAK);
 
@@ -62,6 +70,18 @@ public class Shooter extends SubsystemBase {
   public void setSpeed(double speed) {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
     shooter.setControl(request.withVelocity(speed));
+  }
+
+  public boolean shooterAtSpeed() {
+    return (shooter.getClosedLoopError().getValueAsDouble() < 20);
+  }
+
+  /**
+   * Runs the kicker at a specific speed.
+   */
+  public void kickerOn() {
+    final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
+    kicker.setControl(request.withVelocity(500));
   }
 
   /**
@@ -98,7 +118,14 @@ public class Shooter extends SubsystemBase {
   /**
    * Turns the shooter off.
    */
-  public void off() {
+  public void shooterOff() {
     shooter.set(0);
+  }
+
+  /**
+   * Turns the kicker off.
+   */
+  public void kickerOff() {
+    kicker.set(0);
   }
 }

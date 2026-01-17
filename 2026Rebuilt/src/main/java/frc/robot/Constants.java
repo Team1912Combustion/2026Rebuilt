@@ -34,6 +34,9 @@ public final class Constants {
     public static final int TURRET = 1;
     public static final int TURRET_HOOD = 2;
 
+    public static final int SHOOTER = 3;
+    public static final int KICKER = 4;
+
   }
 
   public static class SensorIDs {

@@ -33,15 +33,19 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (turret.isAimed() && turretHood.isInPosiiton()) {
-      shooter.setSpeed(shooter.calculateSpeed(driveTrain.getPose()));
+    shooter.setSpeed(shooter.calculateSpeed(driveTrain.getPose()));
+    if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed()) {
+      shooter.kickerOn();
+    } else {
+      shooter.kickerOff();
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.off();
+    shooter.shooterOff();
+    shooter.kickerOff();
   }
 
   // Returns true when the command should end.
