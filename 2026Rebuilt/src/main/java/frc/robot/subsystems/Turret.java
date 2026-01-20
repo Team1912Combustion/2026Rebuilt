@@ -100,9 +100,7 @@ public class Turret extends SubsystemBase {
     }
 
     turretAngle = Rotation2d.fromDegrees((currentPosition / upperLimit) * 180);
-    turretAngle = Rotation2d.fromDegrees(turretAngle.getDegrees() - MathUtil.inputModulus(driveTrain.getHeading(), -180, 180));
-
-    turretPose = new Pose2d(driveTrain.getPose().getTranslation().minus(turretOffset), turretAngle);
+    turretAngle = Rotation2d.fromDegrees(turretAngle.getDegrees() + angleModulus(driveTrain.getHeading()));
 
     currentPosition = turret.getPosition().getValueAsDouble();
     targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);
@@ -113,11 +111,27 @@ public class Turret extends SubsystemBase {
   }
 
   /**
+   * Loops a value between the lower limit and upper limit of the motor.
+   * @param value The value to loop
+   * @return The looped value
+   */
+  public double motorModulus(double value) {
+    return MathUtil.inputModulus(value, lowerLimit, upperLimit);
+  }
+  /**
+   * Loops a value between -180 and 180.
+   * @param value The value to loop
+   * @return The looped value
+   */
+  public double angleModulus(double value) {
+    return MathUtil.inputModulus(value, -180, 180);
+  }
+  /**
    * Sets the turret's target position to a certain field-relative angle.
    * @param angle The angle, in degrees, to set the turret to
    */
   public void setTurretAngle(double angle) {
-    targetPosition = ((turretAngle.getDegrees() + MathUtil.inputModulus(driveTrain.getHeading(), -180, 180)) / 180) * upperLimit;
+    targetPosition = motorModulus(((angle - angleModulus(driveTrain.getHeading())) / 180) * upperLimit);
   }
 
   /**
