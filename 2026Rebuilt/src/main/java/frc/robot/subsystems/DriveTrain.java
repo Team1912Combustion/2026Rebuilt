@@ -71,7 +71,7 @@ public class DriveTrain extends SubsystemBase {
   public SwerveDrivePoseEstimator poseEstimator;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(.1));
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(2.0, 2.0, Units.degreesToRadians(15));
 
   public SendableChooser<Command> autoChooser;
 
