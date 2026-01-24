@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LimelightTurret;
 import frc.robot.subsystems.Turret;
@@ -32,7 +34,11 @@ public class MoveTurret extends Command {
       turret.aimAtTag(limelight.getXOffset());
     } else {
       turret.setTargetMode("pose");
-      turret.setTurretAngle(turret.getDirection(turret.getTurretPose().getTranslation(), turret.getCurrentFieldZone().getShotPoint()).getDegrees());
+      turret.setTurretAngle(
+        turret.getDirection(
+          turret.getTurretPose(), 
+          new Pose2d(turret.getCurrentFieldZone().getShotPoint(), 
+          new Rotation2d())).getDegrees());
     }
   }
 

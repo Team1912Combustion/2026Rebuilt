@@ -207,12 +207,16 @@ public class Turret extends SubsystemBase {
    * @param goal The Translation2d to point to
    * @return The angle as a Rotation2d
    */
-  public Rotation2d getDirection(Translation2d origin, Translation2d goal) {
+  public Rotation2d getDirection(Pose2d origin, Pose2d goal) {
     return Rotation2d.fromRadians(Math.atan2(
-      turretPose.relativeTo(new Pose2d(blueDepotZone.getShotPoint(), new Rotation2d())).getY(), 
-      turretPose.relativeTo(new Pose2d(blueDepotZone.getShotPoint(), new Rotation2d())).getX()
+      origin.relativeTo(goal).getY(), 
+      origin.relativeTo(goal).getX()
       ));
     
+  }
+
+  public Pose2d addVector(Pose2d pose) {
+    return pose.exp(driveTrain.getRobotSpeed());
   }
 
   /**

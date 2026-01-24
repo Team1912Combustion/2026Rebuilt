@@ -25,10 +25,13 @@ import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -76,6 +79,7 @@ public class DriveTrain extends SubsystemBase {
   public SendableChooser<Command> autoChooser;
 
   public double poseX, poseY, poseYaw;
+  Twist2d robotSpeed;
 
   double compositeLatency;
   Pose2d compositeVisionPose;
@@ -128,6 +132,8 @@ public class DriveTrain extends SubsystemBase {
     poseX = 0;
     poseY = 0;
     poseYaw = 0;
+
+    robotSpeed = new Twist2d(0, 0, 0);
 
     compositeLatency = 0;
     compositeVisionPose = new Pose2d();
@@ -205,6 +211,11 @@ public class DriveTrain extends SubsystemBase {
       poseEstimator.addVisionMeasurement(compositeVisionPose, Timer.getFPGATimestamp() - (compositeLatency / 1000));
     }
 
+    robotSpeed = new Twist2d(
+      getDirection(new Pose2d(new Translation2d(poseX, poseY), new Rotation2d(poseYaw)), poseEstimator.getEstimatedPosition()).getDegrees(),
+      poseEstimator.getEstimatedPosition().getTranslation().getDistance(new Pose2d(new Translation2d(poseX, poseY), new Rotation2d(poseYaw)).getTranslation()),
+      0
+      );
     // update pose variables
     poseX = poseEstimator.getEstimatedPosition().getX();
     poseY = poseEstimator.getEstimatedPosition().getY();
@@ -370,6 +381,13 @@ public class DriveTrain extends SubsystemBase {
   public double getHeading() {
     return gyro.getYaw().getValueAsDouble();
   }
+  public Rotation2d getDirection(Pose2d origin, Pose2d goal) {
+    return Rotation2d.fromRadians(Math.atan2(
+      origin.relativeTo(goal).getY(), 
+      origin.relativeTo(goal).getX()
+      ));
+    
+  }
   /**
    * Gets the estimated field pose from the pose estimator.
    * @return The pose of the robot
@@ -399,6 +417,9 @@ public class DriveTrain extends SubsystemBase {
     SwerveModulePosition[] m_positions = {frontLeft.getPosition(),frontRight.getPosition(),
     rearLeft.getPosition(),rearRight.getPosition()};
     return m_positions;
+  }
+  public Twist2d getRobotSpeed(){
+    return robotSpeed;
   }
   /**
    * Gets whether or not to flip autonomous paths.
