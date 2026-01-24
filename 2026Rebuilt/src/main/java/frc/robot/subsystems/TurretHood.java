@@ -59,7 +59,7 @@ public class TurretHood extends SubsystemBase {
     for (double[] range : TurretConstants.DISTANCES) {
       index += 1;
       if ((distance > range[0]) && (distance < range[1])) {
-        angle = TurretConstants.HOOD_ANGLES[index];
+        angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
         break;
       }
     }

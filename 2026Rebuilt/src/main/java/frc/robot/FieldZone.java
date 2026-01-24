@@ -14,6 +14,7 @@ public class FieldZone {
     Translation2d topLeft;
     Translation2d bottomRight;
     Translation2d shotPoint;
+    boolean low;
 
     /**
      * Creates a FieldZone. 
@@ -62,9 +63,19 @@ public class FieldZone {
     /**
      * Defines the shot point for the FieldZone.
      * @param desiredShotPoint The translation of the shot point
+     * @param low Whether or not to use low turret hood heights or high turret hood heights. Low heights are for shooting through zones, high heights are for scoring
      */
-    public void setShotPoint(Translation2d desiredShotPoint) {
+    public void setShotPoint(Translation2d desiredShotPoint, boolean low) {
         shotPoint = desiredShotPoint;
+        this.low = low;
+    }
+
+    /**
+     * Gets whether or not the shot point is "low", which means lower turret hood angles should be used.
+     * @return True if low angles should be used, false is high angles should be used
+     */
+    public boolean getShotPointHeight() {
+        return low;
     }
 
     /**

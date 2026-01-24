@@ -104,7 +104,8 @@ public final class Constants {
 
     public static final double[][] DISTANCES = { {0.0, 1.5}, {1.51, 3.0}, {3.01, 4.5}, {4.51, 6.0}, {6.01, 7.5}, {7.51, 9.0} };
     public static final double[] SPEEDS = { 500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0 };
-    public static final double[] HOOD_ANGLES = { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0 };
+    public static final double[] HIGH_HOOD_ANGLES = { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0 };
+    public static final double[] LOW_HOOD_ANGLES = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 };
 
     public static final double X_OFFSET_THRESHHOLD = 0.2;
     
