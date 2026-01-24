@@ -72,6 +72,10 @@ public class Shooter extends SubsystemBase {
     shooter.setControl(request.withVelocity(speed));
   }
 
+  /**
+   * Gets whether or not the shooter speed is within a certain error limit of its target speed.
+   * @return True if the shooter is within in the limit, false if it isn't
+   */
   public boolean shooterAtSpeed() {
     return (shooter.getClosedLoopError().getValueAsDouble() < 20);
   }
@@ -86,7 +90,7 @@ public class Shooter extends SubsystemBase {
 
   /**
    * Gets the ideal shooter speed for the distance from the shot point. There are different ranges of distances, each with a unique shooter speed.
-   * @param pose The current pose of the robot
+   * @param pose The current pose of the turret
    * @return The ideal speed
    */
   public double calculateSpeed(Pose2d pose) {
@@ -100,6 +104,20 @@ public class Shooter extends SubsystemBase {
         break;
       }
     }
+
+    return speed;
+  }
+
+  /**
+   * Gets the ideal shooter speed for the distance from the shot point. It is calculated as a function of distance.
+   * @param pose The current pose of the turret
+   * @return The ideal speed
+   */
+  public double calculateSpeedContinuous(Pose2d pose) {
+    double speed = 0;
+    double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
+
+    // FIGURE OUT THIS FUNCTION AT SOME POINT
 
     return speed;
   }

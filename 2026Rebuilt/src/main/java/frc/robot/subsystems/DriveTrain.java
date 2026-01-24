@@ -381,6 +381,12 @@ public class DriveTrain extends SubsystemBase {
   public double getHeading() {
     return gyro.getYaw().getValueAsDouble();
   }
+  /**
+   * Gets the direction from one pose to another.
+   * @param origin The pose to start from
+   * @param goal The pose to point at
+   * @return The angle from the origin pose to the goal pose
+   */
   public Rotation2d getDirection(Pose2d origin, Pose2d goal) {
     return Rotation2d.fromRadians(Math.atan2(
       origin.relativeTo(goal).getY(), 

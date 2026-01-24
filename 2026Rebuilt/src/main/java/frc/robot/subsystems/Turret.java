@@ -215,6 +215,11 @@ public class Turret extends SubsystemBase {
     
   }
 
+  /**
+   * Adds the robot's speed vector to a supplied pose
+   * @param pose The pose to add to
+   * @return The updated pose
+   */
   public Pose2d addVector(Pose2d pose) {
     return pose.exp(driveTrain.getRobotSpeed());
   }

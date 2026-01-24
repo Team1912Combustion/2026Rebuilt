@@ -33,7 +33,7 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setSpeed(shooter.calculateSpeed(driveTrain.getPose()));
+    shooter.setSpeed(shooter.calculateSpeed(turret.getTurretPose()));
     if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed()) {
       shooter.kickerOn();
     } else {
