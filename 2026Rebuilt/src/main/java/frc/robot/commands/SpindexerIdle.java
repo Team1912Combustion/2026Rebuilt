@@ -5,27 +5,15 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Spindexer;
-import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.TurretHood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ShootFuel extends Command {
-  Shooter shooter;
+public class SpindexerIdle extends Command {
   Spindexer spindexer;
-  DriveTrain driveTrain;
-  Turret turret;
-  TurretHood turretHood;
-  /** Creates a new ShootFuel. */
-  public ShootFuel(Shooter s, Spindexer sp, DriveTrain dt, Turret t, TurretHood th) {
-    shooter = s;
-    spindexer = sp;
-    driveTrain = dt;
-    turret = t;
-    turretHood = th;
-    addRequirements(shooter, spindexer);
+  /** Creates a new SpindexerIdle. */
+  public SpindexerIdle(Spindexer s) {
+    spindexer = s;
+    addRequirements(spindexer);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -36,21 +24,13 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setSpeed(shooter.calculateSpeed(turret.getTurretPose()));
-    spindexer.setSpeed(4000);
-    if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed()) {
-      shooter.kickerOn();
-    } else {
-      shooter.kickerOff();
-    }
+    spindexer.setSpeed(400);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.shooterOff();
-    spindexer.spindexerOff();
-    shooter.kickerOff();
+    spindexer.setSpeed(0);
   }
 
   // Returns true when the command should end.

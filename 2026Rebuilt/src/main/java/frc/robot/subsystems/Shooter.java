@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -36,16 +37,23 @@ public class Shooter extends SubsystemBase {
   public Shooter(Turret t) {
     turret = t;
 
-    shooter = new TalonFX(MotorIDs.SHOOTER, "1912CANivore");
-    kicker = new TalonFX(MotorIDs.KICKER, "1912CANivore");
+    shooter = new TalonFX(MotorIDs.SHOOTER, new CANBus("1912CANivore"));
+    kicker = new TalonFX(MotorIDs.KICKER, new CANBus("1912CANivore"));
+
     shooterConfig = new TalonFXConfiguration();
-    kickerConfig = new TalonFXConfiguration();
-    shooterConfig.Slot0.kS = 0.1;
-    shooterConfig.Slot0.kV = 0.12;
+    shooterConfig.Slot0.kS = 0;
+    shooterConfig.Slot0.kV = 0;
     shooterConfig.Slot0.kP = 0;
-    kickerConfig.Slot0.kS = 0.1;
-    kickerConfig.Slot0.kV = 0.12;
+    shooterConfig.Slot0.kI = 0;
+    shooterConfig.Slot0.kD = 0;
+
+    
+    kickerConfig = new TalonFXConfiguration();
+    kickerConfig.Slot0.kS = 0;
+    kickerConfig.Slot0.kV = 0;
     kickerConfig.Slot0.kP = 0;
+    kickerConfig.Slot0.kI = 0;
+    kickerConfig.Slot0.kD = 0;
 
     shooter.getConfigurator().apply(shooterConfig);
     kicker.getConfigurator().apply(kickerConfig);

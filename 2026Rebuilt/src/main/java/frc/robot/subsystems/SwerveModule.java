@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -40,13 +41,13 @@ public class SwerveModule {
         this.angleOffset = moduleConstants.angleOffset;
         
         /* Angle Encoder Config */
-        angleEncoder = new CANcoder(moduleConstants.cancoderID, "1912CANivore");
+        angleEncoder = new CANcoder(moduleConstants.cancoderID, new CANBus("1912CANivore"));
         //angleEncoder.getConfigurator().apply(Robot.ctreConfigs.swerveCANcoderConfig);
 
        // this.angleOffset = Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValue());
 
         /* Angle Motor Config */
-        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, "1912CANivore");
+        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, new CANBus("1912CANivore"));
         TalonFXConfiguration myAngleFXConfig = Robot.ctreConfigs.swerveAngleFXConfig;
         myAngleFXConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         myAngleFXConfig.Feedback.FeedbackRemoteSensorID = moduleConstants.cancoderID;
@@ -55,7 +56,7 @@ public class SwerveModule {
         //resetToAbsolute();
 
         /* Drive Motor Config */
-        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, "1912CANivore");
+        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, new CANBus("1912CANivore"));
         mDriveMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
     }

@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
 
@@ -60,7 +61,7 @@ public class Turret extends SubsystemBase {
   public Turret(DriveTrain dt) {
     driveTrain = dt;
 
-    turret = new TalonFX(MotorIDs.TURRET, "1912CANivore");
+    turret = new TalonFX(MotorIDs.TURRET, new CANBus("1912CANivore"));
     turret.setPosition(0);
 
     pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
@@ -101,6 +102,8 @@ public class Turret extends SubsystemBase {
 
     turretAngle = Rotation2d.fromDegrees((currentPosition / upperLimit) * 180);
     turretAngle = Rotation2d.fromDegrees(turretAngle.getDegrees() + angleModulus(driveTrain.getHeading()));
+
+    turretPose = new Pose2d(driveTrain.getPose().minus(TurretConstants.TURRET_POSE_OFFSET).getTranslation(), turretAngle);
 
     currentPosition = turret.getPosition().getValueAsDouble();
     targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);

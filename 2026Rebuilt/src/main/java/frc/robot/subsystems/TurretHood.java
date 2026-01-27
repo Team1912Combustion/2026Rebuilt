@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.servohub.ServoChannel;
+import com.revrobotics.servohub.ServoHub;
+import com.revrobotics.servohub.ServoChannel.ChannelId;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -16,33 +19,23 @@ import frc.robot.Constants.TurretConstants;
 public class TurretHood extends SubsystemBase {
   Turret turret;
 
-  SparkMax hood;
+  ServoHub servoHub;
+  ServoChannel servo;
 
-  PIDController pid;
-  double upperLimit, lowerLimit, currentPosition, targetPosition;
   /** Creates a new TurretHood. */
   public TurretHood(Turret t) {
     turret = t;
 
-    hood = new SparkMax(MotorIDs.TURRET_HOOD, MotorType.kBrushless);
+    servoHub = new ServoHub(0);
+    
+    servo = servoHub.getServoChannel(ChannelId.kChannelId0);
 
-    pid = new PIDController(0, 0, 0);
-    pid.setTolerance(1);
-
-    upperLimit = 5;
-    lowerLimit = 0;
-    currentPosition = hood.getEncoder().getPosition();
-    targetPosition = 0;
+    servo.setEnabled(true);
 
   }
 
   @Override
   public void periodic() {
-
-    currentPosition = hood.getEncoder().getPosition();
-
-    targetPosition = Math.max(Math.min(targetPosition, upperLimit), lowerLimit);
-    hood.set(pid.calculate(currentPosition, targetPosition));
 
     // This method will be called once per scheduler run
   }
@@ -52,8 +45,8 @@ public class TurretHood extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal hood angle
    */
-  public double calculateHoodAngle(Pose2d pose) {
-    double angle = 0;
+  public int calculateHoodAngle(Pose2d pose) {
+    int angle = 0;
     double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
     int index = -1;
     for (double[] range : TurretConstants.DISTANCES) {
@@ -72,8 +65,8 @@ public class TurretHood extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal hood angle
    */
-  public double calculateHoodAngleContinuous(Pose2d pose) {
-    double angle = 0;
+  public int calculateHoodAngleContinuous(Pose2d pose) {
+    int angle = 0;
     double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
 
     // FIGURE OUT THIS FUNCTION AT SOME POINT
@@ -85,8 +78,8 @@ public class TurretHood extends SubsystemBase {
    * Sets a target position for the PID controller.
    * @param target The position to go to
    */
-  public void setPosition(double target) {
-    targetPosition = target;
+  public void setPosition(int target) {
+    servo.setPulseWidth(target);
   }
 
   /**
@@ -94,6 +87,6 @@ public class TurretHood extends SubsystemBase {
    * @return Whether or not the hood is within tolerance for the PID controller
    */
   public boolean isInPosiiton() {
-    return pid.atSetpoint();
+    return (servo.getCurrent() > 0.04) && (servo.getCurrent() < 0.1);
   }
 }

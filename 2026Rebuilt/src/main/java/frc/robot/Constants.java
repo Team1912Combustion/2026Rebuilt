@@ -9,6 +9,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -36,6 +37,9 @@ public final class Constants {
 
     public static final int SHOOTER = 3;
     public static final int KICKER = 4;
+    public static final int SPINDEXER = 5;
+
+    public static final int SERVO_HUB = 6;
 
   }
 
@@ -102,10 +106,12 @@ public final class Constants {
 
   public static class TurretConstants {
 
+    public static final Pose2d TURRET_POSE_OFFSET = new Pose2d(new Translation2d(0, 0), new Rotation2d());
+
     public static final double[][] DISTANCES = { {0.0, 1.5}, {1.51, 3.0}, {3.01, 4.5}, {4.51, 6.0}, {6.01, 7.5}, {7.51, 9.0} };
     public static final double[] SPEEDS = { 500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0 };
-    public static final double[] HIGH_HOOD_ANGLES = { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0 };
-    public static final double[] LOW_HOOD_ANGLES = { 0.0, 0.2, 0.4, 0.6, 0.8, 1.0 };
+    public static final int[] HIGH_HOOD_ANGLES = { 500, 1000, 1500, 1750, 2000, 2500 };
+    public static final int[] LOW_HOOD_ANGLES = { 500, 600, 700, 800, 900, 1000 };
 
     public static final double X_OFFSET_THRESHHOLD = 0.2;
     
