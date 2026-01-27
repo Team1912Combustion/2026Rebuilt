@@ -41,6 +41,9 @@ public final class Constants {
 
     public static final int SERVO_HUB = 6;
 
+    public static final int INTAKE_ROLLERS = 7;
+    public static final int INTAKE_ARM = 8;
+
   }
 
   public static class SensorIDs {

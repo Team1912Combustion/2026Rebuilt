@@ -43,7 +43,7 @@ public class TurretHood extends SubsystemBase {
   /**
    * Returns the hood angle for the current distance from the shot point. There are different ranges of distances, each with a unique turret hood angle.
    * @param pose The current pose of the turret
-   * @return The ideal hood angle
+   * @return The ideal hood angle, as a servo pulse width
    */
   public int calculateHoodAngle(Pose2d pose) {
     int angle = 0;
@@ -63,7 +63,7 @@ public class TurretHood extends SubsystemBase {
   /**
    * Returns the hood angle for the current distance from the shot point. This is calculated as a function of distance.
    * @param pose The current pose of the turret
-   * @return The ideal hood angle
+   * @return The ideal hood angle, as a servo pulse width
    */
   public int calculateHoodAngleContinuous(Pose2d pose) {
     int angle = 0;
