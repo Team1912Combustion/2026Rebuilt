@@ -113,8 +113,8 @@ public final class Constants {
 
     public static final double[][] DISTANCES = { {0.0, 1.5}, {1.51, 3.0}, {3.01, 4.5}, {4.51, 6.0}, {6.01, 7.5}, {7.51, 9.0} };
     public static final double[] SPEEDS = { 500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0 };
-    public static final int[] HIGH_HOOD_ANGLES = { 500, 1000, 1500, 1750, 2000, 2500 };
-    public static final int[] LOW_HOOD_ANGLES = { 500, 600, 700, 800, 900, 1000 };
+    public static final double[] HIGH_HOOD_ANGLES = { 500.0, 1000.0, 1500.0, 1750.0, 2000.0, 2500.0 };
+    public static final double[] LOW_HOOD_ANGLES = { 100.0, 200.0, 300.0, 400.0, 500.0, 600.0 };
 
     public static final double X_OFFSET_THRESHHOLD = 0.2;
     
