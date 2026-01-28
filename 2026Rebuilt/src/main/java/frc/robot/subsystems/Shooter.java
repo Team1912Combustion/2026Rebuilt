@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.QuadraticSolver;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.SensorIDs;
 import frc.robot.Constants.TurretConstants;
@@ -32,7 +33,8 @@ public class Shooter extends SubsystemBase {
   double shotCount;
   boolean previousBeambreakState;
 
-  double[] ranges;
+  QuadraticSolver quadraticSolver;
+
   /** Creates a new Shooter. */
   public Shooter(Turret t) {
     turret = t;
@@ -62,6 +64,8 @@ public class Shooter extends SubsystemBase {
 
     shotCount = 0;
     previousBeambreakState = true;
+
+    quadraticSolver = new QuadraticSolver();
 
   }
 
@@ -128,6 +132,17 @@ public class Shooter extends SubsystemBase {
     // FIGURE OUT THIS FUNCTION AT SOME POINT
 
     return speed;
+  }
+
+  /**
+   * Gets the amount of time the ball takes to reach the hub based on the initial velocity of the ball.
+   * @return The time the ball takes to reach the hub, in seconds
+   */
+  public double getFuelTravelTime() {
+    double rps = shooter.getVelocity().getValueAsDouble() / 60;
+    double shootSpeed = rps * TurretConstants.SHOOTER_WHEEL_CIRCUMFERENCE;
+
+    return quadraticSolver.findZeros(-4.9, shootSpeed, -1.3);
   }
 
   /**

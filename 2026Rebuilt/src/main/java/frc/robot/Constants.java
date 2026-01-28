@@ -117,13 +117,9 @@ public final class Constants {
     public static final double[] LOW_HOOD_ANGLES = { 100.0, 200.0, 300.0, 400.0, 500.0, 600.0 };
 
     public static final double X_OFFSET_THRESHHOLD = 0.2;
-    
-    /*public static final Double[] DISTANCE1 = {0.0, 1.5};
-    public static final Double[] DISTANCE2 = {1.51, 3.0};
-    public static final Double[] DISTANCE3 = {3.01, 4.5};
-    public static final Double[] DISTANCE4 = {4.51, 6.0};
-    public static final Double[] DISTANCE5 = {6.01, 7.5};
-    public static final Double[] DISTANCE6 = {7.51, 9.0};*/
+
+    public static final double SHOOTER_WHEEL_DIAMETER = Units.inchesToMeters(4);
+    public static final double SHOOTER_WHEEL_CIRCUMFERENCE = SHOOTER_WHEEL_DIAMETER * Math.PI;
 
   }
 
