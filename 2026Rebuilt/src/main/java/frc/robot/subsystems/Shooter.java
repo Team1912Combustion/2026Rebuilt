@@ -30,7 +30,7 @@ public class Shooter extends SubsystemBase {
 
   DigitalInput beambreak;
 
-  double shotCount;
+  int shotCount;
   boolean previousBeambreakState;
 
   QuadraticSolver quadraticSolver;
@@ -105,7 +105,7 @@ public class Shooter extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal speed
    */
-  public double calculateSpeed(Pose2d pose) {
+  /*public double calculateSpeed(Pose2d pose) {
     double speed = 0;
     double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
     int index = -1;
@@ -116,6 +116,22 @@ public class Shooter extends SubsystemBase {
         break;
       }
     }
+
+    return speed;
+  }*/
+  
+  /**
+   * Gets the ideal shooter speed for the distance from the shot point. There are different ranges of distances, each with a unique shooter speed.
+   * @param pose The current pose of the turret
+   * @return The ideal speed
+   */
+  public double calculateSpeed(Pose2d pose) {
+    double speed = 0;
+    double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
+    int index = 0;
+
+    index = (int) Math.floor(distance / 1.5);
+    speed = TurretConstants.SPEEDS[index];
 
     return speed;
   }
@@ -154,6 +170,10 @@ public class Shooter extends SubsystemBase {
     }
 
     previousBeambreakState = beambreak.get();
+  }
+
+  public int getShotCount() {
+    return shotCount;
   }
 
   /**

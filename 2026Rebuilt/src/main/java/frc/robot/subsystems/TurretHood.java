@@ -52,7 +52,7 @@ public class TurretHood extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal hood angle
    */
-  public double calculateHoodAngle(Pose2d pose) {
+  /*public double calculateHoodAngle(Pose2d pose) {
     double angle = 0;
     double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
     int index = -1;
@@ -63,6 +63,22 @@ public class TurretHood extends SubsystemBase {
         break;
       }
     }
+
+    return angle;
+  }*/
+
+  /**
+   * Returns the hood angle for the current distance from the shot point. There are different ranges of distances, each with a unique turret hood angle.
+   * @param pose The current pose of the turret
+   * @return The ideal hood angle
+   */
+  public double calculateHoodAngle(Pose2d pose) {
+    double angle = 0;
+    double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
+    int index = 0;
+
+    index = (int) Math.floor(distance / 1.5);
+    angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
 
     return angle;
   }

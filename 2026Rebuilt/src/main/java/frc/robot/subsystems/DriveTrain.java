@@ -391,8 +391,7 @@ public class DriveTrain extends SubsystemBase {
     return Rotation2d.fromRadians(Math.atan2(
       origin.relativeTo(goal).getY(), 
       origin.relativeTo(goal).getX()
-      ));
-    
+      )); 
   }
   /**
    * Gets the estimated field pose from the pose estimator.

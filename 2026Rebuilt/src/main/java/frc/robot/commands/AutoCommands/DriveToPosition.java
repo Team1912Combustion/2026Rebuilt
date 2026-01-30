@@ -1,0 +1,70 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.commands.AutoCommands;
+
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.DriveTrain;
+
+/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+public class DriveToPosition extends Command {
+  DriveTrain driveTrain;
+  double x, y, rot;
+  double xSpeed, ySpeed, rotSpeed;
+  boolean flipPath;
+
+  ProfiledPIDController xController, yController, rotController;
+  HolonomicDriveController pid;
+  /** Creates a new DriveToPosition. */
+  public DriveToPosition(DriveTrain dt, double x, double y, double rot, boolean flipPath) {
+    driveTrain = dt;
+    addRequirements(driveTrain);
+    this.x = x;
+    this.y = y;
+    this.rot = rot;
+    xSpeed = 0;
+    ySpeed = 0;
+    rotSpeed = 0;
+    this.flipPath = flipPath;
+
+    xController = new ProfiledPIDController(0.01, 0, 0, new Constraints(0, 0));
+    xController.setTolerance(0.06);
+    yController = new ProfiledPIDController(0.01, 0, 0, new Constraints(0, 0));
+    yController.setTolerance(0.06);
+    rotController = new ProfiledPIDController(0.01, 0, 0, new Constraints(0, 0));
+    rotController.setTolerance(2);
+    rotController.enableContinuousInput(-180, 180);
+    // Use addRequirements() here to declare subsystem dependencies.
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {}
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    xSpeed = xController.calculate(driveTrain.getPose().getX(), x) * (flipPath ? -1 : 1);
+    ySpeed = yController.calculate(driveTrain.getPose().getY(), y) * (flipPath ? -1 : 1);
+    rotSpeed = rotController.calculate(driveTrain.getPose().getRotation().getDegrees(), rot);
+
+    driveTrain.driveAuto(xSpeed, ySpeed, rotSpeed, true);
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    driveTrain.driveAuto(0, 0, 0, true);
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return (xController.atSetpoint() && yController.atSetpoint() && rotController.atSetpoint());
+  }
+}

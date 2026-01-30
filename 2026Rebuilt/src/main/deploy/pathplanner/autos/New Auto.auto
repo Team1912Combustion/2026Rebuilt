@@ -3,7 +3,33 @@
   "command": {
     "type": "sequential",
     "data": {
-      "commands": []
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "EmptyHopperCheck"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left to Depot Shoot Path"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootFuel"
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
   },
   "resetOdom": true,
