@@ -5,38 +5,30 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.LimelightTurret;
 import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.TurretHood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class MoveHood extends Command {
-  TurretHood hood;
+public class ToggleTurretTargetMode extends Command {
   Turret turret;
-  LimelightTurret limelightTurret;
-  /** Creates a new MoveHood. */
-  public MoveHood(TurretHood h, Turret t, LimelightTurret lt) {
-    hood = h;
+  /** Creates a new ToggleTurretTargetMode. */
+  public ToggleTurretTargetMode(Turret t) {
     turret = t;
-    limelightTurret = lt;
-    addRequirements(hood);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    if (turret.getTargetMode() == "pose") {
+      turret.setTargetMode("tag");
+    } else {
+      turret.setTargetMode("pose");
+    }
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    if (turret.getTargetMode() == "pose") {
-      hood.setPosition(hood.calculateHoodAngle(turret.getCurrentFieldZone().getDistanceFromShotPoint(turret.getTurretPose()), turret.getTargetMode()));
-    } else {
-      hood.setPosition(hood.calculateHoodAngle(limelightTurret.getTargetArea(), turret.getTargetMode()));
-    }
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -45,6 +37,6 @@ public class MoveHood extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

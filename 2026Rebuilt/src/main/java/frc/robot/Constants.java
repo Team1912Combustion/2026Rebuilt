@@ -111,8 +111,10 @@ public final class Constants {
 
     public static final Pose2d TURRET_POSE_OFFSET = new Pose2d(new Translation2d(0, 0), new Rotation2d());
 
-    public static final double[][] DISTANCES = { {0.0, 1.5}, {1.51, 3.0}, {3.01, 4.5}, {4.51, 6.0}, {6.01, 7.5}, {7.51, 9.0} };
-    public static final double DELTA_DISTANCE = 1.5;
+    public static final double[][] DISTANCES = { {0.0, 1.49}, {1.5, 2.99}, {3.0, 4.49}, {4.5, 5.99}, {6.0, 7.49}, {7.5, 8.99} };
+    public static final double DELTA_DISTANCE = 1.49;
+    public static final double[][] TAG_AREA = { {0.4, 0.36}, {0.35, 0.31}, {0.30, 0.26}, {0.25, 0.21}, {0.20, 0.16}, {0.15, 0.1}};
+    public static final double DELTA_AREA = 0.04;
     public static final double[] SPEEDS = { 500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0 };
     public static final double[] HIGH_HOOD_ANGLES = { 500.0, 1000.0, 1500.0, 1750.0, 2000.0, 2500.0 };
     public static final double[] LOW_HOOD_ANGLES = { 100.0, 200.0, 300.0, 400.0, 500.0, 600.0 };

@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.LimelightTurret;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Turret;
@@ -18,13 +19,15 @@ public class ShootFuel extends Command {
   DriveTrain driveTrain;
   Turret turret;
   TurretHood turretHood;
+  LimelightTurret limelightTurret;
   /** Creates a new ShootFuel. */
-  public ShootFuel(Shooter s, Spindexer sp, DriveTrain dt, Turret t, TurretHood th) {
+  public ShootFuel(Shooter s, Spindexer sp, DriveTrain dt, Turret t, TurretHood th, LimelightTurret lt) {
     shooter = s;
     spindexer = sp;
     driveTrain = dt;
     turret = t;
     turretHood = th;
+    limelightTurret = lt;
     addRequirements(shooter, spindexer);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -36,7 +39,11 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setSpeed(shooter.calculateSpeed(turret.getTurretPose()));
+    if (turret.getTargetMode() == "pose") {
+      shooter.setSpeed(shooter.calculateSpeed(turret.getCurrentFieldZone().getDistanceFromShotPoint(turret.getTurretPose()), turret.getTargetMode()));
+    } else {
+      shooter.setSpeed(shooter.calculateSpeed(limelightTurret.getTargetArea(), turret.getTargetMode()));
+    }
     spindexer.setSpeed(4000);
     if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed()) {
       shooter.kickerOn();

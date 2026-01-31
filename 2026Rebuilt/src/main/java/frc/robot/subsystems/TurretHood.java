@@ -72,13 +72,17 @@ public class TurretHood extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal hood angle
    */
-  public double calculateHoodAngle(Pose2d pose) {
+  public double calculateHoodAngle(double distance, String targetMode) {
     double angle = 0;
-    double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
     int index = 0;
 
-    index = (int) Math.floor(distance / 1.5);
-    angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
+    if (targetMode == "pose") {
+      index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
+      angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
+    } else {
+      index = (int) Math.floor(distance / TurretConstants.DELTA_AREA);
+      angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
+    }
 
     return angle;
   }
@@ -88,9 +92,8 @@ public class TurretHood extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal hood angle
    */
-  public double calculateHoodAngleContinuous(Pose2d pose) {
+  public double calculateHoodAngleContinuous(double distancce) {
     double angle = 0;
-    double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
 
     // FIGURE OUT THIS FUNCTION AT SOME POINT
 

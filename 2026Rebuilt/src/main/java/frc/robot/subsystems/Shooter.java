@@ -125,13 +125,17 @@ public class Shooter extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal speed
    */
-  public double calculateSpeed(Pose2d pose) {
+  public double calculateSpeed(double distance, String targetMode) {
     double speed = 0;
-    double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
     int index = 0;
 
-    index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
-    speed = TurretConstants.SPEEDS[index];
+    if (targetMode == "pose") {
+      index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
+      speed = TurretConstants.SPEEDS[index];
+    } else {
+      index = (int) Math.floor(distance / TurretConstants.DELTA_AREA);
+      speed = TurretConstants.SPEEDS[index];
+    }
 
     return speed;
   }
@@ -141,10 +145,8 @@ public class Shooter extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal speed
    */
-  public double calculateSpeedContinuous(Pose2d pose) {
+  public double calculateSpeedContinuous(double distance) {
     double speed = 0;
-    double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
-
     // FIGURE OUT THIS FUNCTION AT SOME POINT
 
     return speed;
