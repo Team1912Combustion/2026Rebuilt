@@ -130,7 +130,7 @@ public class Shooter extends SubsystemBase {
     double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
     int index = 0;
 
-    index = (int) Math.floor(distance / 1.5);
+    index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
     speed = TurretConstants.SPEEDS[index];
 
     return speed;

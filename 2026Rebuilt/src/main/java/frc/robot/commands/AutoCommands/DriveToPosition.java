@@ -7,6 +7,9 @@ package frc.robot.commands.AutoCommands;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
@@ -24,13 +27,13 @@ public class DriveToPosition extends Command {
   public DriveToPosition(DriveTrain dt, double x, double y, double rot, boolean flipPath) {
     driveTrain = dt;
     addRequirements(driveTrain);
-    this.x = x;
-    this.y = y;
-    this.rot = rot;
+    this.flipPath = flipPath;
+    this.x = (flipPath ? driveTrain.flipCoordinates(new Pose2d(new Translation2d(x, y), new Rotation2d(rot))).getX() : x);
+    this.y = (flipPath ? driveTrain.flipCoordinates(new Pose2d(new Translation2d(x, y), new Rotation2d(rot))).getY() : y);
+    this.rot = (flipPath ? driveTrain.flipCoordinates(new Pose2d(new Translation2d(x, y), new Rotation2d(rot))).getRotation().getDegrees() : rot);
     xSpeed = 0;
     ySpeed = 0;
     rotSpeed = 0;
-    this.flipPath = flipPath;
 
     xController = new ProfiledPIDController(0.01, 0, 0, new Constraints(0, 0));
     xController.setTolerance(0.06);
@@ -49,8 +52,8 @@ public class DriveToPosition extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    xSpeed = xController.calculate(driveTrain.getPose().getX(), x) * (flipPath ? -1 : 1);
-    ySpeed = yController.calculate(driveTrain.getPose().getY(), y) * (flipPath ? -1 : 1);
+    xSpeed = xController.calculate(driveTrain.getPose().getX(), x);
+    ySpeed = yController.calculate(driveTrain.getPose().getY(), y);
     rotSpeed = rotController.calculate(driveTrain.getPose().getRotation().getDegrees(), rot);
 
     driveTrain.driveAuto(xSpeed, ySpeed, rotSpeed, true);

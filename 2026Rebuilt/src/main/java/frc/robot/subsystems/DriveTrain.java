@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -99,6 +101,10 @@ public class DriveTrain extends SubsystemBase {
   boolean autoBuilderConfigured;
 
   RobotConfig cfg;
+
+  Integer[] towerTagArray = {15, 31};
+
+  List<Integer> towerTagIDs = Arrays.asList(towerTagArray);
 
   /** Creates a new DriveTrain. */
   public DriveTrain(LimelightTurret lt) {
@@ -437,6 +443,10 @@ public class DriveTrain extends SubsystemBase {
         }
         return false;
   }
+
+  public Pose2d flipCoordinates(Pose2d pose) {
+    return pose.rotateAround(new Translation2d(8.1, 4.05), Rotation2d.fromDegrees(180));
+  }
   /**
    * Compiles all limelight pose measurements into a single pose called CompositeVisionPose.
    * Measurements are weighted based on target area.
@@ -486,6 +496,10 @@ public class DriveTrain extends SubsystemBase {
       );
     }
 
+  }
+
+  public boolean towerReadyToAim() {
+    return towerTagIDs.contains(limelightFrontLeft.getTagId());
   }
 
 }
