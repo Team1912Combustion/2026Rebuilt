@@ -68,8 +68,9 @@ public class TurretHood extends SubsystemBase {
   }*/
 
   /**
-   * Returns the hood angle for the current distance from the shot point. There are different ranges of distances, each with a unique turret hood angle.
-   * @param pose The current pose of the turret
+   * Gets the ideal hood angle for the distance from the shot point.
+   * @param distance The distance from the target, measured in meters for pose mode and measured by tag area for tag mode
+   * @param targetMode The target mode that the turret is using. Should be either "pose" or "tag"
    * @return The ideal hood angle
    */
   public double calculateHoodAngle(double distance, String targetMode) {

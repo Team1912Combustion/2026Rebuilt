@@ -121,8 +121,9 @@ public class Shooter extends SubsystemBase {
   }*/
   
   /**
-   * Gets the ideal shooter speed for the distance from the shot point. There are different ranges of distances, each with a unique shooter speed.
-   * @param pose The current pose of the turret
+   * Gets the ideal shooter speed for the distance from the shot point.
+   * @param distance The distance from the target, measured in meters for pose mode and measured by tag area for tag mode
+   * @param targetMode The target mode that the turret is using. Should be either "pose" or "tag"
    * @return The ideal speed
    */
   public double calculateSpeed(double distance, String targetMode) {
