@@ -32,7 +32,9 @@ public class MoveHood extends Command {
   @Override
   public void execute() {
     if (turret.getTargetMode() == "pose") {
-      hood.setPosition(hood.calculateHoodAngle(turret.getCurrentFieldZone().getDistanceFromShotPoint(turret.getTurretPose()), turret.getTargetMode()));
+      hood.setPosition(hood.calculateHoodAngle(
+        turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation()), 
+        turret.getTargetMode()));
     } else {
       hood.setPosition(hood.calculateHoodAngle(limelightTurret.getTargetArea(), turret.getTargetMode()));
     }

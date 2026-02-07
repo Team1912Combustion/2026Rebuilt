@@ -109,7 +109,7 @@ public final class Constants {
 
   public static class TurretConstants {
 
-    public static final Pose2d TURRET_POSE_OFFSET = new Pose2d(new Translation2d(0, 0), new Rotation2d());
+    public static final Translation2d TURRET_OFFSET = new Translation2d(0, 0);
 
     public static final double[][] DISTANCES = { {0.0, 1.49}, {1.5, 2.99}, {3.0, 4.49}, {4.5, 5.99}, {6.0, 7.49}, {7.5, 8.99} };
     public static final double DELTA_DISTANCE = 1.49;

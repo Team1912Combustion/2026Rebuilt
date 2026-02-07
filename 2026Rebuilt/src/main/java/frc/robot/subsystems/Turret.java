@@ -15,6 +15,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -39,7 +40,6 @@ public class Turret extends SubsystemBase {
 
   Rotation2d turretAngle;
   Pose2d turretPose;
-  Translation2d turretOffset;
 
   DigitalInput leftLimitSwitch, rightLimitSwitch;
   Timer limitSwitchTimer;
@@ -73,8 +73,7 @@ public class Turret extends SubsystemBase {
     upperLimit = 18;
     lowerLimit = -18;
     turretAngle = new Rotation2d(0);
-    turretPose = new Pose2d(driveTrain.getPose().getTranslation(), turretAngle);
-    turretOffset = new Translation2d();
+    turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
 
     leftLimitSwitch = new DigitalInput(SensorIDs.TURRET_LEFT_LIMIT_SWITCH);
     rightLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
@@ -101,9 +100,8 @@ public class Turret extends SubsystemBase {
     }
 
     turretAngle = Rotation2d.fromDegrees((currentPosition / upperLimit) * 180);
-    turretAngle = Rotation2d.fromDegrees(turretAngle.getDegrees() + angleModulus(driveTrain.getHeading()));
 
-    turretPose = new Pose2d(driveTrain.getPose().minus(TurretConstants.TURRET_POSE_OFFSET).getTranslation(), turretAngle);
+    turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
 
     currentPosition = turret.getPosition().getValueAsDouble();
     targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);
@@ -211,11 +209,30 @@ public class Turret extends SubsystemBase {
    * @return The angle as a Rotation2d
    */
   public Rotation2d getDirection(Pose2d origin, Pose2d goal) {
+    Pose2d originPose = new Pose2d(origin.getTranslation(), new Rotation2d());
+    Pose2d goalPose = new Pose2d(goal.getTranslation(), new Rotation2d());
     return Rotation2d.fromRadians(Math.atan2(
-      origin.relativeTo(goal).getY(), 
-      origin.relativeTo(goal).getX()
-      ));
-    
+      goalPose.relativeTo(originPose).getY(), 
+      goalPose.relativeTo(originPose).getX()
+      )); 
+  }
+
+  /**
+   * Gets the pose of the target, adjusted for the speed of the robot.
+   * @return The pose of the target
+   */
+  public Pose2d getTarget() {
+    return addVector(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
+  }
+
+  /**
+   * Gets the distance between two poses.
+   * @param origin The pose to start from
+   * @param goal The pose to end at
+   * @return The distance between the poses
+   */
+  public double getDistance(Translation2d origin, Translation2d goal) {
+    return origin.getDistance(goal);
   }
 
   /**

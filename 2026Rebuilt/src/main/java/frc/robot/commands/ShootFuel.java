@@ -40,7 +40,9 @@ public class ShootFuel extends Command {
   @Override
   public void execute() {
     if (turret.getTargetMode() == "pose") {
-      shooter.setSpeed(shooter.calculateSpeed(turret.getCurrentFieldZone().getDistanceFromShotPoint(turret.getTurretPose()), turret.getTargetMode()));
+      shooter.setSpeed(shooter.calculateSpeed(
+        turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation()), 
+        turret.getTargetMode()));
     } else {
       shooter.setSpeed(shooter.calculateSpeed(limelightTurret.getTargetArea(), turret.getTargetMode()));
     }

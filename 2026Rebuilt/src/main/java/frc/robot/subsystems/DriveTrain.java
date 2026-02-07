@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Rotation;
 
+import java.text.FieldPosition;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -41,6 +43,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -218,8 +221,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     robotSpeed = new Twist2d(
-      getDirection(new Pose2d(new Translation2d(poseX, poseY), new Rotation2d(poseYaw)), poseEstimator.getEstimatedPosition()).getDegrees(),
-      poseEstimator.getEstimatedPosition().getTranslation().getDistance(new Pose2d(new Translation2d(poseX, poseY), new Rotation2d(poseYaw)).getTranslation()),
+      -(poseEstimator.getEstimatedPosition().getX() - poseX) * 50,
+      -(poseEstimator.getEstimatedPosition().getY() - poseY) * 50,
       0
       );
     // update pose variables
@@ -444,11 +447,16 @@ public class DriveTrain extends SubsystemBase {
         return false;
   }
 
+  /**
+   * Flips a pose around the origin to flip between red and blue.
+   * @param pose The pose to flip
+   * @return The flipped pose
+   */
   public Pose2d flipCoordinates(Pose2d pose) {
     return pose.rotateAround(new Translation2d(8.1, 4.05), Rotation2d.fromDegrees(180));
   }
   /**
-   * Compiles all limelight pose measurements into a single pose called CompositeVisionPose.
+   * Compiles all limelight pose measurements into a single pose called compositeVisionPose.
    * Measurements are weighted based on target area.
    */
   public void processFrame() {

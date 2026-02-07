@@ -75,7 +75,7 @@ public class LimelightFrontLeft extends SubsystemBase {
   /**
    * Toggles between pipeline 0 and 1.
    */
-  public void togglezoom() {
+  public void togglePipeline() {
     if (currentPipeline == 0)
       currentPipeline = 1;
     else if (currentPipeline ==1)
@@ -207,6 +207,10 @@ public class LimelightFrontLeft extends SubsystemBase {
    */
   public void setPipeline(int id) {
     pipeline.setNumber(id);
+  }
+
+  public int getPipeline() {
+    return currentPipeline;
   }
 
 }
