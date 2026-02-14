@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
 
@@ -34,16 +36,16 @@ public class Turret extends SubsystemBase {
   DriveTrain driveTrain;
 
   TalonFX turret;
-
-  ProfiledPIDController pid;
+  TalonFXConfiguration turretConfig;
 
   double targetPosition, currentPosition, error, upperLimit, lowerLimit;
 
   Rotation2d turretAngle;
   Pose2d turretPose;
 
-  DigitalInput leftLimitSwitch, rightLimitSwitch;
   Timer limitSwitchTimer;
+
+  DigitalInput lowerLimitSwitch, upperLimitSwitch;
 
   FieldZone blueDepotZone;
   FieldZone blueOutpostZone;
@@ -65,19 +67,25 @@ public class Turret extends SubsystemBase {
     turret = new TalonFX(MotorIDs.TURRET, new CANBus("1912CANivore"));
     turret.setPosition(0);
 
-    pid = new ProfiledPIDController(0, 0, 0, new Constraints(0, 0));
-    pid.setTolerance(1);
+    turretConfig = new TalonFXConfiguration();
+    turretConfig.Slot0.kS = 0;
+    turretConfig.Slot0.kV = 0;
+    turretConfig.Slot0.kA = 0;
+    turretConfig.Slot0.kP = 0;
+    turretConfig.Slot0.kI = 0;
+    turretConfig.Slot0.kD = 0;
 
     targetPosition = 0;
     currentPosition = 0;
     error = 0;
     upperLimit = 18;
     lowerLimit = -18;
+
+    lowerLimitSwitch = new DigitalInput(SensorIDs.TURRET_LEFT_LIMIT_SWITCH);
+    upperLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
+
     turretAngle = new Rotation2d(0);
     turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
-
-    leftLimitSwitch = new DigitalInput(SensorIDs.TURRET_LEFT_LIMIT_SWITCH);
-    rightLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
 
     limitSwitchTimer = new Timer();
 
@@ -108,7 +116,8 @@ public class Turret extends SubsystemBase {
     targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);
     error = currentPosition - targetPosition;
 
-    turret.set(pid.calculate(currentPosition, targetPosition));
+    final PositionVoltage request = new PositionVoltage(0).withSlot(0);
+    turret.setControl(request.withPosition(targetPosition));
 
     SmartDashboard.putString("Current field zone", getCurrentFieldZone().getFieldZoneName());
     // This method will be called once per scheduler run
@@ -184,19 +193,19 @@ public class Turret extends SubsystemBase {
    * @return Whether or not the turret is within tolerance
    */
   public boolean isAimed() {
-    return pid.atSetpoint();
+    return (turret.getClosedLoopError().getValueAsDouble() < TurretConstants.TURRET_ALLOWED_ERROR);
   }
 
   /**
    * Resets the turret to -180 or 180 degrees when a certain limit switch is pressed for greater than 0.5 seconds.
    */
   public void checkLimitSwitches() {
-    if (leftLimitSwitch.get() || rightLimitSwitch.get()) {
+    if (lowerLimitSwitch.get() || upperLimitSwitch.get()) {
       limitSwitchTimer.start();
-      if (limitSwitchTimer.get() > 0.5 && leftLimitSwitch.get()) {
+      if (limitSwitchTimer.get() > 0.5 && lowerLimitSwitch.get()) {
         turret.setPosition(lowerLimit);
       }
-      if (limitSwitchTimer.get() > 0.5 && rightLimitSwitch.get()) {
+      if (limitSwitchTimer.get() > 0.5 && upperLimitSwitch.get()) {
         turret.setPosition(upperLimit);
       }
     } else {

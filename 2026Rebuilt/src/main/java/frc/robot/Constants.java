@@ -115,6 +115,8 @@ public final class Constants {
 
     public static final Translation2d TURRET_OFFSET = new Translation2d(0, 0);
 
+    public static final double TURRET_ALLOWED_ERROR = 0.5;
+
     public static final double[][] DISTANCES = { {0.0, 1.49}, {1.5, 2.99}, {3.0, 4.49}, {4.5, 5.99}, {6.0, 7.49}, {7.5, 8.99} };
     public static final double DELTA_DISTANCE = 1.49;
     public static final double[][] TAG_AREA = { {0.4, 0.36}, {0.35, 0.31}, {0.30, 0.26}, {0.25, 0.21}, {0.20, 0.16}, {0.15, 0.1}};
