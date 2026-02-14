@@ -21,6 +21,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldZoneConstants;
@@ -108,6 +109,8 @@ public class Turret extends SubsystemBase {
     error = currentPosition - targetPosition;
 
     turret.set(pid.calculate(currentPosition, targetPosition));
+
+    SmartDashboard.putString("Current field zone", getCurrentFieldZone().getFieldZoneName());
     // This method will be called once per scheduler run
   }
 
@@ -260,7 +263,7 @@ public class Turret extends SubsystemBase {
         blueDepotZone.setShotPoint(FieldZoneConstants.BLUE_DEPOT_SHOT_POINT, true);
         blueOutpostZone.setShotPoint(FieldZoneConstants.BLUE_OUTPOST_SHOT_POINT, true);
         neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_RED_SHOT_POINT, true);
-        neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT, true);
+        neutralBottomZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT, true);
         redDepotZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT, false);
         redOutpostZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT, false);
       }

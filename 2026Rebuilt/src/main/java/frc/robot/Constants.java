@@ -58,52 +58,56 @@ public final class Constants {
 
   public static class FieldZoneConstants {
 
+    public static final double FIELD_WIDTH = 8.07;
+    public static final double FIELD_LENGTH = 16.54;
+    public static final double ALLIANCE_ZONE_LENGTH = 4.625;
+
     // TL is Top Left, BR is Bottom Right
 
     // BLUE ZONES //
-    public static final Translation2d BLUE_DEPOT_ZONE_TL = new Translation2d();
-    public static final Translation2d BLUE_DEPOT_ZONE_BR = new Translation2d();
+    public static final Translation2d BLUE_DEPOT_ZONE_TL = new Translation2d(0, FIELD_WIDTH);
+    public static final Translation2d BLUE_DEPOT_ZONE_BR = new Translation2d(ALLIANCE_ZONE_LENGTH, FIELD_WIDTH / 2);
 
-    public static final Translation2d BLUE_OUTPOST_ZONE_TL = new Translation2d();
-    public static final Translation2d BLUE_OUTPOST_ZONE_BR = new Translation2d();
+    public static final Translation2d BLUE_OUTPOST_ZONE_TL = new Translation2d(0, FIELD_WIDTH / 2);
+    public static final Translation2d BLUE_OUTPOST_ZONE_BR = new Translation2d(ALLIANCE_ZONE_LENGTH, 0);
 
     // BLUE SHOT POINTS //
-    public static final Translation2d BLUE_HUB_SHOT_POINT = new Translation2d();
-    public static final Translation2d BLUE_DEPOT_SHOT_POINT = new Translation2d();
-    public static final Translation2d BLUE_OUTPOST_SHOT_POINT = new Translation2d();
+    public static final Translation2d BLUE_HUB_SHOT_POINT = new Translation2d(ALLIANCE_ZONE_LENGTH, FIELD_WIDTH / 2);
+    public static final Translation2d BLUE_DEPOT_SHOT_POINT = new Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH * (5.0 / 8.0));
+    public static final Translation2d BLUE_OUTPOST_SHOT_POINT = new Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH * (3.0 / 8.0));
 
     // RED ZONES // 
-    public static final Translation2d RED_DEPOT_ZONE_TL = new Translation2d();
-    public static final Translation2d RED_DEPOT_ZONE_BR = new Translation2d();
+    public static final Translation2d RED_DEPOT_ZONE_TL = new Translation2d(FIELD_LENGTH - ALLIANCE_ZONE_LENGTH, FIELD_WIDTH / 2);
+    public static final Translation2d RED_DEPOT_ZONE_BR = new Translation2d(FIELD_LENGTH, 0);
 
-    public static final Translation2d RED_OUTPOST_ZONE_TL = new Translation2d();
-    public static final Translation2d RED_OUTPOST_ZONE_BR = new Translation2d();
+    public static final Translation2d RED_OUTPOST_ZONE_TL = new Translation2d(FIELD_LENGTH - ALLIANCE_ZONE_LENGTH, FIELD_WIDTH);
+    public static final Translation2d RED_OUTPOST_ZONE_BR = new Translation2d(FIELD_LENGTH, FIELD_WIDTH / 2);
 
     // RED SHOT POINTS //
-    public static final Translation2d RED_HUB_SHOT_POINT = new Translation2d();
-    public static final Translation2d RED_DEPOT_SHOT_POINT = new Translation2d();
-    public static final Translation2d RED_OUTPOST_SHOT_POINT = new Translation2d();
+    public static final Translation2d RED_HUB_SHOT_POINT = new Translation2d(FIELD_LENGTH - ALLIANCE_ZONE_LENGTH, FIELD_WIDTH / 2);
+    public static final Translation2d RED_DEPOT_SHOT_POINT = new Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH * (3.0 / 8.0));
+    public static final Translation2d RED_OUTPOST_SHOT_POINT = new Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH * (5.0 / 8.0));
 
     // NEUTRAL ZONES //
-    public static final Translation2d NEUTRAL_TOP_ZONE_TL = new Translation2d();
-    public static final Translation2d NEUTRAL_TOP_ZONE_BR = new Translation2d();
+    public static final Translation2d NEUTRAL_TOP_ZONE_TL = new Translation2d(ALLIANCE_ZONE_LENGTH, FIELD_WIDTH);
+    public static final Translation2d NEUTRAL_TOP_ZONE_BR = new Translation2d(FIELD_LENGTH - ALLIANCE_ZONE_LENGTH, FIELD_WIDTH / 2);
 
-    public static final Translation2d NEUTRAL_BOTTOM_ZONE_TL = new Translation2d();
-    public static final Translation2d NEUTRAL_BOTTOM_ZONE_BR = new Translation2d();
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_TL = new Translation2d(ALLIANCE_ZONE_LENGTH, FIELD_WIDTH / 2);
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_BR = new Translation2d(FIELD_LENGTH - ALLIANCE_ZONE_LENGTH, 0);
 
     // NEUTRAL SHOT POINTS //
-    public static final Translation2d NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT = new Translation2d();
-    public static final Translation2d NEUTRAL_TOP_ZONE_RED_SHOT_POINT = new Translation2d();
-    public static final Translation2d NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT = new Translation2d();
-    public static final Translation2d NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT = new Translation2d();
+    public static final Translation2d NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT = new Translation2d(ALLIANCE_ZONE_LENGTH / 2, FIELD_WIDTH * (5.0 / 8.0));
+    public static final Translation2d NEUTRAL_TOP_ZONE_RED_SHOT_POINT = new Translation2d(FIELD_LENGTH - (ALLIANCE_ZONE_LENGTH / 2), FIELD_WIDTH * (5.0 / 8.0));
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT = new Translation2d(ALLIANCE_ZONE_LENGTH / 2, FIELD_WIDTH * (3.0 / 8.0));
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT = new Translation2d(FIELD_LENGTH - (ALLIANCE_ZONE_LENGTH / 2), FIELD_WIDTH * (3.0 / 8.0));
 
     // CONSTRUCTED FIELD ZONES //
-    public static final FieldZone BLUE_DEPOT_ZONE = new FieldZone(BLUE_DEPOT_ZONE_TL, BLUE_DEPOT_ZONE_BR);
-    public static final FieldZone BLUE_OUTPOST_ZONE = new FieldZone(BLUE_OUTPOST_ZONE_TL, BLUE_OUTPOST_ZONE_BR);
-    public static final FieldZone RED_DEPOT_ZONE = new FieldZone(RED_DEPOT_ZONE_TL, RED_DEPOT_ZONE_BR);
-    public static final FieldZone RED_OUTPOST_ZONE = new FieldZone(RED_OUTPOST_ZONE_TL, RED_OUTPOST_ZONE_BR);
-    public static final FieldZone NEUTRAL_TOP_ZONE = new FieldZone(NEUTRAL_TOP_ZONE_TL, NEUTRAL_TOP_ZONE_BR);
-    public static final FieldZone NEUTRAL_BOTTOM_ZONE = new FieldZone(NEUTRAL_BOTTOM_ZONE_TL, NEUTRAL_BOTTOM_ZONE_BR);
+    public static final FieldZone BLUE_DEPOT_ZONE = new FieldZone(BLUE_DEPOT_ZONE_TL, BLUE_DEPOT_ZONE_BR, "BLUE DEPOT");
+    public static final FieldZone BLUE_OUTPOST_ZONE = new FieldZone(BLUE_OUTPOST_ZONE_TL, BLUE_OUTPOST_ZONE_BR, "BLUE OUTPOST");
+    public static final FieldZone RED_DEPOT_ZONE = new FieldZone(RED_DEPOT_ZONE_TL, RED_DEPOT_ZONE_BR, "RED DEPOT");
+    public static final FieldZone RED_OUTPOST_ZONE = new FieldZone(RED_OUTPOST_ZONE_TL, RED_OUTPOST_ZONE_BR, "RED OUTPOST");
+    public static final FieldZone NEUTRAL_TOP_ZONE = new FieldZone(NEUTRAL_TOP_ZONE_TL, NEUTRAL_TOP_ZONE_BR, "NEUTRAL TOP");
+    public static final FieldZone NEUTRAL_BOTTOM_ZONE = new FieldZone(NEUTRAL_BOTTOM_ZONE_TL, NEUTRAL_BOTTOM_ZONE_BR, "NEUTRAL BOTTOM");
 
   }
 
@@ -217,8 +221,8 @@ public final class Constants {
   public static class DriveConstants {
     public static final double DRIVE_SPEED = 1.0;
     public static final double RAMP_TIME = 0.07;
-    public static final double TRACK_WIDTH = Units.inchesToMeters(29);
-    public static final double WHEEL_BASE = Units.inchesToMeters(29);
+    public static final double TRACK_WIDTH = 0.5325;
+    public static final double WHEEL_BASE = 0.5325;
     public static final SwerveDriveKinematics DRIVE_KINEMATICS =
       new SwerveDriveKinematics(
           new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),   //FL

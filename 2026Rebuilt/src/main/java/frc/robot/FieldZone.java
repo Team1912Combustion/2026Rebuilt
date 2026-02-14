@@ -16,6 +16,8 @@ public class FieldZone {
     Translation2d shotPoint;
     boolean low;
 
+    String fieldZoneName;
+
     /**
      * Creates a FieldZone. 
      * The FieldZone class is meant for getting information about the robot's presence in certain areas of the field.
@@ -23,10 +25,20 @@ public class FieldZone {
      * @param topLeftTranslation2d The position of the top left of the field zone, with the origin starting on the right of blue's side
      * @param bottomRightTranslation2d The position of the bottom right of the field zone, with the origin starting on the right of blue's side
      */
-    public FieldZone(Translation2d topLeftTranslation2d, Translation2d bottomRightTranslation2d) {
+    public FieldZone(Translation2d topLeftTranslation2d, Translation2d bottomRightTranslation2d, String fieldZoneString) {
         topLeft = topLeftTranslation2d;
         bottomRight = bottomRightTranslation2d;
         shotPoint = new Translation2d();
+
+        fieldZoneName = fieldZoneString;
+    }
+
+    /**
+     * Gets the name of the field zone.
+     * @return The name of the field zone
+     */
+    public String getFieldZoneName() {
+        return fieldZoneName;
     }
 
     /**
