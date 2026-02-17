@@ -40,6 +40,9 @@ public class Turret extends SubsystemBase {
 
   double targetPosition, currentPosition, error, upperLimit, lowerLimit;
 
+  // smaller to larger
+  double[] deadZone = {-80, -10};
+
   Rotation2d turretAngle;
   Pose2d turretPose;
 
@@ -144,7 +147,23 @@ public class Turret extends SubsystemBase {
    * @param angle The angle, in degrees, to set the turret to
    */
   public void setTurretAngle(double angle) {
-    targetPosition = motorModulus(((angle - angleModulus(driveTrain.getHeading())) / 180) * upperLimit);
+    double robotRelativeAngle = (angle - angleModulus(driveTrain.getPose().getRotation().getDegrees()));
+    double modifiedAngle = robotRelativeAngle;
+    if (getCurrentFieldZone().getShotPointHeight()) {
+      modifiedAngle = (isAngleInDeadZone(robotRelativeAngle) ? Math.max(deadZone[1], Math.min(deadZone[0], angle)) : robotRelativeAngle);
+    } else {
+      modifiedAngle = angle;
+    }
+    targetPosition = motorModulus((modifiedAngle / 180) * upperLimit);
+  }
+
+  /**
+   * Returns whether or not an angle is within the turret's dead zone (an area that the turret can not shoot through, like the elevator).
+   * @param angle The angle to check
+   * @return Whether or not it is within the robot relative dead zone
+   */
+  public boolean isAngleInDeadZone(double angle) {
+    return ((angle > deadZone[0]) && (angle < deadZone[1]));
   }
 
   /**
