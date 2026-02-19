@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -60,7 +61,7 @@ public class DriveTrain extends SubsystemBase {
   private final SwerveModule rearLeft = new SwerveModule(2, DeviceIDs.REAR_LEFT.constants);
   private final SwerveModule rearRight = new SwerveModule(3, DeviceIDs.REAR_RIGHT.constants);
 
-  public final Pigeon2 gyro = new Pigeon2(SensorIDs.GYRO, "1912CANivore");
+  public final Pigeon2 gyro = new Pigeon2(SensorIDs.GYRO, new CANBus("1912CANivore"));
 
   public double driveYaw;
   public double driveYawDirection;

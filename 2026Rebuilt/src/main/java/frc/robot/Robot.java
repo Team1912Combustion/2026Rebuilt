@@ -94,7 +94,7 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+      m_autonomousCommand.cancel();
     }
   }
 
