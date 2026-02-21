@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.QuadraticSolver;
 import frc.robot.Constants.MotorIDs;
@@ -72,6 +73,7 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     countShot();
+    SmartDashboard.putNumber("shooter target speed", calculateSpeed(turret.getDistance(turret.turretPose.getTranslation(), turret.getTarget().getTranslation()), "pose"));
     // This method will be called once per scheduler run
   }
 
@@ -158,7 +160,7 @@ public class Shooter extends SubsystemBase {
    * @return The time the ball takes to reach the hub, in seconds
    */
   public double getFuelTravelTime() {
-    double rps = shooter.getVelocity().getValueAsDouble() / 60;
+    double rps = shooter.getVelocity().getValueAsDouble();
     double shootSpeed = rps * TurretConstants.SHOOTER_WHEEL_CIRCUMFERENCE;
 
     return quadraticSolver.findZeros(-4.9, shootSpeed, -1.3);

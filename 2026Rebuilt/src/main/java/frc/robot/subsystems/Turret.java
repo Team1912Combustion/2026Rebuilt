@@ -15,14 +15,17 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -45,6 +48,8 @@ public class Turret extends SubsystemBase {
 
   Rotation2d turretAngle;
   Pose2d turretPose;
+  double turretX, turretY, turretYaw;
+  Twist2d turretSpeed;
 
   Timer limitSwitchTimer;
 
@@ -62,6 +67,8 @@ public class Turret extends SubsystemBase {
   Integer[] hubTagsArray = {8, 10, 11, 24, 26, 27};
 
   List<Integer> hubTags = Arrays.asList(hubTagsArray);
+
+  Field2d field;
   
   /** Creates a new Turret. */
   public Turret(DriveTrain dt) {
@@ -89,6 +96,10 @@ public class Turret extends SubsystemBase {
 
     turretAngle = new Rotation2d(0);
     turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
+    turretX = turretPose.getX();
+    turretY = turretPose.getY();
+    turretYaw = turretPose.getRotation().getDegrees();
+    turretSpeed = new Twist2d();
 
     limitSwitchTimer = new Timer();
 
@@ -100,6 +111,8 @@ public class Turret extends SubsystemBase {
     neutralBottomZone = FieldZoneConstants.NEUTRAL_BOTTOM_ZONE;
 
     targetMode = "pose";
+
+    field = new Field2d();
 
   }
 
@@ -115,6 +128,16 @@ public class Turret extends SubsystemBase {
 
     turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
 
+    turretSpeed = new Twist2d(
+      (-(turretPose.getX() - turretX) * 50) * calculateSpeedContinuous(getCurrentFieldZone().getDistanceFromShotPoint(turretPose)),
+      (-(turretPose.getY() - turretY) * 50) * calculateSpeedContinuous(getCurrentFieldZone().getDistanceFromShotPoint(turretPose)),
+      0
+    );
+
+    turretX = turretPose.getX();
+    turretY = turretPose.getY();
+    turretYaw = turretPose.getRotation().getDegrees();
+
     currentPosition = turret.getPosition().getValueAsDouble();
     targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);
     error = currentPosition - targetPosition;
@@ -123,6 +146,12 @@ public class Turret extends SubsystemBase {
     turret.setControl(request.withPosition(targetPosition));
 
     SmartDashboard.putString("Current field zone", getCurrentFieldZone().getFieldZoneName());
+
+    field.setRobotPose(driveTrain.getPose());
+    field.getObject("turret").setPose(new Pose2d(turretPose.getTranslation(), getDirection(turretPose, getTarget())));
+    field.getObject("target").setPose(getTarget());
+    field.getObject("shot point").setPose(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
+    SmartDashboard.putData(field);
     // This method will be called once per scheduler run
   }
 
@@ -155,6 +184,30 @@ public class Turret extends SubsystemBase {
       modifiedAngle = angle;
     }
     targetPosition = motorModulus((modifiedAngle / 180) * upperLimit);
+  }
+
+  public void setToPosition() {
+    final PositionVoltage request = new PositionVoltage(0).withSlot(0);
+    turret.setControl(request.withPosition(targetPosition));
+  }
+
+  public double calculateSpeed(double distance, String targetMode) {
+    double speed = 0;
+    int index = 0;
+
+    if (targetMode == "pose") {
+      index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
+      speed = TurretConstants.TIME_OF_FLIGHT[index];
+    } else {
+      index = (int) Math.floor(distance / TurretConstants.DELTA_AREA);
+      speed = TurretConstants.TIME_OF_FLIGHT[index];
+    }
+
+    return speed;
+  }
+
+  public double calculateSpeedContinuous(double distance) {
+    return distance * 0.12;
   }
 
   /**
@@ -272,7 +325,7 @@ public class Turret extends SubsystemBase {
    * @return The updated pose
    */
   public Pose2d addVector(Pose2d pose) {
-    return pose.exp(driveTrain.getRobotSpeed());
+    return pose.exp(turretSpeed);
   }
 
   /**
@@ -316,7 +369,7 @@ public class Turret extends SubsystemBase {
     } else if (redOutpostZone.isInZone(driveTrain.getPose())) {
       return redOutpostZone;
     } else {
-      return null;
+      return blueDepotZone;
     }
   }
 }

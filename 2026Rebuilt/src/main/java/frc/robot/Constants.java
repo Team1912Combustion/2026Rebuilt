@@ -49,10 +49,10 @@ public final class Constants {
   public static class SensorIDs {
     public static final int GYRO = 1;
     
-    public static final int TURRET_BEAMBREAK = 1;
+    public static final int TURRET_BEAMBREAK = 3;
     
     public static final int TURRET_LEFT_LIMIT_SWITCH = 1;
-    public static final int TURRET_RIGHT_LIMIT_SWITCH = 1;
+    public static final int TURRET_RIGHT_LIMIT_SWITCH = 2;
 
   }
 
@@ -113,7 +113,7 @@ public final class Constants {
 
   public static class TurretConstants {
 
-    public static final Translation2d TURRET_OFFSET = new Translation2d(0, 0);
+    public static final Translation2d TURRET_OFFSET = new Translation2d(-0.1, 0.2);
 
     public static final double TURRET_ALLOWED_ERROR = 0.5;
 
@@ -124,6 +124,7 @@ public final class Constants {
     public static final double[] SPEEDS = { 500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0 };
     public static final double[] HIGH_HOOD_ANGLES = { 500.0, 1000.0, 1500.0, 1750.0, 2000.0, 2500.0 };
     public static final double[] LOW_HOOD_ANGLES = { 100.0, 200.0, 300.0, 400.0, 500.0, 600.0 };
+    public static final double[] TIME_OF_FLIGHT = {0.12, 0.24, 0.36, 0.48, 0.6, 0.72};
 
     public static final double X_OFFSET_THRESHHOLD = 0.2;
 

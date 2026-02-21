@@ -4,21 +4,21 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix6.controls.PositionVoltage;
+import java.lang.constant.DirectMethodHandleDesc;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.LimelightTurret;
-import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.DriveTrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class MoveTurret extends Command {
-  Turret turret;
-  /** Creates a new MoveTurret. */
-  public MoveTurret(Turret t) {
-    turret = t;
-    addRequirements(turret);
+public class MovePose extends Command {
+  DriveTrain driveTrain;
+  /** Creates a new MovePose. */
+  public MovePose(DriveTrain dt) {
+    driveTrain = dt;
+    addRequirements(driveTrain);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -29,8 +29,7 @@ public class MoveTurret extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.setTurretAngle(turret.getDirection(turret.getTurretPose(), turret.getTarget()).getDegrees());
-    turret.setToPosition();
+    driveTrain.resetPose(driveTrain.getPose().exp(new Twist2d(driveTrain.yRateLimit(-driveTrain.driverController.getLeftY() * 0.08), driveTrain.xRateLimit(-driveTrain.driverController.getLeftX() * 0.08), driveTrain.rotRateLimit(-driveTrain.driverController.getRightX() * 0.08))));
   }
 
   // Called once the command ends or is interrupted.

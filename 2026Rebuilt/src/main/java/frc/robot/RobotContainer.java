@@ -7,9 +7,13 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.MovePose;
+import frc.robot.commands.MoveTurret;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LimelightTurret;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Turret;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -34,19 +38,32 @@ public class RobotContainer {
       new CommandXboxController(1);
 
   DriveTrain driveTrain;
+  Turret turret;
+  Shooter shooter;
   LimelightTurret limelightTurret;
+
+  MovePose movePose;
+  MoveTurret moveTurret;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     limelightTurret = new LimelightTurret();
     driveTrain = new DriveTrain(limelightTurret);
+    turret = new Turret(driveTrain);
+    shooter= new Shooter(turret);
 
-    driveTrain.setDefaultCommand(new RunCommand( () -> driveTrain.drive(
+    movePose = new MovePose(driveTrain);
+    moveTurret = new MoveTurret(turret);
+
+    /*driveTrain.setDefaultCommand(new RunCommand( () -> driveTrain.drive(
         -driverController.getLeftY(), 
         -driverController.getLeftX(), 
         -driverController.getRightX(), 
         driveTrain.fieldRelative),
-      driveTrain));
+      driveTrain));*/
+    driveTrain.setDefaultCommand(movePose);
+
+    turret.setDefaultCommand(moveTurret);
 
     // Configure the trigger bindings
     configureBindings();
@@ -62,7 +79,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    
+    //driverController.a().whileTrue(movePose);
   }
 
   /**

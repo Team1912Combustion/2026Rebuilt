@@ -29,39 +29,17 @@ public class Robot extends LoggedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  private final UsbCamera camera;
-
-  // if URCL REV hardware logging is currently active
-  public Boolean urcl_is_logging = false;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   public Robot() {
-    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
-
-    if (isReal()) {
-      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-      Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-    } else {
-      setUseTiming(false); // Run as fast as possible
-      String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-      Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-      Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-    }
-
-Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
-
-    camera = CameraServer.startAutomaticCapture(0);
-    camera.setResolution(240, 120);
     // camera.setFPS(45)//////////////////////////////////////////;
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
 
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
-    start_rev_log();
   }
 
   /**
@@ -133,15 +111,8 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
-
-  /**
-   * Begins logging REV hardware to NetworkTables using URCL
-   * (see docs.advantagescope.org/more-features/urcl)
-   */
-  private void start_rev_log() {
-    if (this.urcl_is_logging) { return; }
-    this.urcl_is_logging = true;
-    //URCL.start();
+  public void simulationPeriodic() {
+    
   }
+
 }

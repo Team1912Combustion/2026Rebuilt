@@ -14,6 +14,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -100,8 +101,6 @@ public class DriveTrain extends SubsystemBase {
 
   public final double DISTANCE_ERROR_FRACTION = 0.1;
 
-  Field2d field;
-
   boolean autoBuilderConfigured;
 
   RobotConfig cfg;
@@ -109,6 +108,8 @@ public class DriveTrain extends SubsystemBase {
   Integer[] towerTagArray = {15, 31};
 
   List<Integer> towerTagIDs = Arrays.asList(towerTagArray);
+  
+  SlewRateLimiter xRate, yRate, rotRate;
 
   /** Creates a new DriveTrain. */
   public DriveTrain(LimelightTurret lt) {
@@ -158,8 +159,6 @@ public class DriveTrain extends SubsystemBase {
 
     driverController = new XboxController(0);
 
-    field = new Field2d();
-
     try {
       cfg = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -181,6 +180,10 @@ public class DriveTrain extends SubsystemBase {
     autoBuilderConfigured = false;
 
     Logger.recordOutput("Pose", poseEstimator.getEstimatedPosition());
+    
+    xRate = new SlewRateLimiter(0.5);
+    yRate = new SlewRateLimiter(0.5);
+    rotRate = new SlewRateLimiter(40);
 
   }
 
@@ -226,16 +229,12 @@ public class DriveTrain extends SubsystemBase {
       -(poseEstimator.getEstimatedPosition().getY() - poseY) * 50,
       0
       );
+
     // update pose variables
     poseX = poseEstimator.getEstimatedPosition().getX();
     poseY = poseEstimator.getEstimatedPosition().getY();
     poseYaw = poseEstimator.getEstimatedPosition().getRotation().getDegrees();
 
-    // update field2d object
-    field.setRobotPose(poseEstimator.getEstimatedPosition());
-
-    // print to smart dashboard
-    SmartDashboard.putData(field);
     SmartDashboard.putNumber("Drive yaw", driveYaw);
 
     SmartDashboard.putData("Auto?:", autoChooser);
@@ -509,6 +508,23 @@ public class DriveTrain extends SubsystemBase {
 
   public boolean towerReadyToAim() {
     return towerTagIDs.contains(limelightFrontLeft.getTagId());
+  }
+
+  
+  public double xRateLimit(double x) {
+    return xRate.calculate(x);
+  }
+
+  public double yRateLimit(double y) {
+    return yRate.calculate(y);
+  }
+
+  public double rotRateLimit(double rot) {
+    return rotRate.calculate(rot);
+  }
+
+  public Pose2d removeRot(Pose2d pose) {
+    return new Pose2d(pose.getTranslation(), new Rotation2d());
   }
 
 }
