@@ -16,6 +16,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.QuadraticSolver;
 import frc.robot.Constants.MotorIDs;
@@ -123,20 +124,14 @@ public class Shooter extends SubsystemBase {
   /**
    * Gets the ideal shooter speed for the distance from the shot point.
    * @param distance The distance from the target, measured in meters for pose mode and measured by tag area for tag mode
-   * @param targetMode The target mode that the turret is using. Should be either "pose" or "tag"
    * @return The ideal speed
    */
-  public double calculateSpeed(double distance, String targetMode) {
+  public double calculateSpeed(double distance) {
     double speed = 0;
     int index = 0;
 
-    if (targetMode == "pose") {
-      index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
-      speed = TurretConstants.SPEEDS[index];
-    } else {
-      index = (int) Math.floor(distance / TurretConstants.DELTA_AREA);
-      speed = TurretConstants.SPEEDS[index];
-    }
+    index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
+    speed = TurretConstants.SPEEDS[index];
 
     return speed;
   }
@@ -157,8 +152,8 @@ public class Shooter extends SubsystemBase {
    * Gets the amount of time the ball takes to reach the hub based on the initial velocity of the ball.
    * @return The time the ball takes to reach the hub, in seconds
    */
-  public double getFuelTravelTime() {
-    double rps = shooter.getVelocity().getValueAsDouble() / 60;
+  public double calculateFuelTravelTime() {
+    double rps = shooter.getVelocity().getValueAsDouble();
     double shootSpeed = rps * TurretConstants.SHOOTER_WHEEL_CIRCUMFERENCE;
 
     return quadraticSolver.findZeros(-4.9, shootSpeed, -1.3);

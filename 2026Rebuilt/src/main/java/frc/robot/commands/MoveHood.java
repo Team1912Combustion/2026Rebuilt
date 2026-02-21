@@ -31,13 +31,7 @@ public class MoveHood extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (turret.getTargetMode() == "pose") {
-      hood.setPosition(hood.calculateHoodAngle(
-        turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation()), 
-        turret.getTargetMode()));
-    } else {
-      hood.setPosition(hood.calculateHoodAngle(limelightTurret.getTargetArea(), turret.getTargetMode()));
-    }
+    hood.setPosition(hood.calculateHoodAngle(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
   }
 
   // Called once the command ends or is interrupted.

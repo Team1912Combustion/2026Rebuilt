@@ -222,8 +222,8 @@ public class DriveTrain extends SubsystemBase {
     }
 
     robotSpeed = new Twist2d(
-      -(poseEstimator.getEstimatedPosition().getX() - poseX) * 50,
-      -(poseEstimator.getEstimatedPosition().getY() - poseY) * 50,
+      (poseEstimator.getEstimatedPosition().getX() - poseX) * 50,
+      (poseEstimator.getEstimatedPosition().getY() - poseY) * 50,
       0
       );
     // update pose variables

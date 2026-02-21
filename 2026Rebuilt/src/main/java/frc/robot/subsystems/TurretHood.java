@@ -48,42 +48,16 @@ public class TurretHood extends SubsystemBase {
   }
 
   /**
-   * Returns the hood angle for the current distance from the shot point. There are different ranges of distances, each with a unique turret hood angle.
-   * @param pose The current pose of the turret
-   * @return The ideal hood angle
-   */
-  /*public double calculateHoodAngle(Pose2d pose) {
-    double angle = 0;
-    double distance = turret.getCurrentFieldZone().getDistanceFromShotPoint(pose);
-    int index = -1;
-    for (double[] range : TurretConstants.DISTANCES) {
-      index += 1;
-      if ((distance > range[0]) && (distance < range[1])) {
-        angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
-        break;
-      }
-    }
-
-    return angle;
-  }*/
-
-  /**
    * Gets the ideal hood angle for the distance from the shot point.
-   * @param distance The distance from the target, measured in meters for pose mode and measured by tag area for tag mode
-   * @param targetMode The target mode that the turret is using. Should be either "pose" or "tag"
+   * @param distance The distance from the target, measured in meters
    * @return The ideal hood angle
    */
-  public double calculateHoodAngle(double distance, String targetMode) {
+  public double calculateHoodAngle(double distance) {
     double angle = 0;
     int index = 0;
 
-    if (targetMode == "pose") {
-      index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
-      angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
-    } else {
-      index = (int) Math.floor(distance / TurretConstants.DELTA_AREA);
-      angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
-    }
+    index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
+    angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
 
     return angle;
   }

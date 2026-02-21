@@ -39,14 +39,7 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (turret.getTargetMode() == "pose") {
-      shooter.setSpeed(shooter.calculateSpeed(
-        turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation()), 
-        turret.getTargetMode()));
-    } else {
-      shooter.setSpeed(shooter.calculateSpeed(limelightTurret.getTargetArea(), turret.getTargetMode()));
-    }
-    spindexer.setSpeed(4000);
+    shooter.setSpeed(shooter.calculateSpeed(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
     if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed()) {
       shooter.kickerOn();
     } else {

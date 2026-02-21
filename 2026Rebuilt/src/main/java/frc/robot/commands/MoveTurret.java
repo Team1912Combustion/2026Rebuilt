@@ -29,11 +29,7 @@ public class MoveTurret extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (turret.getTargetMode() == "pose") {
-      turret.setTurretAngle(turret.getDirection(turret.getTurretPose(), turret.getTarget()).getDegrees());
-    } else {
-      turret.aimAtTag(limelight.getXOffset());
-    }
+    turret.setTurretAngle(turret.getDirection(turret.getTurretPose(), turret.getTarget()).getDegrees());
   }
 
   // Called once the command ends or is interrupted.

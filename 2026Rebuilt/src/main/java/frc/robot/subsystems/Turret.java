@@ -57,8 +57,6 @@ public class Turret extends SubsystemBase {
   FieldZone neutralTopZone;
   FieldZone neutralBottomZone;
 
-  String targetMode;
-
   Integer[] hubTagsArray = {8, 10, 11, 24, 26, 27};
 
   List<Integer> hubTags = Arrays.asList(hubTagsArray);
@@ -98,9 +96,6 @@ public class Turret extends SubsystemBase {
     redOutpostZone = FieldZoneConstants.RED_OUTPOST_ZONE;
     neutralTopZone = FieldZoneConstants.NEUTRAL_TOP_ZONE;
     neutralBottomZone = FieldZoneConstants.NEUTRAL_BOTTOM_ZONE;
-
-    targetMode = "pose";
-
   }
 
   @Override
@@ -150,9 +145,9 @@ public class Turret extends SubsystemBase {
     double robotRelativeAngle = (angle - angleModulus(driveTrain.getPose().getRotation().getDegrees()));
     double modifiedAngle = robotRelativeAngle;
     if (getCurrentFieldZone().getShotPointHeight()) {
-      modifiedAngle = (isAngleInDeadZone(robotRelativeAngle) ? Math.max(deadZone[1], Math.min(deadZone[0], angle)) : robotRelativeAngle);
+      modifiedAngle = (isAngleInDeadZone(robotRelativeAngle) ? Math.max(deadZone[1], Math.min(deadZone[0], robotRelativeAngle)) : robotRelativeAngle);
     } else {
-      modifiedAngle = angle;
+      modifiedAngle = robotRelativeAngle;
     }
     targetPosition = motorModulus((modifiedAngle / 180) * upperLimit);
   }
@@ -190,21 +185,6 @@ public class Turret extends SubsystemBase {
    */
   public Pose2d getTurretPose() {
     return turretPose;
-  }
-
-  /**
-   * Used to set the target mode to either 'pose' or 'tag'. 'pose' and 'tag' are the only valid arguments.
-   */
-  public void setTargetMode(String mode) {
-    targetMode = mode;
-  }
-
-  /**
-   * Gets the current target mode of the turret.
-   * @return The target mode of the turret, either 'pose' or 'tag'
-   */
-  public String getTargetMode() {
-    return targetMode;
   }
 
   /**
