@@ -4,27 +4,37 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Spindexer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SpindexerIdle extends Command {
   Spindexer spindexer;
+  Timer timer;
   /** Creates a new SpindexerIdle. */
   public SpindexerIdle(Spindexer s) {
     spindexer = s;
     addRequirements(spindexer);
+
+    timer = new Timer();
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer.start();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    spindexer.setSpeed(400);
+    if ((Math.round(timer.get()) % 2)== 0) {
+      spindexer.setSpeed(5);
+    } else {
+      spindexer.setSpeed(-5);
+    }
   }
 
   // Called once the command ends or is interrupted.

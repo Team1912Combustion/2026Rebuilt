@@ -40,6 +40,7 @@ public class ShootFuel extends Command {
   @Override
   public void execute() {
     shooter.setSpeed(shooter.calculateSpeed(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
+    spindexer.setSpeed(100);
     if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed()) {
       shooter.kickerOn();
     } else {

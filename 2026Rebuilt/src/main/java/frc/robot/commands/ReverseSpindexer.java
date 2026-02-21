@@ -24,7 +24,7 @@ public class ReverseSpindexer extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    spindexer.setSpeed(-400);
+    spindexer.setSpeed(-20);
   }
 
   // Called once the command ends or is interrupted.
