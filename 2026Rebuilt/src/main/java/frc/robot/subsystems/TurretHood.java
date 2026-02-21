@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.TurretConstants;
@@ -43,6 +44,8 @@ public class TurretHood extends SubsystemBase {
 
     targetPosition = Math.max(Math.min(targetPosition, upperLimit), lowerLimit);
     hood.set(pid.calculate(currentPosition, targetPosition));
+
+    SmartDashboard.putNumber("hood position", getPosition());
 
     // This method will be called once per scheduler run
   }
@@ -81,6 +84,22 @@ public class TurretHood extends SubsystemBase {
    */
   public void setPosition(double target) {
     targetPosition = target;
+  }
+
+  /**
+   * Gets the position of the hood encoder.
+   * @return The position of the hood encoder in motor rotations
+   */
+  public double getPosition() {
+    return hood.getEncoder().getPosition();
+  }
+
+  /**
+   * Gets the target position of the hood pid.
+   * @return The target position, in motor rotations
+   */
+  public double getTarget() {
+    return pid.getSetpoint();
   }
 
   /**

@@ -111,7 +111,7 @@ public class DriveTrain extends SubsystemBase {
   List<Integer> towerTagIDs = Arrays.asList(towerTagArray);
 
   /** Creates a new DriveTrain. */
-  public DriveTrain(LimelightTurret lt) {
+  public DriveTrain() {
     fieldRelative = true;
 
     driveYaw = 0;
@@ -122,7 +122,7 @@ public class DriveTrain extends SubsystemBase {
 
     limelightFrontLeft = new LimelightFrontLeft();
     limelightFrontRight = new LimelightFrontRight();
-    limelightTurret = lt;
+    limelightTurret = new LimelightTurret();
 
     limelightXFilter = new MedianFilter(3);
     limelightYFilter = new MedianFilter(3);

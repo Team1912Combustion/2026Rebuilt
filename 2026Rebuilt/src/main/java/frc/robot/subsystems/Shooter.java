@@ -73,6 +73,8 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     countShot();
+
+    SmartDashboard.putNumber("shooter speed", getSpeed());
     // This method will be called once per scheduler run
   }
 
@@ -83,6 +85,22 @@ public class Shooter extends SubsystemBase {
   public void setSpeed(double speed) {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
     shooter.setControl(request.withVelocity(speed));
+  }
+
+  /**
+   * Gets the speed of the shooter wheel.
+   * @return The speed of the shooter wheel, in rotations per second
+   */
+  public double getSpeed() {
+    return shooter.getVelocity().getValueAsDouble();
+  }
+
+  /**
+   * Gets the value that the shooter pid is set to.
+   * @return The set velocity of the shooter, in rotations per second
+   */
+  public double getShooterTarget() {
+    return shooter.getClosedLoopReference().getValueAsDouble();
   }
 
   /**

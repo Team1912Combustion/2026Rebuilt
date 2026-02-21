@@ -34,12 +34,10 @@ public class RobotContainer {
       new CommandXboxController(1);
 
   DriveTrain driveTrain;
-  LimelightTurret limelightTurret;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    limelightTurret = new LimelightTurret();
-    driveTrain = new DriveTrain(limelightTurret);
+    driveTrain = new DriveTrain();
 
     driveTrain.setDefaultCommand(new RunCommand( () -> driveTrain.drive(
         -driverController.getLeftY(), 
@@ -63,6 +61,8 @@ public class RobotContainer {
    */
   private void configureBindings() {
     
+    // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES
+
   }
 
   /**

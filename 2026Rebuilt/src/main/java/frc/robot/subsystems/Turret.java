@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -118,6 +119,7 @@ public class Turret extends SubsystemBase {
     turret.setControl(request.withPosition(targetPosition));
 
     SmartDashboard.putString("Current field zone", getCurrentFieldZone().getFieldZoneName());
+    SmartDashboard.putNumber("Distance from shot point", getCurrentFieldZone().getDistanceFromShotPoint(turretPose));
     // This method will be called once per scheduler run
   }
 
@@ -229,6 +231,21 @@ public class Turret extends SubsystemBase {
   }
 
   /**
+   * Gets the travel time of the fuel to the target from a certain distance.
+   * @param distance The distance from the target
+   * @return The travel time of the fuel
+   */
+  public double calculateTime(double distance) {
+    double time = 0;
+    int index = 0;
+
+    index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
+    time = TurretConstants.TRAVEL_TIMES[index];
+
+    return time;
+  }
+
+  /**
    * Gets the pose of the target, adjusted for the speed of the robot.
    * @return The pose of the target
    */
@@ -252,7 +269,10 @@ public class Turret extends SubsystemBase {
    * @return The updated pose
    */
   public Pose2d addVector(Pose2d pose) {
-    return pose.exp(driveTrain.getRobotSpeed());
+    Twist2d vector = driveTrain.getRobotSpeed();
+    vector.dx *= -calculateTime(getCurrentFieldZone().getDistanceFromShotPoint(pose));
+    vector.dy *= -calculateTime(getCurrentFieldZone().getDistanceFromShotPoint(pose));
+    return pose.exp(vector);
   }
 
   /**
