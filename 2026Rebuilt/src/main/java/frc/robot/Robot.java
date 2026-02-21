@@ -29,7 +29,7 @@ public class Robot extends LoggedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  private final UsbCamera camera;
+  //private final UsbCamera camera;
 
   // if URCL REV hardware logging is currently active
   public Boolean urcl_is_logging = false;
@@ -53,15 +53,14 @@ public class Robot extends LoggedRobot {
 
 Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
 
-    camera = CameraServer.startAutomaticCapture(0);
-    camera.setResolution(240, 120);
-    // camera.setFPS(45)//////////////////////////////////////////;
+    //camera = CameraServer.startAutomaticCapture(0);
+    //camera.setResolution(240, 120);
+    // camera.setFPS(45);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
 
     m_robotContainer = new RobotContainer();
     DataLogManager.start();
-    start_rev_log();
   }
 
   /**

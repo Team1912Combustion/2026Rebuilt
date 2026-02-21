@@ -100,8 +100,6 @@ public class DriveTrain extends SubsystemBase {
 
   public final double DISTANCE_ERROR_FRACTION = 0.1;
 
-  Field2d field;
-
   boolean autoBuilderConfigured;
 
   RobotConfig cfg;
@@ -157,8 +155,6 @@ public class DriveTrain extends SubsystemBase {
     distancePID = new PIDController(0.001, 0, 0);
 
     driverController = new XboxController(0);
-
-    field = new Field2d();
 
     try {
       cfg = RobotConfig.fromGUISettings();
@@ -231,11 +227,6 @@ public class DriveTrain extends SubsystemBase {
     poseY = poseEstimator.getEstimatedPosition().getY();
     poseYaw = poseEstimator.getEstimatedPosition().getRotation().getDegrees();
 
-    // update field2d object
-    field.setRobotPose(poseEstimator.getEstimatedPosition());
-
-    // print to smart dashboard
-    SmartDashboard.putData(field);
     SmartDashboard.putNumber("Drive yaw", driveYaw);
 
     SmartDashboard.putData("Auto?:", autoChooser);

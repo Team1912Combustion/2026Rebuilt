@@ -24,6 +24,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -61,6 +62,8 @@ public class Turret extends SubsystemBase {
   Integer[] hubTagsArray = {8, 10, 11, 24, 26, 27};
 
   List<Integer> hubTags = Arrays.asList(hubTagsArray);
+
+  Field2d field;
   
   /** Creates a new Turret. */
   public Turret(DriveTrain dt) {
@@ -97,6 +100,8 @@ public class Turret extends SubsystemBase {
     redOutpostZone = FieldZoneConstants.RED_OUTPOST_ZONE;
     neutralTopZone = FieldZoneConstants.NEUTRAL_TOP_ZONE;
     neutralBottomZone = FieldZoneConstants.NEUTRAL_BOTTOM_ZONE;
+
+    field = new Field2d();
   }
 
   @Override
@@ -120,6 +125,13 @@ public class Turret extends SubsystemBase {
 
     SmartDashboard.putString("Current field zone", getCurrentFieldZone().getFieldZoneName());
     SmartDashboard.putNumber("Distance from shot point", getCurrentFieldZone().getDistanceFromShotPoint(turretPose));
+
+    field.setRobotPose(driveTrain.getPose());
+    field.getObject("turret").setPose(turretPose);
+    field.getObject("actual target").setPose(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
+    field.getObject("virtual target").setPose(getTarget());
+
+    SmartDashboard.putData(field);
     // This method will be called once per scheduler run
   }
 
