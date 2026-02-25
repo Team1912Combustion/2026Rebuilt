@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldZone;
@@ -24,7 +25,7 @@ public class TurretHood extends SubsystemBase {
   PIDController pid;
   double upperLimit, lowerLimit, currentPosition, targetPosition;
 
-  FieldZone blueDepotTrench, blueOutpostTrench, redDepotTrench, redOutpostTrench;
+  FieldZone blueDepotTrench, blueOutpostTrench, redDepotTrench, redOutpostTrench, noTrench;
   /** Creates a new TurretHood. */
   public TurretHood(Turret t) {
     turret = t;
@@ -43,6 +44,7 @@ public class TurretHood extends SubsystemBase {
     blueOutpostTrench = FieldZoneConstants.BLUE_OUTPOST_TRENCH_ZONE;
     redDepotTrench = FieldZoneConstants.RED_DEPOT_TRENCH_ZONE;
     redOutpostTrench = FieldZoneConstants.RED_OUTPOST_TRENCH_ZONE;
+    noTrench = new FieldZone(new Translation2d(-1, -1), new Translation2d(-0.5, -1.5), "NO TRENCH");
 
   }
 
@@ -119,6 +121,28 @@ public class TurretHood extends SubsystemBase {
     return pid.atSetpoint();
   }
 
+  /**
+   * Gets the FieldZone that the turret is currently in.
+   * @return The FieldZone that the robot is in
+   */
+  public FieldZone getCurrentFieldZone() {
+    if (blueDepotTrench.isInZone(turret.getTurretPose())) {
+      return blueDepotTrench;
+    } else if (blueOutpostTrench.isInZone(turret.getTurretPose())) {
+      return blueOutpostTrench; 
+    } else if (redDepotTrench.isInZone(turret.getTurretPose())) {
+      return redDepotTrench;
+    } else if (redOutpostTrench.isInZone(turret.getTurretPose())) {
+      return redOutpostTrench;
+    } else {
+      return noTrench;
+    }
+  }
+
+  /**
+   * Returns whether or not the turret is near the trench and should duck.
+   * @return True if the hood should be ducked, false if it should not
+   */
   public boolean duckHood() {
     return (
       blueDepotTrench.isInZone(turret.getTurretPose()) || 
