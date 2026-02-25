@@ -7,17 +7,14 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.LimelightTurret;
 import frc.robot.subsystems.Turret;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class MoveTurret extends Command {
   Turret turret;
-  LimelightTurret limelight;
   /** Creates a new MoveTurret. */
-  public MoveTurret(Turret t, LimelightTurret lt) {
+  public MoveTurret(Turret t) {
     turret = t;
-    limelight = lt;
     addRequirements(turret);
     // Use addRequirements() here to declare subsystem dependencies.
   }

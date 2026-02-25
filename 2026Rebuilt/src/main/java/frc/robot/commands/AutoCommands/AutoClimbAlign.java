@@ -7,17 +7,17 @@ package frc.robot.commands.AutoCommands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.LimelightFrontLeft;
+import frc.robot.subsystems.LimelightClimberLeft;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AutoClimbAlign extends Command {
   DriveTrain driveTrain;
-  LimelightFrontLeft limelightFrontLeft;
+  LimelightClimberLeft limelightFrontLeft;
 
   private PIDController xController, yController, rotController;
   private boolean isRightClimb;
   /** Creates a new AutoClimbAlign. */
-  public AutoClimbAlign(DriveTrain dt, LimelightFrontLeft llfl, boolean isRightClimb) {
+  public AutoClimbAlign(DriveTrain dt, LimelightClimberLeft llfl, boolean isRightClimb) {
     driveTrain = dt;
     limelightFrontLeft = llfl;
     addRequirements(driveTrain);

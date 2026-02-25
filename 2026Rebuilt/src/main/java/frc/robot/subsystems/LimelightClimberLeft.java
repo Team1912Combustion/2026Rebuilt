@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 
-public class LimelightFrontLeft extends SubsystemBase {
+public class LimelightClimberLeft extends SubsystemBase {
   private final NetworkTable table =
 	  NetworkTableInstance.getDefault().getTable(getName());
   private final NetworkTableEntry pipeline = table.getEntry("pipeline");
@@ -33,7 +33,7 @@ public class LimelightFrontLeft extends SubsystemBase {
   private int currentPipeline = 0;
   private int currentTagId = 0;
   /** Creates a new LimelightFrontLeft. */
-  public LimelightFrontLeft() {}
+  public LimelightClimberLeft() {}
 
   @Override
   public void periodic() {
@@ -62,7 +62,7 @@ public class LimelightFrontLeft extends SubsystemBase {
    * @return The name of the limelight as a string
    */
   public String getName() {
-    return "limelight-fl";
+    return "limelight-cl";
   }
 
   /**
@@ -70,7 +70,7 @@ public class LimelightFrontLeft extends SubsystemBase {
    * @return The position of the limelight as a string
    */
   public String getPosition() {
-    return "frontLeft";
+    return "climberLeft";
   }
   /**
    * Toggles between pipeline 0 and 1.
@@ -210,7 +210,7 @@ public class LimelightFrontLeft extends SubsystemBase {
   }
 
   public int getPipeline() {
-    return currentPipeline;
+    return pipeline.getNumber(0).intValue();
   }
 
 }
