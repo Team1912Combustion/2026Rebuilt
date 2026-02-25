@@ -9,6 +9,8 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.LimelightClimberLeft;
+import frc.robot.subsystems.LimelightClimberRight;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -33,10 +35,12 @@ public class RobotContainer {
       new CommandXboxController(1);
 
   DriveTrain driveTrain;
+  LimelightClimberLeft limelightClimberLeft;
+  LimelightClimberRight limelightClimberRight;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    driveTrain = new DriveTrain();
+    driveTrain = new DriveTrain(limelightClimberLeft, limelightClimberRight);
 
     driveTrain.setDefaultCommand(new RunCommand( () -> driveTrain.drive(
         -driverController.getLeftY(), 
