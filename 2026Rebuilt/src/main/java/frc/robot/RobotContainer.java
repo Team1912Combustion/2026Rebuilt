@@ -14,6 +14,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LimelightTurret;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.TurretHood;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -39,7 +40,7 @@ public class RobotContainer {
 
   DriveTrain driveTrain;
   Turret turret;
-  Shooter shooter;
+  TurretHood hood;
   LimelightTurret limelightTurret;
 
   MovePose movePose;
@@ -50,7 +51,7 @@ public class RobotContainer {
     limelightTurret = new LimelightTurret();
     driveTrain = new DriveTrain(limelightTurret);
     turret = new Turret(driveTrain);
-    shooter= new Shooter(turret);
+    hood = new TurretHood(turret);
 
     movePose = new MovePose(driveTrain);
     moveTurret = new MoveTurret(turret);

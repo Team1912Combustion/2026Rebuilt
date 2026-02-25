@@ -9,9 +9,13 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.FieldZone;
 
 public class TurretHood extends SubsystemBase {
   Turret turret;
@@ -20,6 +24,7 @@ public class TurretHood extends SubsystemBase {
 
   PIDController pid;
   double upperLimit, lowerLimit, currentPosition, targetPosition;
+  FieldZone blueDepotTrench, blueOutpostTrench, redDepotTrench, redOutpostTrench, noTrench;
   /** Creates a new TurretHood. */
   public TurretHood(Turret t) {
     turret = t;
@@ -34,6 +39,12 @@ public class TurretHood extends SubsystemBase {
     currentPosition = hood.getEncoder().getPosition();
     targetPosition = 0;
 
+    blueDepotTrench = FieldZoneConstants.BLUE_DEPOT_TRENCH_ZONE;
+    blueOutpostTrench = FieldZoneConstants.BLUE_OUTPOST_TRENCH_ZONE;
+    redDepotTrench = FieldZoneConstants.RED_DEPOT_TRENCH_ZONE;
+    redOutpostTrench = FieldZoneConstants.RED_OUTPOST_TRENCH_ZONE;
+    noTrench = new FieldZone(new Translation2d(-1, -1), new Translation2d(-0.5, -1.5), "NO TRENCH");
+
   }
 
   @Override
@@ -43,6 +54,8 @@ public class TurretHood extends SubsystemBase {
 
     targetPosition = Math.max(Math.min(targetPosition, upperLimit), lowerLimit);
     hood.set(pid.calculate(currentPosition, targetPosition));
+
+    SmartDashboard.putString("trench zone", getCurrentFieldZone().getFieldZoneName());
 
     // This method will be called once per scheduler run
   }
@@ -115,5 +128,31 @@ public class TurretHood extends SubsystemBase {
    */
   public boolean isInPosiiton() {
     return pid.atSetpoint();
+  }
+
+  public boolean duckHood() {
+    return (
+      blueDepotTrench.isInZone(turret.getTurretPose()) || 
+      blueOutpostTrench.isInZone(turret.getTurretPose()) ||
+      redDepotTrench.isInZone(turret.getTurretPose()) ||
+      redOutpostTrench.isInZone(turret.getTurretPose()));
+  }
+
+  /**
+   * Gets the FieldZone that the turret is currently in.
+   * @return The FieldZone that the robot is in
+   */
+  public FieldZone getCurrentFieldZone() {
+    if (blueDepotTrench.isInZone(turret.getTurretPose())) {
+      return blueDepotTrench;
+    } else if (blueOutpostTrench.isInZone(turret.getTurretPose())) {
+      return blueOutpostTrench; 
+    } else if (redDepotTrench.isInZone(turret.getTurretPose())) {
+      return redDepotTrench;
+    } else if (redOutpostTrench.isInZone(turret.getTurretPose())) {
+      return redOutpostTrench;
+    } else {
+      return noTrench;
+    }
   }
 }
