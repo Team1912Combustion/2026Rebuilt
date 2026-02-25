@@ -55,6 +55,14 @@ public class Intake extends SubsystemBase {
     rollers.setControl(request.withVelocity(speed));
   }
 
+  public void intake() {
+    setRollerSpeed(3000);
+  }
+
+  public void expel() {
+    setRollerSpeed(-3000);
+  }
+
   public boolean rollersAtSpeed() {
     return (Math.abs(rollers.getClosedLoopError().getValueAsDouble()) < 20);
   }

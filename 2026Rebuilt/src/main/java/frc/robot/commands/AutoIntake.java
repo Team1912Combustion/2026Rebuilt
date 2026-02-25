@@ -34,6 +34,8 @@ public class AutoIntake extends Command {
     pid.setTolerance(0.2);
     pid.setSetpoint(0);
     limelight.setPipeline(1);
+    intake.armOut();
+    intake.intake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,6 +51,7 @@ public class AutoIntake extends Command {
   public void end(boolean interrupted) {
     limelight.setPipeline(0);
     driveTrain.drive(0, 0, 0, true);
+    intake.setRollerSpeed(0);
   }
 
   // Returns true when the command should end.
