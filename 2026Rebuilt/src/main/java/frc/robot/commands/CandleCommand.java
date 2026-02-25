@@ -34,7 +34,7 @@ public class CandleCommand extends Command {
   @Override
   public void execute() {
     if (turret.isAimed() && hood.isInPosiiton() && shooter.shooterAtSpeed()) {
-      leds.setOrangeStatic();
+      leds.setOrangeFlashing();
     } else {
       leds.setBlueStatic();
     }

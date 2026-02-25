@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.lang.reflect.Field;
+
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
@@ -110,6 +112,32 @@ public final class Constants {
     public static final FieldZone RED_OUTPOST_ZONE = new FieldZone(RED_OUTPOST_ZONE_TL, RED_OUTPOST_ZONE_BR, "RED OUTPOST");
     public static final FieldZone NEUTRAL_TOP_ZONE = new FieldZone(NEUTRAL_TOP_ZONE_TL, NEUTRAL_TOP_ZONE_BR, "NEUTRAL TOP");
     public static final FieldZone NEUTRAL_BOTTOM_ZONE = new FieldZone(NEUTRAL_BOTTOM_ZONE_TL, NEUTRAL_BOTTOM_ZONE_BR, "NEUTRAL BOTTOM");
+
+    /*
+     * TRENCH ZONES
+     */
+
+    public static final double WALL_TO_TRENCH = 3.977;
+    public static final double TRENCH_WIDTH = 1.285;
+    public static final double TRENCH_LENGTH = 1.194;
+
+    // CONSTRUCTED FIELD ZONES //
+    public static final Translation2d BLUE_DEPOT_TRENCH_TL = new Translation2d(WALL_TO_TRENCH, FIELD_WIDTH);
+    public static final Translation2d BLUE_DEPOT_TRENCH_BR = new Translation2d(WALL_TO_TRENCH + TRENCH_LENGTH, FIELD_WIDTH - TRENCH_WIDTH);
+
+    public static final Translation2d BLUE_OUTPOST_TRENCH_TL = new Translation2d(WALL_TO_TRENCH, TRENCH_WIDTH);
+    public static final Translation2d BLUE_OUTPOST_TRENCH_BR = new Translation2d(WALL_TO_TRENCH + TRENCH_LENGTH, 0);
+
+    public static final Translation2d RED_DEPOT_TRENCH_TL = new Translation2d(FIELD_LENGTH - (WALL_TO_TRENCH + TRENCH_LENGTH), FIELD_WIDTH);
+    public static final Translation2d RED_DEPOT_TRENCH_BR = new Translation2d(FIELD_LENGTH - WALL_TO_TRENCH, FIELD_WIDTH - TRENCH_WIDTH);
+
+    public static final Translation2d RED_OUTPOST_TRENCH_TL = new Translation2d(FIELD_LENGTH - (WALL_TO_TRENCH + TRENCH_LENGTH), TRENCH_WIDTH);
+    public static final Translation2d RED_OUTPOST_TRENCH_BR = new Translation2d(FIELD_LENGTH - WALL_TO_TRENCH, 0);
+
+    public static final FieldZone BLUE_DEPOT_TRENCH_ZONE = new FieldZone(BLUE_DEPOT_TRENCH_TL, BLUE_DEPOT_TRENCH_BR, "BLUE DEPOT TRENCH");
+    public static final FieldZone BLUE_OUTPOST_TRENCH_ZONE = new FieldZone(BLUE_OUTPOST_TRENCH_TL, BLUE_OUTPOST_TRENCH_BR, "BLUE OUTPOST TRENCH");
+    public static final FieldZone RED_DEPOT_TRENCH_ZONE = new FieldZone(RED_DEPOT_TRENCH_TL, RED_DEPOT_TRENCH_BR, "RED DEPOT TRENCH");
+    public static final FieldZone RED_OUTPOST_TRENCH_ZONE = new FieldZone(RED_OUTPOST_TRENCH_TL, RED_OUTPOST_TRENCH_BR, "RED OUTPOST TRENCH");
 
   }
 

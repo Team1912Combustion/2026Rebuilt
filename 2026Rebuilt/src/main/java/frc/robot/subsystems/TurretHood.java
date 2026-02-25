@@ -11,6 +11,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FieldZone;
+import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.TurretConstants;
 
@@ -21,6 +23,8 @@ public class TurretHood extends SubsystemBase {
 
   PIDController pid;
   double upperLimit, lowerLimit, currentPosition, targetPosition;
+
+  FieldZone blueDepotTrench, blueOutpostTrench, redDepotTrench, redOutpostTrench;
   /** Creates a new TurretHood. */
   public TurretHood(Turret t) {
     turret = t;
@@ -34,6 +38,11 @@ public class TurretHood extends SubsystemBase {
     lowerLimit = 0;
     currentPosition = hood.getEncoder().getPosition();
     targetPosition = 0;
+
+    blueDepotTrench = FieldZoneConstants.BLUE_DEPOT_TRENCH_ZONE;
+    blueOutpostTrench = FieldZoneConstants.BLUE_OUTPOST_TRENCH_ZONE;
+    redDepotTrench = FieldZoneConstants.RED_DEPOT_TRENCH_ZONE;
+    redOutpostTrench = FieldZoneConstants.RED_OUTPOST_TRENCH_ZONE;
 
   }
 
@@ -108,5 +117,13 @@ public class TurretHood extends SubsystemBase {
    */
   public boolean isInPosiiton() {
     return pid.atSetpoint();
+  }
+
+  public boolean duckHood() {
+    return (
+      blueDepotTrench.isInZone(turret.getTurretPose()) || 
+      blueOutpostTrench.isInZone(turret.getTurretPose()) ||
+      redDepotTrench.isInZone(turret.getTurretPose()) ||
+      redOutpostTrench.isInZone(turret.getTurretPose()));
   }
 }

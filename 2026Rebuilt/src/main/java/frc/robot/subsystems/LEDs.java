@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.controls.ColorFlowAnimation;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
@@ -30,6 +31,11 @@ public class LEDs extends SubsystemBase {
 
   public void setOrangeStatic() {
     final SolidColor request = new SolidColor(0, 400);
+    candle.setControl(request.withColor(new RGBWColor(230, 40, 0)));
+  }
+
+  public void setOrangeFlashing() {
+    final ColorFlowAnimation request = new ColorFlowAnimation(0, 400);
     candle.setControl(request.withColor(new RGBWColor(230, 40, 0)));
   }
 }
