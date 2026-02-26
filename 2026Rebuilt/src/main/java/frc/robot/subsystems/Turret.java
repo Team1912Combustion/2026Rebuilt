@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -47,6 +48,8 @@ public class Turret extends SubsystemBase {
 
   Rotation2d turretAngle;
   Pose2d turretPose;
+  double turretX, turretY, turretYaw;
+  Twist2d turretSpeed;
 
   Timer limitSwitchTimer;
 
@@ -58,6 +61,8 @@ public class Turret extends SubsystemBase {
   FieldZone redOutpostZone;
   FieldZone neutralTopZone;
   FieldZone neutralBottomZone;
+
+  String targetMode;
 
   Integer[] hubTagsArray = {8, 10, 11, 24, 26, 27};
 
@@ -72,6 +77,12 @@ public class Turret extends SubsystemBase {
     turret = new TalonFX(MotorIDs.TURRET, new CANBus("1912CANivore"));
     turret.setPosition(0);
 
+    targetPosition = 0;
+    currentPosition = 0;
+    error = 0;
+    upperLimit = 18;
+    lowerLimit = -18;
+
     turretConfig = new TalonFXConfiguration();
     turretConfig.Slot0.kS = 0;
     turretConfig.Slot0.kV = 0;
@@ -80,17 +91,22 @@ public class Turret extends SubsystemBase {
     turretConfig.Slot0.kI = 0;
     turretConfig.Slot0.kD = 0;
 
-    targetPosition = 0;
-    currentPosition = 0;
-    error = 0;
-    upperLimit = 18;
-    lowerLimit = -18;
+    turretConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    turretConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = upperLimit;
+    turretConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    turretConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = lowerLimit;
+
+    turret.getConfigurator().apply(turretConfig);
 
     lowerLimitSwitch = new DigitalInput(SensorIDs.TURRET_LEFT_LIMIT_SWITCH);
     upperLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
 
     turretAngle = new Rotation2d(0);
     turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
+    turretX = turretPose.getX();
+    turretY = turretPose.getY();
+    turretYaw = turretPose.getRotation().getDegrees();
+    turretSpeed = new Twist2d();
 
     limitSwitchTimer = new Timer();
 
@@ -101,12 +117,15 @@ public class Turret extends SubsystemBase {
     neutralTopZone = FieldZoneConstants.NEUTRAL_TOP_ZONE;
     neutralBottomZone = FieldZoneConstants.NEUTRAL_BOTTOM_ZONE;
 
+    targetMode = "pose";
+
     field = new Field2d();
+
   }
 
   @Override
   public void periodic() {
-    checkLimitSwitches();
+    //checkLimitSwitches();
 
     if (DriverStation.isDisabled()) {
       setShotPoints();
@@ -116,6 +135,16 @@ public class Turret extends SubsystemBase {
 
     turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
 
+    turretSpeed = new Twist2d(
+      (-(turretPose.getX() - turretX) * 50) * calculateSpeedContinuous(getCurrentFieldZone().getDistanceFromShotPoint(turretPose)),
+      (-(turretPose.getY() - turretY) * 50) * calculateSpeedContinuous(getCurrentFieldZone().getDistanceFromShotPoint(turretPose)),
+      0
+    );
+
+    turretX = turretPose.getX();
+    turretY = turretPose.getY();
+    turretYaw = turretPose.getRotation().getDegrees();
+
     currentPosition = turret.getPosition().getValueAsDouble();
     targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);
     error = currentPosition - targetPosition;
@@ -124,13 +153,11 @@ public class Turret extends SubsystemBase {
     turret.setControl(request.withPosition(targetPosition));
 
     SmartDashboard.putString("Current field zone", getCurrentFieldZone().getFieldZoneName());
-    SmartDashboard.putNumber("Distance from shot point", getCurrentFieldZone().getDistanceFromShotPoint(turretPose));
 
     field.setRobotPose(driveTrain.getPose());
-    field.getObject("turret").setPose(turretPose);
-    field.getObject("actual target").setPose(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
-    field.getObject("virtual target").setPose(getTarget());
-
+    field.getObject("turret").setPose(new Pose2d(turretPose.getTranslation(), getDirection(turretPose, getTarget())));
+    field.getObject("target").setPose(getTarget());
+    field.getObject("shot point").setPose(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
     SmartDashboard.putData(field);
     // This method will be called once per scheduler run
   }
@@ -159,11 +186,35 @@ public class Turret extends SubsystemBase {
     double robotRelativeAngle = (angle - angleModulus(driveTrain.getPose().getRotation().getDegrees()));
     double modifiedAngle = robotRelativeAngle;
     if (getCurrentFieldZone().getShotPointHeight()) {
-      modifiedAngle = (isAngleInDeadZone(robotRelativeAngle) ? Math.max(deadZone[1], Math.min(deadZone[0], robotRelativeAngle)) : robotRelativeAngle);
+      modifiedAngle = (isAngleInDeadZone(robotRelativeAngle) ? Math.max(deadZone[1], Math.min(deadZone[0], angle)) : robotRelativeAngle);
     } else {
-      modifiedAngle = robotRelativeAngle;
+      modifiedAngle = angle;
     }
     targetPosition = motorModulus((modifiedAngle / 180) * upperLimit);
+  }
+
+  public void setToPosition() {
+    final PositionVoltage request = new PositionVoltage(0).withSlot(0);
+    turret.setControl(request.withPosition(targetPosition));
+  }
+
+  public double calculateSpeed(double distance, String targetMode) {
+    double speed = 0;
+    int index = 0;
+
+    if (targetMode == "pose") {
+      index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
+      speed = TurretConstants.TIME_OF_FLIGHT[index];
+    } else {
+      index = (int) Math.floor(distance / TurretConstants.DELTA_AREA);
+      speed = TurretConstants.TIME_OF_FLIGHT[index];
+    }
+
+    return speed;
+  }
+
+  public double calculateSpeedContinuous(double distance) {
+    return distance * 0.12;
   }
 
   /**
@@ -202,6 +253,21 @@ public class Turret extends SubsystemBase {
   }
 
   /**
+   * Used to set the target mode to either 'pose' or 'tag'. 'pose' and 'tag' are the only valid arguments.
+   */
+  public void setTargetMode(String mode) {
+    targetMode = mode;
+  }
+
+  /**
+   * Gets the current target mode of the turret.
+   * @return The target mode of the turret, either 'pose' or 'tag'
+   */
+  public String getTargetMode() {
+    return targetMode;
+  }
+
+  /**
    * Gets whether or not the turret is within the tolerance for the PID controller.
    * @return Whether or not the turret is within tolerance
    */
@@ -213,6 +279,9 @@ public class Turret extends SubsystemBase {
    * Resets the turret to -180 or 180 degrees when a certain limit switch is pressed for greater than 0.5 seconds.
    */
   public void checkLimitSwitches() {
+
+    // UNOPTIMIZED ; CAUSES LOOP TO OVERRUN
+
     if (lowerLimitSwitch.get() || upperLimitSwitch.get()) {
       limitSwitchTimer.start();
       if (limitSwitchTimer.get() > 0.5 && lowerLimitSwitch.get()) {
@@ -243,21 +312,6 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   * Gets the travel time of the fuel to the target from a certain distance.
-   * @param distance The distance from the target
-   * @return The travel time of the fuel
-   */
-  public double calculateTime(double distance) {
-    double time = 0;
-    int index = 0;
-
-    index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
-    time = TurretConstants.TRAVEL_TIMES[index];
-
-    return time;
-  }
-
-  /**
    * Gets the pose of the target, adjusted for the speed of the robot.
    * @return The pose of the target
    */
@@ -281,10 +335,7 @@ public class Turret extends SubsystemBase {
    * @return The updated pose
    */
   public Pose2d addVector(Pose2d pose) {
-    Twist2d vector = driveTrain.getRobotSpeed();
-    vector.dx *= -calculateTime(getCurrentFieldZone().getDistanceFromShotPoint(pose));
-    vector.dy *= -calculateTime(getCurrentFieldZone().getDistanceFromShotPoint(pose));
-    return pose.exp(vector);
+    return pose.exp(turretSpeed);
   }
 
   /**
@@ -328,7 +379,7 @@ public class Turret extends SubsystemBase {
     } else if (redOutpostZone.isInZone(driveTrain.getPose())) {
       return redOutpostZone;
     } else {
-      return null;
+      return blueDepotZone;
     }
   }
 }
