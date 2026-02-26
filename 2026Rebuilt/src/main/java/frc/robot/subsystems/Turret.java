@@ -77,6 +77,12 @@ public class Turret extends SubsystemBase {
     turret = new TalonFX(MotorIDs.TURRET, new CANBus("1912CANivore"));
     turret.setPosition(0);
 
+    targetPosition = 0;
+    currentPosition = 0;
+    error = 0;
+    upperLimit = 18;
+    lowerLimit = -18;
+
     turretConfig = new TalonFXConfiguration();
     turretConfig.Slot0.kS = 0;
     turretConfig.Slot0.kV = 0;
@@ -85,11 +91,12 @@ public class Turret extends SubsystemBase {
     turretConfig.Slot0.kI = 0;
     turretConfig.Slot0.kD = 0;
 
-    targetPosition = 0;
-    currentPosition = 0;
-    error = 0;
-    upperLimit = 18;
-    lowerLimit = -18;
+    turretConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    turretConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = upperLimit;
+    turretConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    turretConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = lowerLimit;
+
+    turret.getConfigurator().apply(turretConfig);
 
     lowerLimitSwitch = new DigitalInput(SensorIDs.TURRET_LEFT_LIMIT_SWITCH);
     upperLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
@@ -118,7 +125,7 @@ public class Turret extends SubsystemBase {
 
   @Override
   public void periodic() {
-    checkLimitSwitches();
+    //checkLimitSwitches();
 
     if (DriverStation.isDisabled()) {
       setShotPoints();
