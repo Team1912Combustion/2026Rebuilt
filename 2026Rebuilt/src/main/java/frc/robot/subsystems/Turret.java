@@ -204,10 +204,10 @@ public class Turret extends SubsystemBase {
 
     if (targetMode == "pose") {
       index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
-      speed = TurretConstants.TIME_OF_FLIGHT[index];
+      speed = TurretConstants.TRAVEL_TIMES[index];
     } else {
       index = (int) Math.floor(distance / TurretConstants.DELTA_AREA);
-      speed = TurretConstants.TIME_OF_FLIGHT[index];
+      speed = TurretConstants.TRAVEL_TIMES[index];
     }
 
     return speed;
