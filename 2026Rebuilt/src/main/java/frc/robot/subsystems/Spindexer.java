@@ -8,7 +8,9 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 
@@ -20,17 +22,21 @@ public class Spindexer extends SubsystemBase {
     spindexer = new TalonFX(MotorIDs.SPINDEXER, new CANBus("1912CANivore"));
     spindexerConfig = new TalonFXConfiguration();
 
-    spindexerConfig.Slot0.kS = 0;
-    spindexerConfig.Slot0.kV = 0;
-    spindexerConfig.Slot0.kP = 0;
+    spindexerConfig.Slot0.kS = 0.2;
+    spindexerConfig.Slot0.kV = 0.1;
+    spindexerConfig.Slot0.kP = 0.3;
     spindexerConfig.Slot0.kI = 0;
     spindexerConfig.Slot0.kD = 0;
+    spindexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    spindexerConfig.HardwareLimitSwitch.ForwardLimitEnable = false;
+    spindexerConfig.HardwareLimitSwitch.ReverseLimitEnable = false;
 
     spindexer.getConfigurator().apply(spindexerConfig);
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("spindexer speed", spindexer.getVelocity().getValueAsDouble());
     // This method will be called once per scheduler run
   }
 

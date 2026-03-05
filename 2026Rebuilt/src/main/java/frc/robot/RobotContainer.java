@@ -6,11 +6,21 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.ClimbAlign;
+import frc.robot.commands.ClimberClimb;
+import frc.robot.commands.ClimberDown;
+import frc.robot.commands.ClimberUp;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.RunIntake;
+import frc.robot.commands.ShootFuel;
+import frc.robot.commands.ZeroHeading;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LimelightClimberLeft;
 import frc.robot.subsystems.LimelightClimberRight;
+import frc.robot.subsystems.Spindexer;
 
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -37,10 +47,30 @@ public class RobotContainer {
   DriveTrain driveTrain;
   LimelightClimberLeft limelightClimberLeft;
   LimelightClimberRight limelightClimberRight;
+  Spindexer spindexer;
+  Intake intake;
+  Climber climber;
+
+  ZeroHeading zeroHeading;
+  ClimbAlign climbAlignLeft;
+  ClimbAlign climbAlignRight;
+
+  ShootFuel shootFuel;
+  RunIntake runIntake;
+
+  ClimberUp climberUp;
+  ClimberDown climberDown;
+  ClimberClimb climberClimb;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    limelightClimberLeft = new LimelightClimberLeft();
+    limelightClimberRight = new LimelightClimberRight();
+
     driveTrain = new DriveTrain(limelightClimberLeft, limelightClimberRight);
+    spindexer = new Spindexer();
+    intake = new Intake();
+    climber = new Climber();
 
     driveTrain.setDefaultCommand(new RunCommand( () -> driveTrain.drive(
         -driverController.getLeftY(), 
@@ -48,6 +78,17 @@ public class RobotContainer {
         -driverController.getRightX(), 
         driveTrain.fieldRelative),
       driveTrain));
+
+    zeroHeading = new ZeroHeading(driveTrain);
+    climbAlignLeft = new ClimbAlign(driveTrain, false);
+    climbAlignRight = new ClimbAlign(driveTrain, true);
+
+    shootFuel = new ShootFuel(spindexer);
+    runIntake = new RunIntake(intake);
+
+    climberUp = new ClimberUp(climber);
+    climberDown = new ClimberDown(climber);
+    climberClimb = new ClimberClimb(climber);
 
     // Configure the trigger bindings
     configureBindings();
@@ -63,6 +104,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
+    driverController.start().onTrue(zeroHeading);
+
+    driverController.rightBumper().whileTrue(shootFuel);
+    driverController.x().whileTrue(runIntake);
+
+    driverController.y().onTrue(climberUp);
+    driverController.a().onTrue(climberDown);
+    driverController.b().onTrue(climberClimb);
+
+    driverController.pov(270).whileTrue(climbAlignLeft);
+    driverController.pov(90).whileTrue(climbAlignRight);
     
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES
 

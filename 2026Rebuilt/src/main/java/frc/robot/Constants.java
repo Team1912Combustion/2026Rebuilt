@@ -39,12 +39,10 @@ public final class Constants {
 
     public static final int SHOOTER = 3;
     public static final int KICKER = 4;
-    public static final int SPINDEXER = 5;
+    public static final int SPINDEXER = 10;
 
-    public static final int SERVO_HUB = 6;
-
-    public static final int INTAKE_ROLLERS = 7;
-    public static final int INTAKE_ARM = 8;
+    public static final int INTAKE_ROLLERS = 12;
+    public static final int INTAKE_ARM = 11;
 
     public static final int CLIMBER = 9;
 
@@ -176,32 +174,32 @@ public final class Constants {
   public static class DeviceIDs {
 
     public static final class FRONT_LEFT {
-      public static final int drive = 2;
-      public static final int angle = 1;
+      public static final int drive = 1;
+      public static final int angle = 2;
       public static final int cancoder = 1;
       public static final SwerveModuleConstants constants = 
         new SwerveModuleConstants(drive, angle, cancoder, Rotation2d.fromDegrees(0));
     }
 
     public static final class FRONT_RIGHT {
-      public static final int drive = 4;
-      public static final int angle = 3;
+      public static final int drive = 3;
+      public static final int angle = 4;
       public static final int cancoder = 2;
       public static final SwerveModuleConstants constants = 
         new SwerveModuleConstants(drive, angle, cancoder, Rotation2d.fromDegrees(0));
     }
 
     public static final class REAR_LEFT {
-      public static final int drive = 6;
-      public static final int angle = 5;
+      public static final int drive = 5;
+      public static final int angle = 6;
       public static final int cancoder = 3;
       public static final SwerveModuleConstants constants = 
         new SwerveModuleConstants(drive, angle, cancoder, Rotation2d.fromDegrees(0));
     }
 
     public static final class REAR_RIGHT {
-      public static final int drive = 8;
-      public static final int angle = 7;
+      public static final int drive = 7;
+      public static final int angle = 8;
       public static final int cancoder = 4;
       public static final SwerveModuleConstants constants = 
         new SwerveModuleConstants(drive, angle, cancoder, Rotation2d.fromDegrees(0));

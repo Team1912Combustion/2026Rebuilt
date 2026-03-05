@@ -5,11 +5,17 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 
@@ -19,29 +25,45 @@ public class Intake extends SubsystemBase {
 
   TalonFXConfiguration rollerConfig;
   TalonFXConfiguration armConfig;
+
+  SlewRateLimiter rateLimiter;
+
+  double targetPosition;
   /** Creates a new Intake. */
   public Intake() {
     rollers = new TalonFX(MotorIDs.INTAKE_ROLLERS,  new CANBus("1912CANivore"));
     arm = new TalonFX(MotorIDs.INTAKE_ARM, new CANBus("1912CANivore"));
-
     rollerConfig = new TalonFXConfiguration();
-    rollerConfig.Slot0.kS = 0;
-    rollerConfig.Slot0.kV = 0;
-    rollerConfig.Slot0.kP = 0;
+    rollerConfig.Slot0.kS = 0.5;
+    rollerConfig.Slot0.kV = 0.03;
+    rollerConfig.Slot0.kP = 0.11;
     rollerConfig.Slot0.kI = 0;
     rollerConfig.Slot0.kD = 0;
+    rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+    rollers.getConfigurator().apply(rollerConfig);
 
     armConfig = new TalonFXConfiguration();
-    armConfig.Slot0.kG = 0;
-    armConfig.Slot0.kP = 0;
+    armConfig.Slot0.kG = 0.6;
+    armConfig.Slot0.kP = 10;
     armConfig.Slot0.kI = 0;
     armConfig.Slot0.kD = 0;
+    armConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    armConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    armConfig.Feedback.SensorToMechanismRatio = 20;
     // UPPER LIMIT //
-    armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    armConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 10;
+    /*armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    armConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0;
     // LOWER LIMIT //
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
+    armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 4.2;*/
+
+    arm.getConfigurator().apply(armConfig);
+    arm.setPosition(0.21); 
+
+    rateLimiter = new SlewRateLimiter(2);
+
+    armIn();
     
   }
 
@@ -56,11 +78,11 @@ public class Intake extends SubsystemBase {
   }
 
   public void intake() {
-    setRollerSpeed(3000);
+    setRollerSpeed(40);
   }
 
   public void expel() {
-    setRollerSpeed(-3000);
+    setRollerSpeed(-40);
   }
 
   public boolean rollersAtSpeed() {
@@ -73,11 +95,11 @@ public class Intake extends SubsystemBase {
   }
 
   public void armOut() {
-    setArmPosition(10);
+    setArmPosition(0);
   }
 
   public void armIn() {
-    setArmPosition(0);
+    setArmPosition(0.24);
   }
 
   public boolean armInPosition() {

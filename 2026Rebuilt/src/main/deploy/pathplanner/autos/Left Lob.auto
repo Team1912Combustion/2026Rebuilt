@@ -9,15 +9,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "EmptyHopperCheck"
+                  "pathName": "Left Shoot to Neutral"
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Left Shoot"
+                  "name": "RunIntake"
                 }
               },
               {
@@ -36,13 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Shoot to Neutral"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RunIntake"
+                  "pathName": "Neutral to Left Climb"
                 }
               },
               {

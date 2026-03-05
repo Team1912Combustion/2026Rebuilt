@@ -13,6 +13,7 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -62,6 +63,7 @@ public class DriveTrain extends SubsystemBase {
   private final SwerveModule rearRight = new SwerveModule(3, DeviceIDs.REAR_RIGHT.constants);
 
   public final Pigeon2 gyro = new Pigeon2(SensorIDs.GYRO, new CANBus("1912CANivore"));
+  Pigeon2Configuration gyroConfig;
 
   public double driveYaw;
   public double driveYawDirection;
@@ -79,7 +81,7 @@ public class DriveTrain extends SubsystemBase {
   public SwerveDrivePoseEstimator poseEstimator;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(.1));
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(2.0, 2.0, Units.degreesToRadians(15));
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(2.0, 2.0, Units.degreesToRadians(5));
 
   public SendableChooser<Command> autoChooser;
 
@@ -93,8 +95,6 @@ public class DriveTrain extends SubsystemBase {
 
   SlewRateLimiter xRateLimiter, yRateLimiter;
 
-  PIDController rotationPID, distancePID;
-
   public XboxController driverController;
 
   public final double DISTANCE_ERROR_FRACTION = 0.1;
@@ -107,8 +107,17 @@ public class DriveTrain extends SubsystemBase {
 
   List<Integer> towerTagIDs = Arrays.asList(towerTagArray);
 
+  Field2d field;
+
   /** Creates a new DriveTrain. */
   public DriveTrain(LimelightClimberLeft llcl, LimelightClimberRight llcr) {
+
+    gyroConfig = new Pigeon2Configuration();
+    gyroConfig.MountPose.MountPoseYaw = 180;
+    gyroConfig.MountPose.MountPoseRoll = 180;
+
+    gyro.getConfigurator().apply(gyroConfig);
+
     fieldRelative = true;
 
     driveYaw = 0;
@@ -148,9 +157,6 @@ public class DriveTrain extends SubsystemBase {
     xRateLimiter = new SlewRateLimiter(1 / DriveConstants.RAMP_TIME);
     yRateLimiter = new SlewRateLimiter(1 / DriveConstants.RAMP_TIME);
 
-    rotationPID = new PIDController(0.01, 0, 0);
-    distancePID = new PIDController(0.001, 0, 0);
-
     driverController = new XboxController(0);
 
     try {
@@ -175,6 +181,7 @@ public class DriveTrain extends SubsystemBase {
 
     Logger.recordOutput("Pose", poseEstimator.getEstimatedPosition());
 
+    field = new Field2d();
   }
 
   @Override
@@ -225,8 +232,12 @@ public class DriveTrain extends SubsystemBase {
     poseYaw = poseEstimator.getEstimatedPosition().getRotation().getDegrees();
 
     SmartDashboard.putNumber("Drive yaw", driveYaw);
+    SmartDashboard.putNumber("gyro yaw", gyro.getYaw().getValueAsDouble());
 
     SmartDashboard.putData("Auto?:", autoChooser);
+
+    field.setRobotPose(poseEstimator.getEstimatedPosition());
+    SmartDashboard.putData(field);
 
     // This method will be called once per scheduler run
   }

@@ -33,6 +33,7 @@ public class RunIntake extends Command {
   @Override
   public void end(boolean interrupted) {
     intake.armIn();
+    intake.setRollerSpeed(0);
   }
 
   // Returns true when the command should end.

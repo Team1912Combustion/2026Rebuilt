@@ -13,19 +13,19 @@ import frc.robot.subsystems.TurretHood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootFuel extends Command {
-  Shooter shooter;
+  //Shooter shooter;
   Spindexer spindexer;
-  DriveTrain driveTrain;
-  Turret turret;
-  TurretHood turretHood;
+  //DriveTrain driveTrain;
+  //Turret turret;
+  //TurretHood turretHood;
   /** Creates a new ShootFuel. */
-  public ShootFuel(Shooter s, Spindexer sp, DriveTrain dt, Turret t, TurretHood th) {
-    shooter = s;
+  public ShootFuel(Spindexer sp) {
+    //shooter = s;
     spindexer = sp;
-    driveTrain = dt;
-    turret = t;
-    turretHood = th;
-    addRequirements(shooter, spindexer);
+    //driveTrain = dt;
+    //turret = t;
+    //turretHood = th;
+    addRequirements(spindexer);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -36,21 +36,21 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setSpeed(shooter.calculateSpeed(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
+    //shooter.setSpeed(shooter.calculateSpeed(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
     spindexer.setSpeed(100);
-    if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed()) {
+    /*if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed() && !turretHood.duckHood()) {
       shooter.kickerOn();
     } else {
       shooter.kickerOff();
-    }
+    }*/
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.shooterOff();
+    //shooter.shooterOff();
     spindexer.spindexerOff();
-    shooter.kickerOff();
+    //shooter.kickerOff();
   }
 
   // Returns true when the command should end.

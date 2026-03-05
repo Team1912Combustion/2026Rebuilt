@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -18,19 +19,27 @@ public class Climber extends SubsystemBase {
 
   TalonFXConfiguration config;
 
-  double upperLimit, lowerLimit;
+  double upperLimit, lowerLimit, climb;
   /** Creates a new Climber. */
   public Climber() {
     elevator = new TalonFX(MotorIDs.CLIMBER, new CANBus("1912CANivore"));
 
     config = new TalonFXConfiguration();
-    config.Slot0.kS = 0;
-    config.Slot0.kP = 0;
-    config.Slot0.kI = 0;
+    config.Slot0.kG = 0;
+    config.Slot0.kP = 0.8;
+    config.Slot0.kI = 0.035;
     config.Slot0.kD = 0;
+    config.MotionMagic.MotionMagicCruiseVelocity = 1600;
+    config.MotionMagic.MotionMagicAcceleration = 1600;
+    config.MotionMagic.MotionMagicJerk = 1600;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     elevator.getConfigurator().apply(config);
+
+    upperLimit = 0;
+    lowerLimit = -19.35;
+
+    climb = -8;
   }
 
   @Override
@@ -48,12 +57,17 @@ public class Climber extends SubsystemBase {
   }
 
   public void elevatorUp() {
-    final PositionVoltage request = new PositionVoltage(0).withSlot(0);
-    elevator.setControl(request.withPosition(10));
+    final MotionMagicDutyCycle request = new MotionMagicDutyCycle(0).withSlot(0);
+    elevator.setControl(request.withPosition(lowerLimit));
   }
 
   public void elevatorDown() {
-    final PositionVoltage request = new PositionVoltage(0).withSlot(0);
+    final MotionMagicDutyCycle request = new MotionMagicDutyCycle(0).withSlot(0);
     elevator.setControl(request.withPosition(0));
+  }
+
+  public void elevatorClimb() {
+    final MotionMagicDutyCycle request = new MotionMagicDutyCycle(0).withSlot(0);
+    elevator.setControl(request.withPosition(climb));
   }
 }

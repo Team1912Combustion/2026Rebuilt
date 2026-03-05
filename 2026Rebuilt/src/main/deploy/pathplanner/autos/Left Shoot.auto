@@ -9,24 +9,24 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "EmptyHopperCheck"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "Right Shoot"
+                  "pathName": "Left Shoot to Neutral"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "ShootFuel"
+                  "name": "RunIntake"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Neutral to Left Trench"
           }
         },
         {
@@ -36,13 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right Shoot to Neutral"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RunIntake"
+                  "pathName": "Left Trench to Left Climb"
                 }
               },
               {
