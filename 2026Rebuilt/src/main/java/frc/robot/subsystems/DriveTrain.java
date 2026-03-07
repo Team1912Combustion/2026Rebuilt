@@ -498,6 +498,8 @@ public class DriveTrain extends SubsystemBase {
       }
     }
 
+    SmartDashboard.putNumber("Total tag area", totalArea);
+
     if (totalArea < VisionConstants.TOTAL_TARGET_AREA_THRESHHOLD) {
       isVisionValid = false;
       compositeLatency = 0;

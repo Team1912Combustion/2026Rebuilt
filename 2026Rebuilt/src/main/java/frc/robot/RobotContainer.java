@@ -13,6 +13,7 @@ import frc.robot.commands.ClimberDown;
 import frc.robot.commands.ClimberUp;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeArmToggle;
+import frc.robot.commands.PointAtThing;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.ShootFuel;
 import frc.robot.commands.ZeroHeading;
@@ -57,6 +58,7 @@ public class RobotContainer {
   ClimbAlign climbAlignLeft;
   ClimbAlign climbAlignRight;
   AutoIntake autoIntake;
+  PointAtThing pointAtThing;
 
   ShootFuel shootFuel;
   RunIntake runIntake;
@@ -87,6 +89,7 @@ public class RobotContainer {
     climbAlignLeft = new ClimbAlign(driveTrain, false);
     climbAlignRight = new ClimbAlign(driveTrain, true);
     autoIntake = new AutoIntake(driveTrain, intake, limelightClimberLeft);
+    pointAtThing = new PointAtThing(driveTrain);
 
     shootFuel = new ShootFuel(spindexer);
     runIntake = new RunIntake(intake);
@@ -114,8 +117,8 @@ public class RobotContainer {
     driverController.start().onTrue(zeroHeading);
 
     driverController.rightBumper().whileTrue(shootFuel);
-    driverController.leftBumper().whileTrue(runIntake);
-    driverController.x().onTrue(intakeArmToggle);
+    driverController.leftStick().whileTrue(runIntake);
+    driverController.rightStick().onTrue(intakeArmToggle);
 
     driverController.y().onTrue(climberUp);
     driverController.a().onTrue(climberDown);
@@ -123,6 +126,7 @@ public class RobotContainer {
 
     driverController.pov(270).whileTrue(climbAlignLeft);
     driverController.pov(90).whileTrue(climbAlignRight);
+    driverController.rightTrigger(0.1).whileTrue(pointAtThing);
     
     driverController.pov(180).whileTrue(autoIntake);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES

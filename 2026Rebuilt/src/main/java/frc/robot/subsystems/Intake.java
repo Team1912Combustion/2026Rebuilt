@@ -46,12 +46,12 @@ public class Intake extends SubsystemBase {
     rollers.getConfigurator().apply(rollerConfig);
 
     armConfig = new TalonFXConfiguration();
-    armConfig.Slot0.kG = 0.4;
-    armConfig.Slot0.kP = 10;
+    armConfig.Slot0.kG = 0.5;
+    armConfig.Slot0.kP = 11;
     armConfig.Slot0.kI = 0;
     armConfig.Slot0.kD = 0;
     armConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    armConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     armConfig.Feedback.SensorToMechanismRatio = 20;
     // UPPER LIMIT //
     /*armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
