@@ -28,8 +28,8 @@ public class ClimbAlign extends Command {
     addRequirements(driveTrain);
     flipPath = driveTrain.flipPath();
 
-    x = 1.04;
-    y = (isRightClimb ? 2.8 : 4.6);
+    x = 1.05;
+    y = (isRightClimb ? 2.8 : 4.56);
     rot = (isRightClimb ? 180 : 0);
 
     x = (flipPath ? driveTrain.flipCoordinates(new Pose2d(new Translation2d(x, y), new Rotation2d(rot))).getX() : x);
@@ -39,12 +39,12 @@ public class ClimbAlign extends Command {
     ySpeed = 0;
     rotSpeed = 0;
 
-    xController = new PIDController(0.01, 0, 0);
-    xController.setTolerance(0.06);
-    yController = new PIDController(0.01, 0, 0);
-    yController.setTolerance(0.06);
+    xController = new PIDController(0.06, 0.02, 0);
+    xController.setTolerance(0.05);
+    yController = new PIDController(0.06, 0.02, 0);
+    yController.setTolerance(0.03);
     rotController = new PIDController(0.01, 0, 0);
-    rotController.setTolerance(2);
+    rotController.setTolerance(5);
     rotController.enableContinuousInput(-180, 180);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -57,8 +57,10 @@ public class ClimbAlign extends Command {
   @Override
   public void execute() {
     xSpeed = xController.calculate(driveTrain.getPose().getX(), x);
+    //xSpeed += Math.signum(xSpeed) * 0.02;
     if (xController.atSetpoint() && rotController.atSetpoint()) {
       ySpeed = yController.calculate(driveTrain.getPose().getY(), y);
+      ySpeed += Math.signum(ySpeed) * 0.02;
     }
     rotSpeed = rotController.calculate(driveTrain.getPose().getRotation().getDegrees(), rot);
 

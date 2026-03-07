@@ -5,12 +5,14 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutoIntake;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ClimbAlign;
 import frc.robot.commands.ClimberClimb;
 import frc.robot.commands.ClimberDown;
 import frc.robot.commands.ClimberUp;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.IntakeArmToggle;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.ShootFuel;
 import frc.robot.commands.ZeroHeading;
@@ -54,9 +56,11 @@ public class RobotContainer {
   ZeroHeading zeroHeading;
   ClimbAlign climbAlignLeft;
   ClimbAlign climbAlignRight;
+  AutoIntake autoIntake;
 
   ShootFuel shootFuel;
   RunIntake runIntake;
+  IntakeArmToggle intakeArmToggle;
 
   ClimberUp climberUp;
   ClimberDown climberDown;
@@ -82,9 +86,11 @@ public class RobotContainer {
     zeroHeading = new ZeroHeading(driveTrain);
     climbAlignLeft = new ClimbAlign(driveTrain, false);
     climbAlignRight = new ClimbAlign(driveTrain, true);
+    autoIntake = new AutoIntake(driveTrain, intake, limelightClimberLeft);
 
     shootFuel = new ShootFuel(spindexer);
     runIntake = new RunIntake(intake);
+    intakeArmToggle = new IntakeArmToggle(intake);
 
     climberUp = new ClimberUp(climber);
     climberDown = new ClimberDown(climber);
@@ -108,7 +114,8 @@ public class RobotContainer {
     driverController.start().onTrue(zeroHeading);
 
     driverController.rightBumper().whileTrue(shootFuel);
-    driverController.x().whileTrue(runIntake);
+    driverController.leftBumper().whileTrue(runIntake);
+    driverController.x().onTrue(intakeArmToggle);
 
     driverController.y().onTrue(climberUp);
     driverController.a().onTrue(climberDown);
@@ -117,6 +124,7 @@ public class RobotContainer {
     driverController.pov(270).whileTrue(climbAlignLeft);
     driverController.pov(90).whileTrue(climbAlignRight);
     
+    driverController.pov(180).whileTrue(autoIntake);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES
 
   }

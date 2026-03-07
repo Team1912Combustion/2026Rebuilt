@@ -163,8 +163,8 @@ public final class Constants {
 
   public static class VisionConstants {
 
-    public static final double TARGET_AREA_THRESHHOLD = 0.15;
-    public static final double TOTAL_TARGET_AREA_THRESHHOLD = 0.25;
+    public static final double TARGET_AREA_THRESHHOLD = 0.05;
+    public static final double TOTAL_TARGET_AREA_THRESHHOLD = 0.1;
 
     public static AprilTagFieldLayout aprilTagLayout = 
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);

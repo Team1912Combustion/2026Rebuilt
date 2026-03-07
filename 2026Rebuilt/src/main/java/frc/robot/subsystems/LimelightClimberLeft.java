@@ -9,13 +9,16 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagPoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.LimelightHelpers.PoseEstimate;
 
 public class LimelightClimberLeft extends SubsystemBase {
   private final NetworkTable table =
@@ -32,19 +35,22 @@ public class LimelightClimberLeft extends SubsystemBase {
   private double[] lastBotPose = new double[6];
   private int currentPipeline = 0;
   private int currentTagId = 0;
+
   /** Creates a new LimelightFrontLeft. */
-  public LimelightClimberLeft() {}
+  public LimelightClimberLeft() {
+    setPipeline(0);
+  }
 
   @Override
   public void periodic() {
     currentTagId = getTagId();
-    lastBotPose = getBotPose();
+    lastBotPose = getBotPoseMT1();
     if(currentTagId > 0) {
      // lastPose2d = new Pose2d(lastBotPose[0],lastBotPose[1], new Rotation2d(lastBotPose[5]));
-      SmartDashboard.putNumber(getPosition()+"Botpose X: ",lastBotPose[0]);
-      SmartDashboard.putNumber(getPosition()+"Botpose Y: ",lastBotPose[1]);
+      //SmartDashboard.putNumber(getPosition()+"Botpose X: ",lastBotPose[0]);
+      //SmartDashboard.putNumber(getPosition()+"Botpose Y: ",lastBotPose[1]);
 
-      SmartDashboard.putNumber(getPosition()+"Botpose Yaw: ",lastBotPose[5]);
+      //SmartDashboard.putNumber(getPosition()+"Botpose Yaw: ",lastBotPose[5]);
 
     }       
     SmartDashboard.putNumber(getPosition()+"Latency: ",(double) latency.getNumber(0));
@@ -75,20 +81,30 @@ public class LimelightClimberLeft extends SubsystemBase {
   /**
    * Toggles between pipeline 0 and 1.
    */
-  public void togglePipeline() {
-    if (currentPipeline == 0)
-      currentPipeline = 1;
-    else if (currentPipeline ==1)
-      currentPipeline = 0;
+  public void setPipeline(int pipeline) {
+    LimelightHelpers.setPipelineIndex(getName(), pipeline);
   }
 
   /**
    * Returns the Apriltags estimated pose or null if there is no pose.
    * @return The limelight's outputted pose
    */
-  public Pose2d getBotPose2d() {
-    return new Pose2d(getBotPose()[0],getBotPose()[1], new Rotation2d(Math.toRadians(getBotPose()[5])));
+  public Pose2d getBotPose2dMT1() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(getName()).pose;
   }
+
+  public PoseEstimate getMT1PoseEstimate() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(getName());
+  }
+
+  public Pose2d getBotPose2dMT2() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(getName()).pose;
+  }
+
+  public PoseEstimate getMT2PoseEstimate() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(getName());
+  }
+
   /**
    * Returns the Apriltags estimated pose in target space or null if there is no pose.
    * @return The limleight's ouputted target space pose
@@ -110,60 +126,43 @@ public class LimelightClimberLeft extends SubsystemBase {
    * https://docs.limelightvision.io/en/latest/networktables_api.html
    * @return
    */
-  public double[] getBotPose() {
-    return botPose.getDoubleArray(new double[7]);
+  public double[] getBotPoseMT1() {
+    return LimelightHelpers.getBotPose_wpiBlue(getName());
   }
   /**
    * Gets the full array of bot pose values in target space
    * @return An array of all pose values
    */
   public double[] getBotPoseTargetSpace() {
-    return botPoseTargetSpace.getDoubleArray(new double[7]);
+    return LimelightHelpers.getBotPose_TargetSpace(getName());
   }
   /**
    * Gets the ID of the biggest tag in frame.
    * @return The ID of the tag
    */
   public int getTagId() {
-    return (int)tagId.getInteger(0);
+    return (int) tagId.getInteger(0);
   }
   /**
    * Gets the number of tags that the limelight can see.
    * @return The number of tags
    */
   public int getTagCount() {
-    return countSubstringOccurrences(json.getString(""), "pts");
+    return LimelightHelpers.getTargetCount(getName());
   }
-  /**
-   * Gets the number of times a string appears in a larger string.
-   * @param mainString The string to search
-   * @param subString The string to search for
-   * @return The number of times the string occurred 
-   */
-  public int countSubstringOccurrences(String mainString, String subString) {
-    int count = 0;
-    int lastIndex = 0;
-    while (lastIndex != -1) {
-        lastIndex = mainString.indexOf(subString, lastIndex);
-        if (lastIndex != -1) {
-            count++;
-            lastIndex += subString.length(); // Move past the found occurrence
-        }
-    }
-    return count;
-  }
+
   public boolean acceptPose() {
-    if (getTagId() == -1) {
+    if (!LimelightHelpers.getTV(getName())) {
       return false;
-    } else if (Math.abs(getBotPose()[3]) > 1) {
+    //} else if (Math.abs(getBotPoseMT1()[3]) > 1) {
+      //return false;
+    } else if (getBotPose2dMT2().getY() < 0) {
       return false;
-    } else if (getBotPose2d().getY() < 0) {
+    } else if (getBotPose2dMT2().getX() < 0) {
       return false;
-    } else if (getBotPose2d().getX() < 0) {
+    } else if (getBotPose2dMT2().getY() > VisionConstants.aprilTagLayout.getFieldWidth()) {
       return false;
-    } else if (getBotPose2d().getY() > VisionConstants.aprilTagLayout.getFieldWidth()) {
-      return false;
-    } else if (getBotPose2d().getX() > VisionConstants.aprilTagLayout.getFieldLength()) {
+    } else if (getBotPose2dMT2().getX() > VisionConstants.aprilTagLayout.getFieldLength()) {
       return false;
     } else {
       return true;
@@ -174,43 +173,31 @@ public class LimelightClimberLeft extends SubsystemBase {
    * @return The X Offset
    */
   public double getXOffset() {
-    if (tagId.getInteger(-1) == 7) {
-      return xOffset.getDouble(0);
-    } else {
-      return 0;
-    }
+    return LimelightHelpers.getTX(getName());
   }
   /**
    * Gets the Y Offset of the tag from the center of frame.
    * @return The Y Offset
    */
   public double getYOffset() {
-    return yOffset.getDouble(0);
+    return LimelightHelpers.getTY(getName());
   }
   /**
    * Gets the area of the tag in frame
    * @return The area of the tag
    */
   public double getTargetArea() {
-    return targetArea.getDouble(0);
+    return LimelightHelpers.getTA(getName());
   }
   /**
    * Turns the limelight LEDs on
    */
   public void setLedsOn() {
-    NetworkTableInstance.getDefault().getTable(getName())
-      .getEntry("ledMode").setNumber(3);
-  }
-  /**
-   * Sets the limelight to a specific pipeline.
-   * @param id The ID of the desired pipeline
-   */
-  public void setPipeline(int id) {
-    pipeline.setNumber(id);
+    LimelightHelpers.setLEDMode_ForceOn(getName());
   }
 
   public int getPipeline() {
-    return pipeline.getNumber(0).intValue();
+    return (int) LimelightHelpers.getCurrentPipelineIndex(getName());
   }
 
 }

@@ -29,6 +29,8 @@ public class Intake extends SubsystemBase {
   SlewRateLimiter rateLimiter;
 
   double targetPosition;
+
+  public boolean armOut;
   /** Creates a new Intake. */
   public Intake() {
     rollers = new TalonFX(MotorIDs.INTAKE_ROLLERS,  new CANBus("1912CANivore"));
@@ -44,7 +46,7 @@ public class Intake extends SubsystemBase {
     rollers.getConfigurator().apply(rollerConfig);
 
     armConfig = new TalonFXConfiguration();
-    armConfig.Slot0.kG = 0.6;
+    armConfig.Slot0.kG = 0.4;
     armConfig.Slot0.kP = 10;
     armConfig.Slot0.kI = 0;
     armConfig.Slot0.kD = 0;
@@ -59,9 +61,11 @@ public class Intake extends SubsystemBase {
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 4.2;*/
 
     arm.getConfigurator().apply(armConfig);
-    arm.setPosition(0.21); 
+    arm.setPosition(0.22); 
 
     rateLimiter = new SlewRateLimiter(2);
+
+    armOut = false;
 
     armIn();
     
@@ -78,7 +82,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void intake() {
-    setRollerSpeed(40);
+    setRollerSpeed(80);
   }
 
   public void expel() {
@@ -95,10 +99,12 @@ public class Intake extends SubsystemBase {
   }
 
   public void armOut() {
+    armOut = true;
     setArmPosition(0);
   }
 
   public void armIn() {
+    armOut = false;
     setArmPosition(0.24);
   }
 
