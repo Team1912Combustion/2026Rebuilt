@@ -131,7 +131,7 @@ public class Turret extends SubsystemBase {
       setShotPoints();
     }
 
-    turretAngle = Rotation2d.fromDegrees((currentPosition / upperLimit) * 180);
+    turretAngle = Rotation2d.fromDegrees(angleModulus((currentPosition / upperLimit) * 180) + 180);
 
     turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
 
@@ -184,13 +184,7 @@ public class Turret extends SubsystemBase {
    */
   public void setTurretAngle(double angle) {
     double robotRelativeAngle = (angle - angleModulus(driveTrain.getPose().getRotation().getDegrees()));
-    double modifiedAngle = robotRelativeAngle;
-    if (getCurrentFieldZone().getShotPointHeight()) {
-      modifiedAngle = (isAngleInDeadZone(robotRelativeAngle) ? Math.max(deadZone[1], Math.min(deadZone[0], angle)) : robotRelativeAngle);
-    } else {
-      modifiedAngle = angle;
-    }
-    targetPosition = motorModulus((modifiedAngle / 180) * upperLimit);
+    targetPosition = motorModulus(((robotRelativeAngle / 180) + 180) * upperLimit);
   }
 
   public void setToPosition() {
