@@ -223,8 +223,9 @@ public class DriveTrain extends SubsystemBase {
       } else if (!flipPath()) {
         driveYawDirection = 0;
       }
-
-      poseEstimator.resetPose(new Pose2d(compositeVisionPose.getTranslation(), Rotation2d.fromDegrees(getHeading())));
+      
+      fixPose();
+      //poseEstimator.resetPose(new Pose2d(compositeVisionPose.getTranslation(), Rotation2d.fromDegrees(getHeading())));
       //poseEstimator.addVisionMeasurement(compositeVisionPose, Timer.getFPGATimestamp() - (compositeLatency / 1000), visionStdDevsDisabled);
     }
 
@@ -426,6 +427,13 @@ public class DriveTrain extends SubsystemBase {
    */
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(getRotation2d(), get_positions(), pose);
+  }
+
+  /**
+   * Resets the pose estimator to the composite vision pose estimate.
+   */
+  public void fixPose() {
+    poseEstimator.resetPose(new Pose2d(compositeVisionPose.getTranslation(), Rotation2d.fromDegrees(getHeading())));
   }
   /**
    * Resets the gyro's yaw to 0.
