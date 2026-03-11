@@ -29,6 +29,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -529,6 +530,20 @@ public class DriveTrain extends SubsystemBase {
 
   public boolean towerReadyToAim() {
     return towerTagIDs.contains(limelightClimberLeft.getTagId());
+  }
+
+  public Pose2d getFuelPosition() {
+    if (limelightClimberLeft.getPipeline() == 1) {
+      Pose3d limelightRobotPose = LimelightHelpers.getCameraPose3d_RobotSpace(limelightClimberLeft.getName());
+      Pose2d limelightPose = getPose().transformBy(new Transform2d(limelightRobotPose.getX(), limelightRobotPose.getY(), new Rotation2d()));
+
+      double distance = limelightClimberLeft.getTargetArea();
+      double angle = (limelightClimberLeft.getXOffset() / 12) * (41);
+
+      return limelightPose.transformBy(new Transform2d(distance * Math.cos(angle), distance * Math.sin(angle), new Rotation2d()));
+    } else {
+      return new Pose2d();
+    }
   }
 
 }

@@ -6,6 +6,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
@@ -19,12 +21,11 @@ public class AutoIntake extends Command {
   LimelightClimberLeft limelight;
   SlewRateLimiter rotLimiter;
 
-  double tx;
-  double ty;
-
   PIDController pid;
 
   Timer intakeTimer;
+
+  Pose2d ballPose;
   /** Creates a new AutoIntake. */
   public AutoIntake(DriveTrain dt, Intake i, LimelightClimberLeft llcl) {
     driveTrain = dt;
@@ -36,18 +37,16 @@ public class AutoIntake extends Command {
 
     rotLimiter = new SlewRateLimiter(1);
 
-    tx = 0;
-    ty = 0;
-
     intakeTimer = new Timer();
+
+    ballPose = driveTrain.getFuelPosition();
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pid.setTolerance(0.1);
-    pid.setSetpoint(0);
+    pid.setTolerance(5);
     limelight.setPipeline(1);
     intake.armOut();
     intake.intake();
@@ -56,16 +55,14 @@ public class AutoIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double deltatx = limelight.getXOffset() - tx;
 
-    if (deltatx > 0.05) {
+    if (Math.abs(ballPose.getTranslation().getDistance(driveTrain.getFuelPosition().getTranslation())) > 0.4) {
       intakeTimer.start();
     }
 
-    tx = limelight.getXOffset();
-    ty = limelight.getYOffset();
+    ballPose = driveTrain.getFuelPosition();
 
-    driveTrain.drive(0.15, 0, rotLimiter.calculate((tx != 0) || (intakeTimer.get() >= 0.5) ? pid.calculate(tx) : 0), false);
+    driveTrain.drive(0.15, 0, pid.calculate(driveTrain.getHeading(), (intakeTimer.get() < 0.5) ? driveTrain.getDirection(driveTrain.getPose(), ballPose).getDegrees() : 0), false);
 
     if (intakeTimer.get() >= 0.5) {
       intakeTimer.stop();
