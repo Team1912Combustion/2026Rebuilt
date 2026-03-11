@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right Shoot to Neutral"
+                  "pathName": "Right Lob Swipe"
                 }
               },
               {
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Neutral to Right Climb"
+                  "pathName": "Right Second Swipe to Shoot"
                 }
               },
               {
