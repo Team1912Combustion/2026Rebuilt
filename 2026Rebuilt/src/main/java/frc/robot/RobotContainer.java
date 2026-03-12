@@ -14,6 +14,7 @@ import frc.robot.commands.ClimberUp;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeArmToggle;
 import frc.robot.commands.PointAtThing;
+import frc.robot.commands.ResetPose;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.ShootFuel;
 import frc.robot.commands.ZeroHeading;
@@ -58,7 +59,7 @@ public class RobotContainer {
   ClimbAlign climbAlignLeft;
   ClimbAlign climbAlignRight;
   AutoIntake autoIntake;
-  PointAtThing pointAtThing;
+  ResetPose resetPose;
 
   ShootFuel shootFuel;
   RunIntake runIntake;
@@ -89,7 +90,7 @@ public class RobotContainer {
     climbAlignLeft = new ClimbAlign(driveTrain, false);
     climbAlignRight = new ClimbAlign(driveTrain, true);
     autoIntake = new AutoIntake(driveTrain, intake, limelightClimberLeft);
-    pointAtThing = new PointAtThing(driveTrain);
+    resetPose = new ResetPose(driveTrain);
 
     shootFuel = new ShootFuel(spindexer);
     runIntake = new RunIntake(intake);
@@ -114,11 +115,13 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
+    // DRIVER //
+
     driverController.start().onTrue(zeroHeading);
 
     driverController.rightBumper().whileTrue(shootFuel);
-    driverController.leftStick().whileTrue(runIntake);
-    driverController.rightStick().onTrue(intakeArmToggle);
+    driverController.leftStick().whileTrue(intakeArmToggle);
+    driverController.rightStick().onTrue(runIntake);
 
     driverController.y().onTrue(climberUp);
     driverController.a().onTrue(climberDown);
@@ -126,9 +129,20 @@ public class RobotContainer {
 
     driverController.pov(270).whileTrue(climbAlignLeft);
     driverController.pov(90).whileTrue(climbAlignRight);
-    driverController.rightTrigger(0.1).whileTrue(pointAtThing);
     
     driverController.pov(180).whileTrue(autoIntake);
+
+    // OPERATOR //
+
+    operatorController.rightBumper().whileTrue(shootFuel);
+    operatorController.leftStick().whileTrue(intakeArmToggle);
+    operatorController.rightStick().onTrue(runIntake);
+
+    operatorController.y().onTrue(climberUp);
+    operatorController.a().onTrue(climberDown);
+    operatorController.b().onTrue(climberClimb);
+
+    operatorController.start().onTrue(resetPose);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES
 
   }

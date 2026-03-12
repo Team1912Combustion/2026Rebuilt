@@ -38,10 +38,10 @@ public class LEDs extends SubsystemBase {
   public void periodic() {
     if (DriverStation.isAutonomous()) {
       matchPeriod = 1;
-    } else if (DriverStation.getMatchTime() < 10) {
+    } else if (DriverStation.getMatchTime() > 130) {
       matchPeriod = 2;
-    } else if (DriverStation.getMatchTime() < 110) {
-      matchPeriod = 3 + Math.floorDiv((int) DriverStation.getMatchTime() - 10, 25);
+    } else if (DriverStation.getMatchTime() > 30) {
+      matchPeriod = 6 - Math.floorDiv((int) DriverStation.getMatchTime() - 30, 25);
     } else {
       matchPeriod = 7;
     }
