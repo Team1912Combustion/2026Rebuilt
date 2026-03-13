@@ -53,11 +53,11 @@ public class RobotContainer {
   LimelightClimberRight limelightClimberRight;
   Spindexer spindexer;
   Intake intake;
-  Climber climber;
+  //Climber climber;
 
   ZeroHeading zeroHeading;
-  ClimbAlign climbAlignLeft;
-  ClimbAlign climbAlignRight;
+  //ClimbAlign climbAlignLeft;
+  //ClimbAlign climbAlignRight;
   AutoIntake autoIntake;
   ResetPose resetPose;
 
@@ -65,9 +65,9 @@ public class RobotContainer {
   RunIntake runIntake;
   IntakeArmToggle intakeArmToggle;
 
-  ClimberUp climberUp;
-  ClimberDown climberDown;
-  ClimberClimb climberClimb;
+  //ClimberUp climberUp;
+  //ClimberDown climberDown;
+  //ClimberClimb climberClimb;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -77,7 +77,7 @@ public class RobotContainer {
     driveTrain = new DriveTrain(limelightClimberLeft, limelightClimberRight);
     spindexer = new Spindexer();
     intake = new Intake();
-    climber = new Climber();
+    //climber = new Climber();
 
     driveTrain.setDefaultCommand(new RunCommand( () -> driveTrain.drive(
         -driverController.getLeftY(), 
@@ -87,8 +87,8 @@ public class RobotContainer {
       driveTrain));
 
     zeroHeading = new ZeroHeading(driveTrain);
-    climbAlignLeft = new ClimbAlign(driveTrain, false);
-    climbAlignRight = new ClimbAlign(driveTrain, true);
+    //climbAlignLeft = new ClimbAlign(driveTrain, false);
+    //climbAlignRight = new ClimbAlign(driveTrain, true);
     autoIntake = new AutoIntake(driveTrain, intake, limelightClimberLeft);
     resetPose = new ResetPose(driveTrain);
 
@@ -96,9 +96,9 @@ public class RobotContainer {
     runIntake = new RunIntake(intake);
     intakeArmToggle = new IntakeArmToggle(intake);
 
-    climberUp = new ClimberUp(climber);
-    climberDown = new ClimberDown(climber);
-    climberClimb = new ClimberClimb(climber);
+    //climberUp = new ClimberUp(climber);
+    //climberDown = new ClimberDown(climber);
+    //climberClimb = new ClimberClimb(climber);
 
     // Configure the trigger bindings
     configureBindings();
@@ -123,12 +123,12 @@ public class RobotContainer {
     driverController.leftStick().whileTrue(intakeArmToggle);
     driverController.rightStick().onTrue(runIntake);
 
-    driverController.y().onTrue(climberUp);
-    driverController.a().onTrue(climberDown);
-    driverController.b().onTrue(climberClimb);
+    //driverController.y().onTrue(climberUp);
+    //driverController.a().onTrue(climberDown);
+    //driverController.b().onTrue(climberClimb);
 
-    driverController.pov(270).whileTrue(climbAlignLeft);
-    driverController.pov(90).whileTrue(climbAlignRight);
+    //driverController.pov(270).whileTrue(climbAlignLeft);
+    //driverController.pov(90).whileTrue(climbAlignRight);
     
     driverController.pov(180).whileTrue(autoIntake);
 
@@ -138,9 +138,9 @@ public class RobotContainer {
     operatorController.leftStick().whileTrue(intakeArmToggle);
     operatorController.rightStick().onTrue(runIntake);
 
-    operatorController.y().onTrue(climberUp);
-    operatorController.a().onTrue(climberDown);
-    operatorController.b().onTrue(climberClimb);
+    //operatorController.y().onTrue(climberUp);
+    //operatorController.a().onTrue(climberDown);
+    //operatorController.b().onTrue(climberClimb);
 
     operatorController.start().onTrue(resetPose);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES

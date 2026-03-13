@@ -81,28 +81,9 @@
           }
         },
         {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ClimbAlignRight"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShootFuel"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "ClimberClimb"
+            "name": "ShootFuel"
           }
         }
       ]
