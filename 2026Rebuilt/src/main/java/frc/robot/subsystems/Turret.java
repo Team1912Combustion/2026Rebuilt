@@ -266,7 +266,7 @@ public class Turret extends SubsystemBase {
    * @return Whether or not the turret is within tolerance
    */
   public boolean isAimed() {
-    return (Math.abs(turret.getClosedLoopError().getValueAsDouble()) < TurretConstants.TURRET_ALLOWED_ERROR);
+    return (Math.abs(targetPosition - turret.getPosition().getValueAsDouble()) < TurretConstants.TURRET_ALLOWED_ERROR);
   }
 
   /**
