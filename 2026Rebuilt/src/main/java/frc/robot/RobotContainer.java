@@ -204,8 +204,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new Command() {
-      
-    };
+    return driveTrain.autoChooser.getSelected();
   }
 }
