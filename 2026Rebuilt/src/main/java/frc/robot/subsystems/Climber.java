@@ -22,7 +22,7 @@ public class Climber extends SubsystemBase {
   double upperLimit, lowerLimit, climb;
   /** Creates a new Climber. */
   public Climber() {
-    elevator = new TalonFX(MotorIDs.CLIMBER, new CANBus("1912CANivore"));
+    elevator = new TalonFX(0, new CANBus("1912CANivore"));
 
     config = new TalonFXConfiguration();
     config.Slot0.kG = 0;

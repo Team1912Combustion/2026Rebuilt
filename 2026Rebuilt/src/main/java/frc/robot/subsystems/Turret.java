@@ -11,6 +11,7 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.MathUtil;
@@ -41,7 +42,7 @@ public class Turret extends SubsystemBase {
   TalonFX turret;
   TalonFXConfiguration turretConfig;
 
-  double targetPosition, currentPosition, error, upperLimit, lowerLimit;
+  double targetPosition, rateLimitedTargetPositon, currentPosition, error, upperLimit, lowerLimit;
 
   // smaller to larger
   double[] deadZone = {-80, -10};
@@ -50,10 +51,6 @@ public class Turret extends SubsystemBase {
   Pose2d turretPose;
   double turretX, turretY, turretYaw;
   Twist2d turretSpeed;
-
-  Timer limitSwitchTimer;
-
-  DigitalInput lowerLimitSwitch, upperLimitSwitch;
 
   FieldZone blueDepotZone;
   FieldZone blueOutpostZone;
@@ -69,6 +66,8 @@ public class Turret extends SubsystemBase {
   List<Integer> hubTags = Arrays.asList(hubTagsArray);
 
   Field2d field;
+
+  SlewRateLimiter targetLimiter;
   
   /** Creates a new Turret. */
   public Turret(DriveTrain dt) {
@@ -78,28 +77,27 @@ public class Turret extends SubsystemBase {
     turret.setPosition(0);
 
     targetPosition = 0;
+    rateLimitedTargetPositon = 0;
     currentPosition = 0;
     error = 0;
-    upperLimit = 18;
-    lowerLimit = -18;
+    upperLimit = 10.65;
+    lowerLimit = -10.65;
 
     turretConfig = new TalonFXConfiguration();
-    turretConfig.Slot0.kS = 0;
+    turretConfig.Slot0.kS = 0.1;
     turretConfig.Slot0.kV = 0;
     turretConfig.Slot0.kA = 0;
-    turretConfig.Slot0.kP = 0;
-    turretConfig.Slot0.kI = 0;
+    turretConfig.Slot0.kP = 0.85;
+    turretConfig.Slot0.kI = 0.3;
     turretConfig.Slot0.kD = 0;
+    turretConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
     turretConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     turretConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = upperLimit;
     turretConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    turretConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = lowerLimit;
+    turretConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = lowerLimit; 
 
     turret.getConfigurator().apply(turretConfig);
-
-    lowerLimitSwitch = new DigitalInput(SensorIDs.TURRET_LEFT_LIMIT_SWITCH);
-    upperLimitSwitch = new DigitalInput(SensorIDs.TURRET_RIGHT_LIMIT_SWITCH);
 
     turretAngle = new Rotation2d(0);
     turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
@@ -107,8 +105,6 @@ public class Turret extends SubsystemBase {
     turretY = turretPose.getY();
     turretYaw = turretPose.getRotation().getDegrees();
     turretSpeed = new Twist2d();
-
-    limitSwitchTimer = new Timer();
 
     blueDepotZone = FieldZoneConstants.BLUE_DEPOT_ZONE;
     blueOutpostZone = FieldZoneConstants.BLUE_OUTPOST_ZONE;
@@ -120,6 +116,8 @@ public class Turret extends SubsystemBase {
     targetMode = "pose";
 
     field = new Field2d();
+
+    targetLimiter = new SlewRateLimiter(80);
 
   }
 
@@ -136,8 +134,8 @@ public class Turret extends SubsystemBase {
     turretPose = driveTrain.getPose().plus(new Transform2d(TurretConstants.TURRET_OFFSET, turretAngle));
 
     turretSpeed = new Twist2d(
-      (-(turretPose.getX() - turretX) * 50) * calculateSpeedContinuous(getCurrentFieldZone().getDistanceFromShotPoint(turretPose)),
-      (-(turretPose.getY() - turretY) * 50) * calculateSpeedContinuous(getCurrentFieldZone().getDistanceFromShotPoint(turretPose)),
+      (-(turretPose.getX() - turretX) * 50) * calculateTravelTime(getCurrentFieldZone().getDistanceFromShotPoint(turretPose)),
+      (-(turretPose.getY() - turretY) * 50) * calculateTravelTime(getCurrentFieldZone().getDistanceFromShotPoint(turretPose)),
       0
     );
 
@@ -149,13 +147,15 @@ public class Turret extends SubsystemBase {
     targetPosition = Math.min(Math.max(targetPosition, lowerLimit), upperLimit);
     error = currentPosition - targetPosition;
 
+    rateLimitedTargetPositon = targetLimiter.calculate(targetPosition);
     final PositionVoltage request = new PositionVoltage(0).withSlot(0);
-    turret.setControl(request.withPosition(targetPosition));
+    //turret.setControl(request.withPosition(Math.abs(error) > 5 ? rateLimitedTargetPositon : targetPosition));
+    turret.setControl(request.withPosition(rateLimitedTargetPositon));
 
     SmartDashboard.putString("Current field zone", getCurrentFieldZone().getFieldZoneName());
 
     field.setRobotPose(driveTrain.getPose());
-    field.getObject("turret").setPose(new Pose2d(turretPose.getTranslation(), getDirection(turretPose, getTarget())));
+    field.getObject("turret").setPose(turretPose);
     field.getObject("target").setPose(getTarget());
     field.getObject("shot point").setPose(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
     SmartDashboard.putData(field);
@@ -184,7 +184,7 @@ public class Turret extends SubsystemBase {
    */
   public void setTurretAngle(double angle) {
     double robotRelativeAngle = (angle - angleModulus(driveTrain.getPose().getRotation().getDegrees()));
-    targetPosition = motorModulus(((robotRelativeAngle / 180) + 180) * upperLimit);
+    targetPosition = motorModulus((((robotRelativeAngle + 180 - driveTrain.robotSpeed.dtheta) / 180)) * upperLimit);
   }
 
   public void setToPosition() {
@@ -207,8 +207,8 @@ public class Turret extends SubsystemBase {
     return speed;
   }
 
-  public double calculateSpeedContinuous(double distance) {
-    return distance * 0.12;
+  public double calculateTravelTime(double distance) {
+    return (0.0537952 * distance) + 1.06221;
   }
 
   /**
@@ -266,28 +266,7 @@ public class Turret extends SubsystemBase {
    * @return Whether or not the turret is within tolerance
    */
   public boolean isAimed() {
-    return (turret.getClosedLoopError().getValueAsDouble() < TurretConstants.TURRET_ALLOWED_ERROR);
-  }
-
-  /**
-   * Resets the turret to -180 or 180 degrees when a certain limit switch is pressed for greater than 0.5 seconds.
-   */
-  public void checkLimitSwitches() {
-
-    // UNOPTIMIZED ; CAUSES LOOP TO OVERRUN
-
-    if (lowerLimitSwitch.get() || upperLimitSwitch.get()) {
-      limitSwitchTimer.start();
-      if (limitSwitchTimer.get() > 0.5 && lowerLimitSwitch.get()) {
-        turret.setPosition(lowerLimit);
-      }
-      if (limitSwitchTimer.get() > 0.5 && upperLimitSwitch.get()) {
-        turret.setPosition(upperLimit);
-      }
-    } else {
-      limitSwitchTimer.stop();
-      limitSwitchTimer.reset();
-    }
+    return (Math.abs(turret.getClosedLoopError().getValueAsDouble()) < TurretConstants.TURRET_ALLOWED_ERROR);
   }
 
   /**

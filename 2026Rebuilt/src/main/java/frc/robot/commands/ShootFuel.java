@@ -13,18 +13,18 @@ import frc.robot.subsystems.TurretHood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootFuel extends Command {
-  //Shooter shooter;
+  Shooter shooter;
   Spindexer spindexer;
   //DriveTrain driveTrain;
-  //Turret turret;
-  //TurretHood turretHood;
+  Turret turret;
+  TurretHood turretHood;
   /** Creates a new ShootFuel. */
-  public ShootFuel(Spindexer sp) {
-    //shooter = s;
+  public ShootFuel(Shooter s, Spindexer sp, Turret t, TurretHood th) {
+    shooter = s;
     spindexer = sp;
     //driveTrain = dt;
-    //turret = t;
-    //turretHood = th;
+    turret = t;
+    turretHood = th;
     addRequirements(spindexer);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -36,21 +36,23 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //shooter.setSpeed(shooter.calculateSpeed(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
-    spindexer.setSpeed(100);
-    /*if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed() && !turretHood.duckHood()) {
+    shooter.setSpeed(shooter.calculateSpeedContinuous(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
+    //shooter.setSpeed(-40);
+    if (turret.isAimed() && turretHood.isInPosiiton() && shooter.shooterAtSpeed() && !turretHood.duckHood()) {
       shooter.kickerOn();
+      spindexer.setSpeed(-40);
     } else {
       shooter.kickerOff();
-    }*/
+      spindexer.setSpeed(0);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //shooter.shooterOff();
+    shooter.shooterOff();
     spindexer.spindexerOff();
-    //shooter.kickerOff();
+    shooter.kickerOff();
   }
 
   // Returns true when the command should end.

@@ -34,17 +34,18 @@ public final class Constants {
 
   public static class MotorIDs {
 
-    public static final int TURRET = 1;
-    public static final int TURRET_HOOD = 2;
+    public static final int TURRET = 15;
+    public static final int TURRET_HOOD = 14;
 
     public static final int SHOOTER = 3;
-    public static final int KICKER = 4;
+    public static final int KICKER = 9;
     public static final int SPINDEXER = 10;
 
     public static final int INTAKE_ROLLERS = 12;
     public static final int INTAKE_ARM = 11;
 
-    public static final int CLIMBER = 9;
+    public static final int SHOOTER_LEFT = 17;
+    public static final int SHOOTER_RIGHT = 16;
 
   }
 
@@ -141,9 +142,9 @@ public final class Constants {
 
   public static class TurretConstants {
 
-    public static final Translation2d TURRET_OFFSET = new Translation2d(0, 0);
+    public static final Translation2d TURRET_OFFSET = new Translation2d(-0.1282, -0.030932);
 
-    public static final double TURRET_ALLOWED_ERROR = 0.5;
+    public static final double TURRET_ALLOWED_ERROR = 4;
 
     public static final double[][] DISTANCES = { {0.0, 1.49}, {1.5, 2.99}, {3.0, 4.49}, {4.5, 5.99}, {6.0, 7.49}, {7.5, 8.99} };
     public static final double DELTA_DISTANCE = 1.49;
@@ -250,6 +251,10 @@ public final class Constants {
   }
 
   public static class DriveConstants {
+    public static final double AUTO_TRANSLATION_ERROR = 0.1;
+    public static final double AUTO_TRANSLATION_MEDIUM_ERROR = 0.2;
+    public static final double AUTO_ROTATION_ERROR = 3;
+
     public static final double DRIVE_SPEED = 1.0;
     public static final double RAMP_TIME = 0.07;
     public static final double TRACK_WIDTH = 0.5325;

@@ -12,8 +12,10 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GainSchedKpBehaviorValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -47,12 +49,14 @@ public class Intake extends SubsystemBase {
 
     armConfig = new TalonFXConfiguration();
     armConfig.Slot0.kG = 0.5;
+    armConfig.Slot0.kS = 0.2;
     armConfig.Slot0.kP = 11;
-    armConfig.Slot0.kI = 0;
+    armConfig.Slot0.kI = 8;
     armConfig.Slot0.kD = 0;
     armConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     armConfig.Feedback.SensorToMechanismRatio = 20;
+    armConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     // UPPER LIMIT //
     /*armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     armConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0;
@@ -61,7 +65,7 @@ public class Intake extends SubsystemBase {
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 4.2;*/
 
     arm.getConfigurator().apply(armConfig);
-    arm.setPosition(0.22); 
+    arm.setPosition(0.24); 
 
     rateLimiter = new SlewRateLimiter(2);
 
@@ -82,7 +86,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void intake() {
-    setRollerSpeed(80);
+    setRollerSpeed(60);
   }
 
   public void expel() {

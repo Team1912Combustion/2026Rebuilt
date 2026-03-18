@@ -7,9 +7,11 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.DeviceIdentifier;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -25,54 +27,49 @@ import frc.robot.Constants.TurretConstants;
 
 public class Shooter extends SubsystemBase {
   Turret turret;
-  TalonFX shooter;
+  TalonFX shooterLeft, shooterRight;
   TalonFX kicker;
   TalonFXConfiguration shooterConfig, kickerConfig;
 
-  DigitalInput beambreak;
-
-  int shotCount;
-  boolean previousBeambreakState;
-
   QuadraticSolver quadraticSolver;
+
+  double upperLimit, lowerLimit;
 
   /** Creates a new Shooter. */
   public Shooter(Turret t) {
     turret = t;
 
-    shooter = new TalonFX(MotorIDs.SHOOTER, new CANBus("1912CANivore"));
+    shooterLeft = new TalonFX(MotorIDs.SHOOTER_LEFT, new CANBus("1912CANivore"));
+    shooterRight = new TalonFX(MotorIDs.SHOOTER_RIGHT, new CANBus("1912CANivore"));
     kicker = new TalonFX(MotorIDs.KICKER, new CANBus("1912CANivore"));
 
     shooterConfig = new TalonFXConfiguration();
-    shooterConfig.Slot0.kS = 0;
-    shooterConfig.Slot0.kV = 0;
-    shooterConfig.Slot0.kP = 0;
+    shooterConfig.Slot0.kS = 0.4;
+    shooterConfig.Slot0.kV = 0.12;
+    shooterConfig.Slot0.kP = 0.4;
     shooterConfig.Slot0.kI = 0;
     shooterConfig.Slot0.kD = 0;
 
     
     kickerConfig = new TalonFXConfiguration();
-    kickerConfig.Slot0.kS = 0;
-    kickerConfig.Slot0.kV = 0;
-    kickerConfig.Slot0.kP = 0;
+    kickerConfig.Slot0.kS = 0.3;
+    kickerConfig.Slot0.kV = 0.12;
+    kickerConfig.Slot0.kP = 0.3;
     kickerConfig.Slot0.kI = 0;
     kickerConfig.Slot0.kD = 0;
 
-    shooter.getConfigurator().apply(shooterConfig);
+    shooterLeft.getConfigurator().apply(shooterConfig);
+    shooterRight.getConfigurator().apply(shooterConfig);
     kicker.getConfigurator().apply(kickerConfig);
-
-    beambreak = new DigitalInput(SensorIDs.TURRET_BEAMBREAK);
-
-    shotCount = 0;
-    previousBeambreakState = true;
 
     quadraticSolver = new QuadraticSolver();
 
+    upperLimit = 6000;
+    lowerLimit = -6000;
   }
 
   @Override
   public void periodic() {
-    countShot();
 
     SmartDashboard.putNumber("shooter speed", getSpeed());
     // This method will be called once per scheduler run
@@ -83,8 +80,11 @@ public class Shooter extends SubsystemBase {
    * @param speed The speed to set the PID to, in rotations per second
    */
   public void setSpeed(double speed) {
+    double targetSpeed = Math.min(upperLimit, Math.max(speed, lowerLimit));
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    shooter.setControl(request.withVelocity(speed));
+    shooterLeft.setControl(request.withVelocity(targetSpeed));
+    final Follower followerRequest = new Follower(0, MotorAlignmentValue.Opposed);
+    shooterRight.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_LEFT).withMotorAlignment(MotorAlignmentValue.Opposed));
   }
 
   /**
@@ -92,7 +92,7 @@ public class Shooter extends SubsystemBase {
    * @return The speed of the shooter wheel, in rotations per second
    */
   public double getSpeed() {
-    return shooter.getVelocity().getValueAsDouble();
+    return shooterLeft.getVelocity().getValueAsDouble();
   }
 
   /**
@@ -100,7 +100,7 @@ public class Shooter extends SubsystemBase {
    * @return The set velocity of the shooter, in rotations per second
    */
   public double getShooterTarget() {
-    return shooter.getClosedLoopReference().getValueAsDouble();
+    return shooterLeft.getClosedLoopReference().getValueAsDouble();
   }
 
   /**
@@ -108,7 +108,7 @@ public class Shooter extends SubsystemBase {
    * @return True if the shooter is within in the limit, false if it isn't
    */
   public boolean shooterAtSpeed() {
-    return (shooter.getClosedLoopError().getValueAsDouble() < 20);
+    return (Math.abs(shooterLeft.getClosedLoopError().getValueAsDouble()) < 5);
   }
 
   /**
@@ -160,8 +160,7 @@ public class Shooter extends SubsystemBase {
    * @return The ideal speed
    */
   public double calculateSpeedContinuous(double distance) {
-    double speed = 0;
-    // FIGURE OUT THIS FUNCTION AT SOME POINT
+    double speed = (-2.71615 * (distance + 1)) - 31.97454;
 
     return speed;
   }
@@ -171,32 +170,17 @@ public class Shooter extends SubsystemBase {
    * @return The time the ball takes to reach the hub, in seconds
    */
   public double calculateFuelTravelTime() {
-    double rps = shooter.getVelocity().getValueAsDouble();
+    double rps = shooterLeft.getVelocity().getValueAsDouble();
     double shootSpeed = rps * TurretConstants.SHOOTER_WHEEL_CIRCUMFERENCE;
 
     return quadraticSolver.findZeros(-4.9, shootSpeed, -1.3);
   }
 
   /**
-   * Adds a count of 1 to shotCount if a ball passes through the shooter.
-   */
-  public void countShot() {
-    if (previousBeambreakState == false && beambreak.get() == true) {
-      shotCount += 1;
-    }
-
-    previousBeambreakState = beambreak.get();
-  }
-
-  public int getShotCount() {
-    return shotCount;
-  }
-
-  /**
    * Turns the shooter off.
    */
   public void shooterOff() {
-    shooter.set(0);
+    shooterLeft.set(0);
   }
 
   /**

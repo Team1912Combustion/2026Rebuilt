@@ -5,6 +5,13 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -20,9 +27,9 @@ import frc.robot.Constants.TurretConstants;
 public class TurretHood extends SubsystemBase {
   Turret turret;
 
-  SparkMax hood;
+  TalonFX hood;
+  TalonFXConfiguration config;
 
-  PIDController pid;
   double upperLimit, lowerLimit, currentPosition, targetPosition;
 
   FieldZone blueDepotTrench, blueOutpostTrench, redDepotTrench, redOutpostTrench, noTrench;
@@ -30,14 +37,20 @@ public class TurretHood extends SubsystemBase {
   public TurretHood(Turret t) {
     turret = t;
 
-    hood = new SparkMax(MotorIDs.TURRET_HOOD, MotorType.kBrushless);
+    hood = new TalonFX(MotorIDs.TURRET_HOOD, new CANBus("1912CANivore"));
+    
+    config = new TalonFXConfiguration();
+    config.Slot0.kP = 0.8;
+    config.Slot0.kI = 0.25;
+    config.Slot0.kD = 0;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    pid = new PIDController(0, 0, 0);
-    pid.setTolerance(1);
+    hood.getConfigurator().apply(config);
+    hood.setPosition(0);
 
-    upperLimit = 5;
+    upperLimit = 12.5;
     lowerLimit = 0;
-    currentPosition = hood.getEncoder().getPosition();
+    currentPosition = hood.getPosition().getValueAsDouble();
     targetPosition = 0;
 
     blueDepotTrench = FieldZoneConstants.BLUE_DEPOT_TRENCH_ZONE;
@@ -51,10 +64,7 @@ public class TurretHood extends SubsystemBase {
   @Override
   public void periodic() {
 
-    currentPosition = hood.getEncoder().getPosition();
-
-    targetPosition = Math.max(Math.min(targetPosition, upperLimit), lowerLimit);
-    hood.set(pid.calculate(currentPosition, targetPosition));
+    currentPosition = hood.getPosition().getValueAsDouble();
 
     SmartDashboard.putNumber("hood position", getPosition());
 
@@ -81,11 +91,9 @@ public class TurretHood extends SubsystemBase {
    * @param pose The current pose of the turret
    * @return The ideal hood angle
    */
-  public double calculateHoodAngleContinuous(double distancce) {
-    double angle = 0;
-
-    // FIGURE OUT THIS FUNCTION AT SOME POINT
-
+  public double calculateHoodAngleContinuous(double distance) {
+    double angle = (2.09074 * distance) - 1.23796;
+    
     return angle;
   }
 
@@ -94,7 +102,9 @@ public class TurretHood extends SubsystemBase {
    * @param target The position to go to
    */
   public void setPosition(double target) {
-    targetPosition = target;
+    double targetPosition = Math.min(upperLimit, Math.max(target, lowerLimit));
+    final PositionVoltage request = new PositionVoltage(0);
+    hood.setControl(request.withPosition(targetPosition));
   }
 
   /**
@@ -102,7 +112,7 @@ public class TurretHood extends SubsystemBase {
    * @return The position of the hood encoder in motor rotations
    */
   public double getPosition() {
-    return hood.getEncoder().getPosition();
+    return hood.getPosition().getValueAsDouble();
   }
 
   /**
@@ -110,7 +120,7 @@ public class TurretHood extends SubsystemBase {
    * @return The target position, in motor rotations
    */
   public double getTarget() {
-    return pid.getSetpoint();
+    return hood.getClosedLoopReference().getValueAsDouble();
   }
 
   /**
@@ -118,7 +128,7 @@ public class TurretHood extends SubsystemBase {
    * @return Whether or not the hood is within tolerance for the PID controller
    */
   public boolean isInPosiiton() {
-    return pid.atSetpoint();
+    return (hood.getClosedLoopError().getValueAsDouble() < 0.5);
   }
 
   /**

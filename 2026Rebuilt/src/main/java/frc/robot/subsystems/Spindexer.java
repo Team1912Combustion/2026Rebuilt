@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
@@ -17,6 +18,8 @@ import frc.robot.Constants.MotorIDs;
 public class Spindexer extends SubsystemBase {
   TalonFX spindexer;
   TalonFXConfiguration spindexerConfig;
+
+  SlewRateLimiter rateLimiter;
   /** Creates a new Spindexer. */
   public Spindexer() {
     spindexer = new TalonFX(MotorIDs.SPINDEXER, new CANBus("1912CANivore"));
@@ -24,7 +27,7 @@ public class Spindexer extends SubsystemBase {
 
     spindexerConfig.Slot0.kS = 0.2;
     spindexerConfig.Slot0.kV = 0.1;
-    spindexerConfig.Slot0.kP = 0.3;
+    spindexerConfig.Slot0.kP = 0.25;
     spindexerConfig.Slot0.kI = 0;
     spindexerConfig.Slot0.kD = 0;
     spindexerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -32,6 +35,8 @@ public class Spindexer extends SubsystemBase {
     spindexerConfig.HardwareLimitSwitch.ReverseLimitEnable = false;
 
     spindexer.getConfigurator().apply(spindexerConfig);
+
+    rateLimiter = new SlewRateLimiter(160);
   }
 
   @Override
@@ -44,8 +49,9 @@ public class Spindexer extends SubsystemBase {
    * @param speed The speed to set the PID to, in rotations per second
    */
   public void setSpeed(double speed) {
+    double targetSpeed = rateLimiter.calculate(speed);
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    spindexer.setControl(request.withVelocity(speed));
+    spindexer.setControl(request.withVelocity(rateLimiter.calculate(targetSpeed)));
   }
 
   /**

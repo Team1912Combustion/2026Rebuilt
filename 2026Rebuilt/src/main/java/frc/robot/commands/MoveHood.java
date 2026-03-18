@@ -31,7 +31,7 @@ public class MoveHood extends Command {
     if (hood.duckHood()) {
       hood.setPosition(0);
     } else {
-      hood.setPosition(hood.calculateHoodAngle(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
+      hood.setPosition(hood.calculateHoodAngleContinuous(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
     }
   }
 

@@ -24,7 +24,7 @@ public class ShooterSpeedUp extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setSpeed(shooter.getShooterTarget() + 0.02);
+    shooter.setSpeed(shooter.getShooterTarget() + 1);
   }
 
   // Called once the command ends or is interrupted.

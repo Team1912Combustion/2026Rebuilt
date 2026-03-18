@@ -5,24 +5,15 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.TurretHood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class CandleCommand extends Command {
-  LEDs leds;
-  Turret turret;
+public class DuckHood extends Command {
   TurretHood hood;
-  Shooter shooter;
-  /** Creates a new CandleCommand. */
-  public CandleCommand(LEDs l, Turret t, TurretHood h, Shooter s) {
-    leds = l;
-    turret = t;
-    hood = h;
-    shooter = s;
-    addRequirements(leds);
+  /** Creates a new DuckHood. */
+  public DuckHood(TurretHood th) {
+    hood = th;
+    addRequirements(hood);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -33,19 +24,7 @@ public class CandleCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /*if (leds.getMatchPeriod() <= 2) {
-      leds.setOrangeFlashing();
-    } else if (leds.getMatchPeriod() <= 6) {
-      if (leds.getAlliance() == leds.getActiveHub()) {
-        leds.setOrangeFlashing();
-      } else {
-        leds.setBlueStatic();
-      }
-    } else if (leds.getMatchPeriod() == 7) {
-      leds.setOrangeFlashing();
-    }*/
-
-    leds.setBlueStatic();
+    hood.setPosition(0);
   }
 
   // Called once the command ends or is interrupted.

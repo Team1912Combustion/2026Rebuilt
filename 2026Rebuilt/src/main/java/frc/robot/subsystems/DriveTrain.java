@@ -58,6 +58,7 @@ import frc.robot.Constants.DeviceIDs;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SensorIDs;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.LimelightHelpers.PoseEstimate;
 
 public class DriveTrain extends SubsystemBase {
   private final SwerveModule frontLeft = new SwerveModule(0, DeviceIDs.FRONT_LEFT.constants);
@@ -83,14 +84,15 @@ public class DriveTrain extends SubsystemBase {
 
   MedianFilter speedXFilter;
   MedianFilter speedYFilter;
+  MedianFilter speedRotFilter;
 
   public SwerveDrivePoseEstimator poseEstimator;
 
-  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(.1));
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, Units.degreesToRadians(50));
+  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(.1));
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.8, 0.8, Units.degreesToRadians(50));
   private static final Vector<N3> visionStdDevsDisabled = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(1));
 
-  public SendableChooser<Command> autoChooser;
+  public SendableChooser<PathPlannerAuto> autoChooser;
 
   public double poseX, poseY, poseYaw;
   Twist2d robotSpeed;
@@ -115,6 +117,8 @@ public class DriveTrain extends SubsystemBase {
   List<Integer> towerTagIDs = Arrays.asList(towerTagArray);
 
   Field2d field;
+
+  boolean slowMode;
 
   /** Creates a new DriveTrain. */
   public DriveTrain(LimelightClimberLeft llcl, LimelightClimberRight llcr) {
@@ -141,6 +145,7 @@ public class DriveTrain extends SubsystemBase {
 
     speedXFilter = new MedianFilter(5);
     speedYFilter = new MedianFilter(5);
+    speedRotFilter = new MedianFilter(5);
 
     autoChooser = new SendableChooser<>();
 
@@ -192,14 +197,13 @@ public class DriveTrain extends SubsystemBase {
     Logger.recordOutput("Pose", poseEstimator.getEstimatedPosition());
 
     field = new Field2d();
+
+    slowMode = false;
   }
 
   @Override
   public void periodic() {
-
-    if (limelightClimberLeft.acceptPose() || limelightClimberRight.acceptPose()) {
-      processFrame();
-    }
+    processFrame();
     
     // update drive yaw
     driveYaw = gyro.getYaw().getValueAsDouble() + driveYawOffset;
@@ -236,10 +240,12 @@ public class DriveTrain extends SubsystemBase {
       poseEstimator.addVisionMeasurement(compositeVisionPose, Timer.getFPGATimestamp() - (compositeLatency / 1000), visionMeasurementStdDevs);
     }
 
+    SmartDashboard.putBoolean("can reset pose?", isVisionValid);
+
     robotSpeed = new Twist2d(
       speedXFilter.calculate((poseEstimator.getEstimatedPosition().getX() - poseX) * 50),
       speedYFilter.calculate((poseEstimator.getEstimatedPosition().getY() - poseY) * 50),
-      0
+      speedRotFilter.calculate((poseEstimator.getEstimatedPosition().getRotation().getDegrees() - poseYaw) * 10)
       );
 
     // update pose variables
@@ -248,10 +254,6 @@ public class DriveTrain extends SubsystemBase {
     poseYaw = poseEstimator.getEstimatedPosition().getRotation().getDegrees();
 
     SmartDashboard.putData("Auto?:", autoChooser);
-
-    field.setRobotPose(poseEstimator.getEstimatedPosition());
-    field.getObject("pred").setPose(poseEstimator.getEstimatedPosition().exp(robotSpeed));
-    SmartDashboard.putData(field);
 
     // This method will be called once per scheduler run
   }
@@ -272,9 +274,9 @@ public class DriveTrain extends SubsystemBase {
       double m_ySpeed;
       double m_rot;
 
-      m_xSpeed = xSpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
-      m_ySpeed = ySpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
-      m_rot = rot * DriveConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
+      m_xSpeed = xSpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND * (slowMode ? 0.5 : 1);
+      m_ySpeed = ySpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND * (slowMode ? 0.5 : 1);
+      m_rot = rot * DriveConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND * (slowMode ? 0.5 : 1);
 
       m_xSpeed = xRateLimiter.calculate(m_xSpeed);
       m_ySpeed = yRateLimiter.calculate(m_ySpeed);
@@ -545,6 +547,10 @@ public class DriveTrain extends SubsystemBase {
     } else {
       return new Pose2d();
     }
+  }
+
+  public void setSlowMode(boolean yeah) {
+    slowMode = yeah;
   }
 
 }
