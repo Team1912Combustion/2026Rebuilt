@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 
@@ -33,6 +34,7 @@ public class Intake extends SubsystemBase {
   double targetPosition;
 
   public boolean armOut;
+
   /** Creates a new Intake. */
   public Intake() {
     rollers = new TalonFX(MotorIDs.INTAKE_ROLLERS,  new CANBus("1912CANivore"));
@@ -110,6 +112,10 @@ public class Intake extends SubsystemBase {
   public void armIn() {
     armOut = false;
     setArmPosition(0.24);
+  }
+
+  public void armWiggle() {
+    setArmPosition(0.18);
   }
 
   public boolean armInPosition() {

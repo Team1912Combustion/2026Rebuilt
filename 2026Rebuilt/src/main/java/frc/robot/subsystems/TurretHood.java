@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldZone;
@@ -33,6 +34,8 @@ public class TurretHood extends SubsystemBase {
   double upperLimit, lowerLimit, currentPosition, targetPosition;
 
   FieldZone blueDepotTrench, blueOutpostTrench, redDepotTrench, redOutpostTrench, noTrench;
+
+  boolean trenchesReassigned;
   /** Creates a new TurretHood. */
   public TurretHood(Turret t) {
     turret = t;
@@ -59,10 +62,21 @@ public class TurretHood extends SubsystemBase {
     redOutpostTrench = FieldZoneConstants.RED_OUTPOST_TRENCH_ZONE;
     noTrench = new FieldZone(new Translation2d(-1, -1), new Translation2d(-0.5, -1.5), "NO TRENCH");
 
+    trenchesReassigned = false;
+
   }
 
   @Override
   public void periodic() {
+
+    if (DriverStation.isTeleop() && DriverStation.isFMSAttached() && !trenchesReassigned) {
+      blueDepotTrench = FieldZoneConstants.BLUE_DEPOT_TRENCH_ZONE_TELEOP;
+      blueOutpostTrench = FieldZoneConstants.BLUE_OUTPOST_TRENCH_ZONE_TELEOP;
+      redDepotTrench = FieldZoneConstants.RED_DEPOT_TRENCH_ZONE_TELEOP;
+      redOutpostTrench = FieldZoneConstants.RED_OUTPOST_TRENCH_ZONE_TELEOP;
+
+      trenchesReassigned = true;
+    }
 
     currentPosition = hood.getPosition().getValueAsDouble();
 

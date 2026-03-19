@@ -133,10 +133,29 @@ public final class Constants {
     public static final Translation2d RED_OUTPOST_TRENCH_TL = new Translation2d(FIELD_LENGTH - (WALL_TO_TRENCH + TRENCH_LENGTH), TRENCH_WIDTH);
     public static final Translation2d RED_OUTPOST_TRENCH_BR = new Translation2d(FIELD_LENGTH - WALL_TO_TRENCH, 0);
 
+    public static final double ADD = 0.25;
+
+    public static final Translation2d BLUE_DEPOT_TRENCH_TELEOP_TL = new Translation2d(WALL_TO_TRENCH - ADD, FIELD_WIDTH);
+    public static final Translation2d BLUE_DEPOT_TRENCH_TELEOP_BR = new Translation2d(WALL_TO_TRENCH + TRENCH_LENGTH + ADD, FIELD_WIDTH - TRENCH_WIDTH);
+
+    public static final Translation2d BLUE_OUTPOST_TRENCH_TELEOP_TL = new Translation2d(WALL_TO_TRENCH - ADD, TRENCH_WIDTH);
+    public static final Translation2d BLUE_OUTPOST_TRENCH_TELEOP_BR = new Translation2d(WALL_TO_TRENCH + TRENCH_LENGTH + ADD, 0);
+
+    public static final Translation2d RED_DEPOT_TRENCH_TELEOP_TL = new Translation2d(FIELD_LENGTH - (WALL_TO_TRENCH + TRENCH_LENGTH) - ADD, FIELD_WIDTH);
+    public static final Translation2d RED_DEPOT_TRENCH_TELEOP_BR = new Translation2d(FIELD_LENGTH - WALL_TO_TRENCH + ADD, FIELD_WIDTH - TRENCH_WIDTH);
+
+    public static final Translation2d RED_OUTPOST_TRENCH_TELEOP_TL = new Translation2d(FIELD_LENGTH - (WALL_TO_TRENCH + TRENCH_LENGTH) - ADD, TRENCH_WIDTH);
+    public static final Translation2d RED_OUTPOST_TRENCH_TELEOP_BR = new Translation2d(FIELD_LENGTH - WALL_TO_TRENCH + ADD, 0);
+
     public static final FieldZone BLUE_DEPOT_TRENCH_ZONE = new FieldZone(BLUE_DEPOT_TRENCH_TL, BLUE_DEPOT_TRENCH_BR, "BLUE DEPOT TRENCH");
     public static final FieldZone BLUE_OUTPOST_TRENCH_ZONE = new FieldZone(BLUE_OUTPOST_TRENCH_TL, BLUE_OUTPOST_TRENCH_BR, "BLUE OUTPOST TRENCH");
     public static final FieldZone RED_DEPOT_TRENCH_ZONE = new FieldZone(RED_DEPOT_TRENCH_TL, RED_DEPOT_TRENCH_BR, "RED DEPOT TRENCH");
     public static final FieldZone RED_OUTPOST_TRENCH_ZONE = new FieldZone(RED_OUTPOST_TRENCH_TL, RED_OUTPOST_TRENCH_BR, "RED OUTPOST TRENCH");
+
+    public static final FieldZone BLUE_DEPOT_TRENCH_ZONE_TELEOP = new FieldZone(BLUE_DEPOT_TRENCH_TELEOP_TL, BLUE_DEPOT_TRENCH_TELEOP_BR, "BLUE DEPOT TRENCH");
+    public static final FieldZone BLUE_OUTPOST_TRENCH_ZONE_TELEOP = new FieldZone(BLUE_OUTPOST_TRENCH_TELEOP_TL, BLUE_OUTPOST_TRENCH_TELEOP_BR, "BLUE OUTPOST TRENCH");
+    public static final FieldZone RED_DEPOT_TRENCH_ZONE_TELEOP = new FieldZone(RED_DEPOT_TRENCH_TELEOP_TL, RED_DEPOT_TRENCH_TELEOP_BR, "RED DEPOT TRENCH");
+    public static final FieldZone RED_OUTPOST_TRENCH_ZONE_TELEOP = new FieldZone(RED_OUTPOST_TRENCH_TELEOP_TL, RED_OUTPOST_TRENCH_TELEOP_BR, "RED OUTPOST TRENCH");
 
   }
 

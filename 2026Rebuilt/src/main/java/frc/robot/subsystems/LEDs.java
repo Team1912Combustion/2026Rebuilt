@@ -87,7 +87,7 @@ public class LEDs extends SubsystemBase {
       }
     }*/
 
-    distanceFromStart = driveTrain.getPose().getTranslation().getDistance(driveTrain.autoChooser.getSelected().getStartingPose().getTranslation());
+    //distanceFromStart = driveTrain.getPose().getTranslation().getDistance(driveTrain.autoChooser.getSelected().getStartingPose().getTranslation());
 
     SmartDashboard.putNumber("distance from auto start", distanceFromStart);
     // This method will be called once per scheduler run
@@ -154,8 +154,8 @@ public class LEDs extends SubsystemBase {
     return (Math.abs(distanceFromStart) < DriveConstants.AUTO_TRANSLATION_MEDIUM_ERROR);
   }
 
-  public boolean isPoseWithinRotationError(Pose2d pose) {
+  /*public boolean isPoseWithinRotationError(Pose2d pose) {
     return (Math.abs(pose.getRotation().getDegrees() - driveTrain.autoChooser.getSelected().getStartingPose().getRotation().getDegrees()) < DriveConstants.AUTO_ROTATION_ERROR);
-  }
+  }*/
 
 }

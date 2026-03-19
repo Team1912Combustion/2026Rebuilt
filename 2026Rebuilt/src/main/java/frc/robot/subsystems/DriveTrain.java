@@ -92,7 +92,7 @@ public class DriveTrain extends SubsystemBase {
   private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.8, 0.8, Units.degreesToRadians(50));
   private static final Vector<N3> visionStdDevsDisabled = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(1));
 
-  public SendableChooser<PathPlannerAuto> autoChooser;
+  public SendableChooser<Command> autoChooser;
 
   public double poseX, poseY, poseYaw;
   Twist2d robotSpeed;
@@ -185,7 +185,7 @@ public class DriveTrain extends SubsystemBase {
       this::getPose,
       this::resetPose,
       this::getChassisSpeeds,
-      this::drive, 
+      this::drive,
       new PPHolonomicDriveController(new PIDConstants(10, 0, 0), new PIDConstants(2.5, 0, 0)), 
       cfg, 
       this::flipPath, 

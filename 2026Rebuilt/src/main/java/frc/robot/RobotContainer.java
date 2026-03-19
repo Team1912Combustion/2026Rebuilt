@@ -40,6 +40,7 @@ import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.TurretHood;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -146,9 +147,11 @@ public class RobotContainer {
     //climberClimb = new ClimberClimb(climber);
 
     NamedCommands.registerCommand("RunIntake", runIntake);
+    NamedCommands.registerCommand("ArmToggle", intakeArmToggle);
     NamedCommands.registerCommand("ShootFuel", shootFuel);
 
-    driveTrain.autoChooser.setDefaultOption("Right Outpost", new PathPlannerAuto("Right Outpost"));
+    driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
+    driveTrain.autoChooser.addOption("Right Outpost", new PathPlannerAuto("Right Outpost"));
     driveTrain.autoChooser.addOption("Right Shoot", new PathPlannerAuto("Right Shoot"));
     driveTrain.autoChooser.addOption("Right Lob", new PathPlannerAuto("Right Lob"));
     driveTrain.autoChooser.addOption("Left Shoot", new PathPlannerAuto("Left Shoot"));

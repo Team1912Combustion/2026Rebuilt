@@ -64,8 +64,8 @@ public class Shooter extends SubsystemBase {
 
     quadraticSolver = new QuadraticSolver();
 
-    upperLimit = 6000;
-    lowerLimit = -6000;
+    upperLimit = 100;
+    lowerLimit = -100;
   }
 
   @Override
@@ -116,7 +116,7 @@ public class Shooter extends SubsystemBase {
    */
   public void kickerOn() {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    kicker.setControl(request.withVelocity(500));
+    kicker.setControl(request.withVelocity(100));
   }
 
   /**
