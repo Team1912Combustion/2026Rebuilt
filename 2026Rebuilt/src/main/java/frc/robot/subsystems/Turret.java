@@ -11,6 +11,7 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.revrobotics.spark.SparkMax;
 
@@ -68,6 +69,8 @@ public class Turret extends SubsystemBase {
   Field2d field;
 
   SlewRateLimiter targetLimiter;
+
+  public double driverOffset;
   
   /** Creates a new Turret. */
   public Turret(DriveTrain dt) {
@@ -87,10 +90,20 @@ public class Turret extends SubsystemBase {
     turretConfig.Slot0.kS = 0.1;
     turretConfig.Slot0.kV = 0;
     turretConfig.Slot0.kA = 0;
-    turretConfig.Slot0.kP = 0.85;
-    turretConfig.Slot0.kI = 0.3;
-    turretConfig.Slot0.kD = 0;
-    turretConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    //turretConfig.Slot0.kP = 0.85;
+    //turretConfig.Slot0.kI = 0.3;
+    turretConfig.Slot0.kP = 2;
+    turretConfig.Slot0.kI = 0;
+    turretConfig.Slot0.kD = 0.1;
+
+    turretConfig.ClosedLoopGeneral.GainSchedErrorThreshold = 0.7;
+    turretConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.UseSlot1;
+
+    turretConfig.Slot1.kS = 1;
+    turretConfig.Slot1.kP = 6;
+    turretConfig.Slot1.kD = .25;
+
+    //turretConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
     turretConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     turretConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = upperLimit;
@@ -118,6 +131,8 @@ public class Turret extends SubsystemBase {
     field = new Field2d();
 
     targetLimiter = new SlewRateLimiter(80);
+
+    driverOffset = 0;
 
   }
 
@@ -154,6 +169,10 @@ public class Turret extends SubsystemBase {
 
     SmartDashboard.putString("Current field zone", getCurrentFieldZone().getFieldZoneName());
 
+    SmartDashboard.putNumber("turret position", currentPosition);
+    SmartDashboard.putNumber("target", targetPosition);
+    SmartDashboard.putNumber("turret offset", driverOffset);
+
     field.setRobotPose(driveTrain.getPose());
     field.getObject("turret").setPose(turretPose);
     field.getObject("target").setPose(getTarget());
@@ -184,7 +203,8 @@ public class Turret extends SubsystemBase {
    */
   public void setTurretAngle(double angle) {
     double robotRelativeAngle = (angle - angleModulus(driveTrain.getPose().getRotation().getDegrees()));
-    targetPosition = motorModulus((((robotRelativeAngle + 180 - driveTrain.robotSpeed.dtheta) / 180)) * upperLimit);
+    //targetPosition = motorModulus((((robotRelativeAngle + 180 - driveTrain.robotSpeed.dtheta) / 180)) * upperLimit);
+    targetPosition = motorModulus((((robotRelativeAngle + 180) / 180)) * upperLimit);
   }
 
   public void setToPosition() {

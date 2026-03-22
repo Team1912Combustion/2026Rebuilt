@@ -99,10 +99,10 @@ public final class Constants {
     public static final Translation2d NEUTRAL_BOTTOM_ZONE_BR = new Translation2d(FIELD_LENGTH - ALLIANCE_ZONE_LENGTH, 0);
 
     // NEUTRAL SHOT POINTS //
-    public static final Translation2d NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT = new Translation2d(ALLIANCE_ZONE_LENGTH / 2, FIELD_WIDTH * (5.0 / 8.0));
-    public static final Translation2d NEUTRAL_TOP_ZONE_RED_SHOT_POINT = new Translation2d(FIELD_LENGTH - (ALLIANCE_ZONE_LENGTH / 2), FIELD_WIDTH * (5.0 / 8.0));
-    public static final Translation2d NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT = new Translation2d(ALLIANCE_ZONE_LENGTH / 2, FIELD_WIDTH * (3.0 / 8.0));
-    public static final Translation2d NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT = new Translation2d(FIELD_LENGTH - (ALLIANCE_ZONE_LENGTH / 2), FIELD_WIDTH * (3.0 / 8.0));
+    public static final Translation2d NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT = new Translation2d(ALLIANCE_ZONE_LENGTH / 2, FIELD_WIDTH * (3.0 / 4.0));
+    public static final Translation2d NEUTRAL_TOP_ZONE_RED_SHOT_POINT = new Translation2d(FIELD_LENGTH - (ALLIANCE_ZONE_LENGTH / 2), FIELD_WIDTH * (3.0 / 4.0));
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT = new Translation2d(ALLIANCE_ZONE_LENGTH / 2, FIELD_WIDTH * (1.0 / 4.0));
+    public static final Translation2d NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT = new Translation2d(FIELD_LENGTH - (ALLIANCE_ZONE_LENGTH / 2), FIELD_WIDTH * (1.0 / 4.0));
 
     // CONSTRUCTED FIELD ZONES //
     public static final FieldZone BLUE_DEPOT_ZONE = new FieldZone(BLUE_DEPOT_ZONE_TL, BLUE_DEPOT_ZONE_BR, "BLUE DEPOT");
@@ -163,7 +163,7 @@ public final class Constants {
 
     public static final Translation2d TURRET_OFFSET = new Translation2d(-0.1282, -0.030932);
 
-    public static final double TURRET_ALLOWED_ERROR = 2;
+    public static final double TURRET_ALLOWED_ERROR = 0.5;
 
     public static final double[][] DISTANCES = { {0.0, 1.49}, {1.5, 2.99}, {3.0, 4.49}, {4.5, 5.99}, {6.0, 7.49}, {7.5, 8.99} };
     public static final double DELTA_DISTANCE = 1.49;
@@ -275,7 +275,7 @@ public final class Constants {
     public static final double AUTO_ROTATION_ERROR = 3;
 
     public static final double DRIVE_SPEED = 1.0;
-    public static final double RAMP_TIME = 0.07;
+    public static final double RAMP_TIME = 0.15;
     public static final double TRACK_WIDTH = 0.5325;
     public static final double WHEEL_BASE = 0.5325;
     public static final SwerveDriveKinematics DRIVE_KINEMATICS =

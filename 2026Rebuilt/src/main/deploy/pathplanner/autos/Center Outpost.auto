@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Center to Shoot"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -17,12 +23,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "ArmToggle"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "ShootFuel"
                 }
               }
@@ -30,41 +30,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Right First Swipe"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RunIntake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Right First Swipe to Outpost"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "RunIntake"
-                }
-              }
-            ]
+            "pathName": "Center Shoot to Outpost"
           }
         },
         {

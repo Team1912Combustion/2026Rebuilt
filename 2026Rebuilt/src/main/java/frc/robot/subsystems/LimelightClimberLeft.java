@@ -39,6 +39,9 @@ public class LimelightClimberLeft extends SubsystemBase {
   /** Creates a new LimelightFrontLeft. */
   public LimelightClimberLeft() {
     setPipeline(0);
+
+    //LimelightHelpers.setRewindEnabled(getName(), true);
+    //LimelightHelpers.triggerRewindCapture(getName(), 20);
   }
 
   @Override

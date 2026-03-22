@@ -7,6 +7,8 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AutoIntake;
 import frc.robot.commands.Autos;
+import frc.robot.commands.BoostDown;
+import frc.robot.commands.BoostUp;
 import frc.robot.commands.CandleCommand;
 import frc.robot.commands.ClimbAlign;
 import frc.robot.commands.ClimberClimb;
@@ -23,6 +25,10 @@ import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunReverseIntake;
 import frc.robot.commands.ShootFuel;
 import frc.robot.commands.SlowMode;
+import frc.robot.commands.TurretOffsetLeft;
+import frc.robot.commands.TurretOffsetReset;
+import frc.robot.commands.TurretOffsetRight;
+import frc.robot.commands.ZeroGyro;
 import frc.robot.commands.ZeroHeading;
 import frc.robot.commands.TuningCommands.ManualHoodDown;
 import frc.robot.commands.TuningCommands.ManualHoodUp;
@@ -33,6 +39,7 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.LimelightClimberCenter;
 import frc.robot.subsystems.LimelightClimberLeft;
 import frc.robot.subsystems.LimelightClimberRight;
 import frc.robot.subsystems.Shooter;
@@ -67,6 +74,7 @@ public class RobotContainer {
   DriveTrain driveTrain;
   LimelightClimberLeft limelightClimberLeft;
   LimelightClimberRight limelightClimberRight;
+  LimelightClimberCenter limelightClimberCenter;
   Spindexer spindexer;
   Intake intake;
   Turret turret;
@@ -78,6 +86,7 @@ public class RobotContainer {
   CandleCommand candleCommand;
 
   ZeroHeading zeroHeading;
+  ZeroGyro zeroGyro;
   SlowMode slowMode;
   //ClimbAlign climbAlignLeft;
   //ClimbAlign climbAlignRight;
@@ -85,13 +94,18 @@ public class RobotContainer {
   ResetPose resetPose;
 
   ShootFuel shootFuel;
+  BoostUp boostUp;
+  BoostDown boostDown;
   RunIntake runIntake;
   RunReverseIntake runReverseIntake;
   IntakeArmToggle intakeArmToggle;
   
   MoveTurret moveTurret;
-  MoveHood moveHood;
+  TurretOffsetLeft turretOffsetLeft;
+  TurretOffsetRight turretOffsetRight;
+  TurretOffsetReset turretOffsetReset;
 
+  MoveHood moveHood;
   DuckHood duckHood;
 
   //ClimberUp climberUp;
@@ -102,8 +116,9 @@ public class RobotContainer {
   public RobotContainer() {
     limelightClimberLeft = new LimelightClimberLeft();
     limelightClimberRight = new LimelightClimberRight();
+    limelightClimberCenter = new LimelightClimberCenter();
 
-    driveTrain = new DriveTrain(limelightClimberLeft, limelightClimberRight);
+    driveTrain = new DriveTrain(limelightClimberLeft, limelightClimberRight, limelightClimberCenter);
     spindexer = new Spindexer();
     intake = new Intake();
     turret = new Turret(driveTrain);
@@ -123,6 +138,7 @@ public class RobotContainer {
       driveTrain));
 
     zeroHeading = new ZeroHeading(driveTrain);
+    zeroGyro = new ZeroGyro(driveTrain);
     slowMode = new SlowMode(driveTrain);
     //climbAlignLeft = new ClimbAlign(driveTrain, false);
     //climbAlignRight = new ClimbAlign(driveTrain, true);
@@ -130,11 +146,16 @@ public class RobotContainer {
     resetPose = new ResetPose(driveTrain);
 
     shootFuel = new ShootFuel(shooter, spindexer, turret, turretHood);
+    boostUp = new BoostUp(shooter);
+    boostDown = new BoostDown(shooter);
     runIntake = new RunIntake(intake);
     runReverseIntake = new RunReverseIntake(intake);
     intakeArmToggle = new IntakeArmToggle(intake);
 
     moveTurret = new MoveTurret(turret);
+    turretOffsetLeft = new TurretOffsetLeft(turret);
+    turretOffsetRight = new TurretOffsetRight(turret);
+    turretOffsetReset = new TurretOffsetReset(turret);
     turret.setDefaultCommand(moveTurret);
 
     moveHood = new MoveHood(turretHood, turret);
@@ -149,6 +170,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("RunIntake", runIntake);
     NamedCommands.registerCommand("ArmToggle", intakeArmToggle);
     NamedCommands.registerCommand("ShootFuel", shootFuel);
+    NamedCommands.registerCommand("RunReverseIntake", runReverseIntake);
 
     driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
     driveTrain.autoChooser.addOption("Right Outpost", new PathPlannerAuto("Right Outpost"));
@@ -180,7 +202,7 @@ public class RobotContainer {
     driverController.rightBumper().whileTrue(shootFuel);
     driverController.leftStick().whileTrue(intakeArmToggle);
     driverController.rightStick().whileTrue(slowMode);
-    driverController.x().whileTrue(runIntake);
+    //driverController.x().whileTrue(runIntake);
     driverController.y().whileTrue(runReverseIntake);
 
     //driverController.pov(180).whileTrue(autoIntake);
@@ -188,14 +210,22 @@ public class RobotContainer {
     // OPERATOR //
 
     operatorController.rightBumper().whileTrue(shootFuel);
-    operatorController.leftStick().whileTrue(intakeArmToggle);
+    //operatorController.leftStick().whileTrue(intakeArmToggle);
+    operatorController.leftStick().whileTrue(shootFuel);
     operatorController.rightStick().whileTrue(runIntake);
+    operatorController.x().whileTrue(runIntake);
+    operatorController.y().whileTrue(runReverseIntake);
 
     operatorController.start().onTrue(resetPose);
+    operatorController.back().multiPress(2, 0.5).onTrue(zeroGyro);
+
+    operatorController.pov(0).whileTrue(boostUp);
+    operatorController.pov(180).whileTrue(boostDown);
+    operatorController.pov(90).whileTrue(turretOffsetRight);
+    operatorController.pov(270).whileTrue(turretOffsetLeft);
+    operatorController.b().onTrue(turretOffsetReset);
 
     operatorController.a().whileTrue(duckHood);
-
-    operatorController.y().whileTrue(runReverseIntake);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES
 
   }

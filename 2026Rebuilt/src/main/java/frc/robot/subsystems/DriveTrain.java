@@ -77,6 +77,7 @@ public class DriveTrain extends SubsystemBase {
 
   LimelightClimberLeft limelightClimberLeft;
   LimelightClimberRight limelightClimberRight;
+  LimelightClimberCenter limelightClimberCenter;
 
   MedianFilter limelightXFilter;
   MedianFilter limelightYFilter;
@@ -89,7 +90,7 @@ public class DriveTrain extends SubsystemBase {
   public SwerveDrivePoseEstimator poseEstimator;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(.1));
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.8, 0.8, Units.degreesToRadians(50));
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(50));
   private static final Vector<N3> visionStdDevsDisabled = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(1));
 
   public SendableChooser<Command> autoChooser;
@@ -120,8 +121,10 @@ public class DriveTrain extends SubsystemBase {
 
   boolean slowMode;
 
+  double lastVisionUpdate;
+
   /** Creates a new DriveTrain. */
-  public DriveTrain(LimelightClimberLeft llcl, LimelightClimberRight llcr) {
+  public DriveTrain(LimelightClimberLeft llcl, LimelightClimberRight llcr, LimelightClimberCenter llcc) {
 
     gyroConfig = new Pigeon2Configuration();
     gyroConfig.MountPose.MountPoseYaw = 180;
@@ -139,6 +142,7 @@ public class DriveTrain extends SubsystemBase {
 
     limelightClimberLeft = llcl;
     limelightClimberRight = llcr;
+    limelightClimberCenter = llcc;
     limelightXFilter = new MedianFilter(3);
     limelightYFilter = new MedianFilter(3);
     limelightYawFilter = new MedianFilter(3);
@@ -199,36 +203,50 @@ public class DriveTrain extends SubsystemBase {
     field = new Field2d();
 
     slowMode = false;
+
+    SmartDashboard.putData(autoChooser);
+
+    lastVisionUpdate = 0;
   }
 
   @Override
   public void periodic() {
-    processFrame();
     
     // update drive yaw
     driveYaw = gyro.getYaw().getValueAsDouble() + driveYawOffset;
     driveYaw = MathUtil.angleModulus(Math.toRadians(driveYaw));
     driveYaw = Math.toDegrees(driveYaw);
 
-    LimelightHelpers.SetRobotOrientation(limelightClimberLeft.getName(), getHeading(), 0, 0, 0, 0, 0);
-    LimelightHelpers.SetRobotOrientation(limelightClimberRight.getName(), getHeading(), 0, 0, 0, 0, 0);
-
     // update pose estimator
     poseEstimator.update(getRotation2d(), get_positions());
 
+    /*if (DriverStation.isFMSAttached() && DriverStation.isAutonomousEnabled()) {
+      if ((Timer.getFPGATimestamp() - lastVisionUpdate) > 0.05) {
+
+      LimelightHelpers.SetRobotOrientation(limelightClimberLeft.getName(), getHeading(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation(limelightClimberRight.getName(), getHeading(), 0, 0, 0, 0, 0);
+
+      processFrame();
+
+      lastVisionUpdate = Timer.getFPGATimestamp();
+      }
+    } else {*/
+      LimelightHelpers.SetRobotOrientation(limelightClimberLeft.getName(), getHeading(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation(limelightClimberRight.getName(), getHeading(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation(limelightClimberCenter.getName(), getHeading(), 0, 0, 0, 0, 0);
+
+      processFrame();
+    //}
+
     // update drive yaw while disabled
     if (DriverStation.isDisabled()) {
-      if(limelightClimberLeft.getTagId() > 0) {
-        driveYawOffset = (limelightClimberLeft.getBotPose2dMT2().getRotation().getDegrees() + driveYawDirection - gyro.getYaw().getValueAsDouble() * (flipPath() ? -1 : 1));
-      } else if (limelightClimberRight.getTagId() > 0) {
-        driveYawOffset = (limelightClimberLeft.getBotPose2dMT2().getRotation().getDegrees() + driveYawDirection - gyro.getYaw().getValueAsDouble() * (flipPath() ? -1 : 1));
-      }
-
       if (flipPath()) {
         driveYawDirection = 180;
-      } else if (!flipPath()) {
+      } else {
         driveYawDirection = 0;
       }
+
+      driveYawOffset = (getHeading() + driveYawDirection);
       
       fixPose();
       //poseEstimator.resetPose(new Pose2d(compositeVisionPose.getTranslation(), Rotation2d.fromDegrees(getHeading())));
@@ -241,6 +259,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     SmartDashboard.putBoolean("can reset pose?", isVisionValid);
+    SmartDashboard.putNumber("drive yaw", driveYaw);
 
     robotSpeed = new Twist2d(
       speedXFilter.calculate((poseEstimator.getEstimatedPosition().getX() - poseX) * 50),
@@ -276,7 +295,7 @@ public class DriveTrain extends SubsystemBase {
 
       m_xSpeed = xSpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND * (slowMode ? 0.5 : 1);
       m_ySpeed = ySpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND * (slowMode ? 0.5 : 1);
-      m_rot = rot * DriveConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND * (slowMode ? 0.5 : 1);
+      m_rot = rot * (DriveConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND * 0.7) * (slowMode ? 0.5 : 1);
 
       m_xSpeed = xRateLimiter.calculate(m_xSpeed);
       m_ySpeed = yRateLimiter.calculate(m_ySpeed);
@@ -509,6 +528,16 @@ public class DriveTrain extends SubsystemBase {
         compositeLatency += limelightClimberRight.getLatency();
       }
     }
+
+    if (limelightClimberCenter.acceptPose() && limelightClimberCenter.getPipeline() == 0) {
+      if (limelightClimberCenter.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
+        totalArea += limelightClimberCenter.getTargetArea();
+        x += limelightClimberCenter.getBotPose2dMT2().getX() * limelightClimberCenter.getTargetArea();
+        y += limelightClimberCenter.getBotPose2dMT2().getY() * limelightClimberCenter.getTargetArea();
+        yaw += limelightClimberCenter.getBotPose2dMT2().getRotation().getDegrees() * limelightClimberCenter.getTargetArea();
+        compositeLatency += limelightClimberCenter.getLatency();
+      }
+    } 
 
     SmartDashboard.putNumber("Total tag area", totalArea);
 

@@ -31,7 +31,9 @@ public class ShootFuel extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    turretHood.duckHood = false;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -50,6 +52,7 @@ public class ShootFuel extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    turretHood.duckHood = true;
     shooter.shooterOff();
     spindexer.spindexerOff();
     shooter.kickerOff();

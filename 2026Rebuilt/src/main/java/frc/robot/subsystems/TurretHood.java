@@ -36,6 +36,7 @@ public class TurretHood extends SubsystemBase {
   FieldZone blueDepotTrench, blueOutpostTrench, redDepotTrench, redOutpostTrench, noTrench;
 
   boolean trenchesReassigned;
+  public boolean duckHood;
   /** Creates a new TurretHood. */
   public TurretHood(Turret t) {
     turret = t;
@@ -64,19 +65,28 @@ public class TurretHood extends SubsystemBase {
 
     trenchesReassigned = false;
 
+    duckHood = true;
   }
 
   @Override
   public void periodic() {
 
-    if (DriverStation.isTeleop() && DriverStation.isFMSAttached() && !trenchesReassigned) {
+    if (blueDepotTrench.isInZone(turret.getTurretPose()) || 
+      blueOutpostTrench.isInZone(turret.getTurretPose()) ||
+      redDepotTrench.isInZone(turret.getTurretPose()) ||
+      redOutpostTrench.isInZone(turret.getTurretPose())
+      ) {
+        duckHood = true;
+      }
+
+    /*if (DriverStation.isTeleop() && DriverStation.isFMSAttached() && !trenchesReassigned) {
       blueDepotTrench = FieldZoneConstants.BLUE_DEPOT_TRENCH_ZONE_TELEOP;
       blueOutpostTrench = FieldZoneConstants.BLUE_OUTPOST_TRENCH_ZONE_TELEOP;
       redDepotTrench = FieldZoneConstants.RED_DEPOT_TRENCH_ZONE_TELEOP;
       redOutpostTrench = FieldZoneConstants.RED_OUTPOST_TRENCH_ZONE_TELEOP;
 
       trenchesReassigned = true;
-    }
+    }*/
 
     currentPosition = hood.getPosition().getValueAsDouble();
 
@@ -168,10 +178,6 @@ public class TurretHood extends SubsystemBase {
    * @return True if the hood should be ducked, false if it should not
    */
   public boolean duckHood() {
-    return (
-      blueDepotTrench.isInZone(turret.getTurretPose()) || 
-      blueOutpostTrench.isInZone(turret.getTurretPose()) ||
-      redDepotTrench.isInZone(turret.getTurretPose()) ||
-      redOutpostTrench.isInZone(turret.getTurretPose()));
+    return duckHood;
   }
 }

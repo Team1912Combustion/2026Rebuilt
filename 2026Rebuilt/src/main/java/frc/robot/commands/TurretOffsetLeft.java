@@ -4,18 +4,15 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Turret;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class MoveTurret extends Command {
+public class TurretOffsetLeft extends Command {
   Turret turret;
-  /** Creates a new MoveTurret. */
-  public MoveTurret(Turret t) {
+  /** Creates a new TurretOffsetLeft. */
+  public TurretOffsetLeft(Turret t) {
     turret = t;
-    addRequirements(turret);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -26,7 +23,7 @@ public class MoveTurret extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.setTurretAngle(turret.getDirection(turret.getTurretPose(), turret.getTarget()).getDegrees() + turret.driverOffset);
+    turret.driverOffset += 0.1;
   }
 
   // Called once the command ends or is interrupted.

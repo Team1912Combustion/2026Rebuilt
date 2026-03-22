@@ -40,9 +40,9 @@ public class Intake extends SubsystemBase {
     rollers = new TalonFX(MotorIDs.INTAKE_ROLLERS,  new CANBus("1912CANivore"));
     arm = new TalonFX(MotorIDs.INTAKE_ARM, new CANBus("1912CANivore"));
     rollerConfig = new TalonFXConfiguration();
-    rollerConfig.Slot0.kS = 0.5;
-    rollerConfig.Slot0.kV = 0.03;
-    rollerConfig.Slot0.kP = 0.11;
+    rollerConfig.Slot0.kS = 0.85;
+    rollerConfig.Slot0.kV = 0.12;
+    rollerConfig.Slot0.kP = 0.4;
     rollerConfig.Slot0.kI = 0;
     rollerConfig.Slot0.kD = 0;
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -88,7 +88,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void intake() {
-    setRollerSpeed(60);
+    setRollerSpeed(70);
   }
 
   public void expel() {

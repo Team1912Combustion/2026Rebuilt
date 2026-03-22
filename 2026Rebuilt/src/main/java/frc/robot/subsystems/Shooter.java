@@ -35,6 +35,8 @@ public class Shooter extends SubsystemBase {
 
   double upperLimit, lowerLimit;
 
+  public double boost;
+
   /** Creates a new Shooter. */
   public Shooter(Turret t) {
     turret = t;
@@ -66,12 +68,15 @@ public class Shooter extends SubsystemBase {
 
     upperLimit = 100;
     lowerLimit = -100;
+
+    boost = 0.1;
   }
 
   @Override
   public void periodic() {
 
     SmartDashboard.putNumber("shooter speed", getSpeed());
+    SmartDashboard.putNumber("shooter boost", boost);
     // This method will be called once per scheduler run
   }
 
@@ -108,7 +113,7 @@ public class Shooter extends SubsystemBase {
    * @return True if the shooter is within in the limit, false if it isn't
    */
   public boolean shooterAtSpeed() {
-    return (Math.abs(shooterLeft.getClosedLoopError().getValueAsDouble()) < 5);
+    return (Math.abs(shooterLeft.getClosedLoopError().getValueAsDouble()) < 3);
   }
 
   /**
@@ -160,7 +165,7 @@ public class Shooter extends SubsystemBase {
    * @return The ideal speed
    */
   public double calculateSpeedContinuous(double distance) {
-    double speed = (-2.71615 * (distance + 1)) - 31.97454;
+    double speed = (-2.71615 * (distance + boost)) - 31.97454;
 
     return speed;
   }
