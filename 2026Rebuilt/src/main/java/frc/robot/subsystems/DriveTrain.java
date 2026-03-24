@@ -249,6 +249,9 @@ public class DriveTrain extends SubsystemBase {
       driveYawOffset = (getHeading() + driveYawDirection);
       
       fixPose();
+      if (!isVisionValid) {
+        poseEstimator.resetPose(new Pose2d(new Translation2d(4, 4), new Rotation2d()));
+      }
       //poseEstimator.resetPose(new Pose2d(compositeVisionPose.getTranslation(), Rotation2d.fromDegrees(getHeading())));
       //poseEstimator.addVisionMeasurement(compositeVisionPose, Timer.getFPGATimestamp() - (compositeLatency / 1000), visionStdDevsDisabled);
     }
