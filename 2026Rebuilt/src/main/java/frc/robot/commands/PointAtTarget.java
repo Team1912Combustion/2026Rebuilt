@@ -13,22 +13,23 @@ import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.subsystems.DriveTrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class PointAtThing extends Command {
+public class PointAtTarget extends Command {
   DriveTrain driveTrain;
 
   PIDController rotPID;
   Pose2d originPose;
   Pose2d goalPose;
   
-  /** Creates a new PointAtThing. */
-  public PointAtThing(DriveTrain dt) {
+  /** Creates a new PointAtTarget. */
+  public PointAtTarget(DriveTrain dt) {
     driveTrain = dt;
     addRequirements(driveTrain);
 
     rotPID = new PIDController(0.01, 0, 0);
+    rotPID.enableContinuousInput(-180, 180);
 
     originPose = new Pose2d(driveTrain.getPose().getTranslation(), new Rotation2d());
-    goalPose = new Pose2d(FieldZoneConstants.BLUE_HUB_SHOT_POINT, new Rotation2d());
+    goalPose = new Pose2d(driveTrain.getCurrentFieldZone().getShotPoint(), new Rotation2d());
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -47,12 +48,16 @@ public class PointAtThing extends Command {
       goalPose.relativeTo(originPose).getY(), 
       goalPose.relativeTo(originPose).getX()
       )); 
-    driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.getPose().getRotation().getDegrees(), angle.getDegrees()), true);
+    driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
+
+    driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    driveTrain.isAimed = false;
+  }
 
   // Returns true when the command should end.
   @Override

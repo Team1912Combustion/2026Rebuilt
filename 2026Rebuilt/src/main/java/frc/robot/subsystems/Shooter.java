@@ -26,7 +26,7 @@ import frc.robot.Constants.SensorIDs;
 import frc.robot.Constants.TurretConstants;
 
 public class Shooter extends SubsystemBase {
-  Turret turret;
+  DriveTrain driveTrain;
   TalonFX shooterLeft, shooterRight;
   TalonFX kicker;
   TalonFXConfiguration shooterConfig, kickerConfig;
@@ -38,8 +38,8 @@ public class Shooter extends SubsystemBase {
   public double boost;
 
   /** Creates a new Shooter. */
-  public Shooter(Turret t) {
-    turret = t;
+  public Shooter(DriveTrain dt) {
+    driveTrain = dt;
 
     shooterLeft = new TalonFX(MotorIDs.SHOOTER_LEFT, new CANBus("1912CANivore"));
     shooterRight = new TalonFX(MotorIDs.SHOOTER_RIGHT, new CANBus("1912CANivore"));

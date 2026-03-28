@@ -10,31 +10,22 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.BoostDown;
 import frc.robot.commands.BoostUp;
 import frc.robot.commands.CandleCommand;
-import frc.robot.commands.ClimbAlign;
-import frc.robot.commands.ClimberClimb;
-import frc.robot.commands.ClimberDown;
-import frc.robot.commands.ClimberUp;
 import frc.robot.commands.DuckHood;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeArmToggle;
 import frc.robot.commands.MoveHood;
-import frc.robot.commands.MoveTurret;
-import frc.robot.commands.PointAtThing;
+import frc.robot.commands.PointAtTarget;
 import frc.robot.commands.ResetPose;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunReverseIntake;
 import frc.robot.commands.ShootFuel;
 import frc.robot.commands.SlowMode;
-import frc.robot.commands.TurretOffsetLeft;
-import frc.robot.commands.TurretOffsetReset;
-import frc.robot.commands.TurretOffsetRight;
 import frc.robot.commands.ZeroGyro;
 import frc.robot.commands.ZeroHeading;
 import frc.robot.commands.TuningCommands.ManualHoodDown;
 import frc.robot.commands.TuningCommands.ManualHoodUp;
 import frc.robot.commands.TuningCommands.ShooterSpeedDown;
 import frc.robot.commands.TuningCommands.ShooterSpeedUp;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Intake;
@@ -44,13 +35,14 @@ import frc.robot.subsystems.LimelightClimberLeft;
 import frc.robot.subsystems.LimelightClimberRight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Spindexer;
-import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.TurretHood;
+import frc.robot.subsystems.Hood;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -77,13 +69,14 @@ public class RobotContainer {
   LimelightClimberCenter limelightClimberCenter;
   Spindexer spindexer;
   Intake intake;
-  Turret turret;
-  TurretHood turretHood;
+  Hood hood;
   Shooter shooter;
   LEDs leds;
   //Climber climber;
 
   CandleCommand candleCommand;
+
+  PointAtTarget pointAtTarget;
 
   ZeroHeading zeroHeading;
   ZeroGyro zeroGyro;
@@ -99,11 +92,6 @@ public class RobotContainer {
   RunIntake runIntake;
   RunReverseIntake runReverseIntake;
   IntakeArmToggle intakeArmToggle;
-  
-  MoveTurret moveTurret;
-  TurretOffsetLeft turretOffsetLeft;
-  TurretOffsetRight turretOffsetRight;
-  TurretOffsetReset turretOffsetReset;
 
   MoveHood moveHood;
   DuckHood duckHood;
@@ -121,14 +109,15 @@ public class RobotContainer {
     driveTrain = new DriveTrain(limelightClimberLeft, limelightClimberRight, limelightClimberCenter);
     spindexer = new Spindexer();
     intake = new Intake();
-    turret = new Turret(driveTrain);
-    turretHood = new TurretHood(turret);
-    shooter = new Shooter(turret);
+    hood = new Hood(driveTrain);
+    shooter = new Shooter(driveTrain);
     leds = new LEDs(driveTrain);
     //climber = new Climber();
 
-    candleCommand = new CandleCommand(leds, turret, turretHood, shooter);
+    candleCommand = new CandleCommand(leds, hood, shooter);
     leds.setDefaultCommand(candleCommand);
+
+    pointAtTarget = new PointAtTarget(driveTrain);
 
     driveTrain.setDefaultCommand(new RunCommand( () -> driveTrain.drive(
         -driverController.getLeftY(), 
@@ -145,23 +134,17 @@ public class RobotContainer {
     autoIntake = new AutoIntake(driveTrain, intake, limelightClimberLeft);
     resetPose = new ResetPose(driveTrain);
 
-    shootFuel = new ShootFuel(shooter, spindexer, turret, turretHood);
+    shootFuel = new ShootFuel(shooter, spindexer, driveTrain, hood);
     boostUp = new BoostUp(shooter);
     boostDown = new BoostDown(shooter);
     runIntake = new RunIntake(intake);
     runReverseIntake = new RunReverseIntake(intake);
     intakeArmToggle = new IntakeArmToggle(intake);
 
-    moveTurret = new MoveTurret(turret);
-    turretOffsetLeft = new TurretOffsetLeft(turret);
-    turretOffsetRight = new TurretOffsetRight(turret);
-    turretOffsetReset = new TurretOffsetReset(turret);
-    turret.setDefaultCommand(moveTurret);
+    moveHood = new MoveHood(hood, driveTrain);
+    hood.setDefaultCommand(moveHood);
 
-    moveHood = new MoveHood(turretHood, turret);
-    turretHood.setDefaultCommand(moveHood);
-
-    duckHood = new DuckHood(turretHood);
+    duckHood = new DuckHood(hood);
 
     //climberUp = new ClimberUp(climber);
     //climberDown = new ClimberDown(climber);
@@ -201,7 +184,7 @@ public class RobotContainer {
 
     driverController.rightBumper().whileTrue(shootFuel);
     driverController.leftStick().whileTrue(intakeArmToggle);
-    driverController.rightStick().whileTrue(slowMode);
+    driverController.rightStick().whileTrue(pointAtTarget);
     //driverController.x().whileTrue(runIntake);
     driverController.y().whileTrue(runReverseIntake);
 
@@ -221,9 +204,6 @@ public class RobotContainer {
 
     operatorController.pov(0).whileTrue(boostUp);
     operatorController.pov(180).whileTrue(boostDown);
-    operatorController.pov(90).whileTrue(turretOffsetRight);
-    operatorController.pov(270).whileTrue(turretOffsetLeft);
-    operatorController.b().onTrue(turretOffsetReset);
 
     operatorController.a().whileTrue(duckHood);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES

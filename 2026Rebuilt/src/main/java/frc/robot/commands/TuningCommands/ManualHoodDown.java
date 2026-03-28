@@ -5,13 +5,13 @@
 package frc.robot.commands.TuningCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.TurretHood;
+import frc.robot.subsystems.Hood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ManualHoodDown extends Command {
-  TurretHood hood;
+  Hood hood;
   /** Creates a new ManualHoodDown. */
-  public ManualHoodDown(TurretHood th) {
+  public ManualHoodDown(Hood th) {
     hood = th;
     addRequirements(hood);
     // Use addRequirements() here to declare subsystem dependencies.

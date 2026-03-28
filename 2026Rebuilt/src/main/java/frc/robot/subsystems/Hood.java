@@ -25,8 +25,8 @@ import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.TurretConstants;
 
-public class TurretHood extends SubsystemBase {
-  Turret turret;
+public class Hood extends SubsystemBase {
+  DriveTrain driveTrain;
 
   TalonFX hood;
   TalonFXConfiguration config;
@@ -37,9 +37,9 @@ public class TurretHood extends SubsystemBase {
 
   boolean trenchesReassigned;
   public boolean duckHood;
-  /** Creates a new TurretHood. */
-  public TurretHood(Turret t) {
-    turret = t;
+  /** Creates a new Hood. */
+  public Hood(DriveTrain dt) {
+    driveTrain = dt;
 
     hood = new TalonFX(MotorIDs.TURRET_HOOD, new CANBus("1912CANivore"));
     
@@ -71,10 +71,10 @@ public class TurretHood extends SubsystemBase {
   @Override
   public void periodic() {
 
-    if (blueDepotTrench.isInZone(turret.getTurretPose()) || 
-      blueOutpostTrench.isInZone(turret.getTurretPose()) ||
-      redDepotTrench.isInZone(turret.getTurretPose()) ||
-      redOutpostTrench.isInZone(turret.getTurretPose())
+    if (blueDepotTrench.isInZone(driveTrain.getPose()) || 
+      blueOutpostTrench.isInZone(driveTrain.getPose()) ||
+      redDepotTrench.isInZone(driveTrain.getPose()) ||
+      redOutpostTrench.isInZone(driveTrain.getPose())
       ) {
         duckHood = true;
       }
@@ -105,7 +105,7 @@ public class TurretHood extends SubsystemBase {
     int index = 0;
 
     index = (int) Math.floor(distance / TurretConstants.DELTA_DISTANCE);
-    angle = (turret.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
+    angle = (driveTrain.getCurrentFieldZone().getShotPointHeight() ? TurretConstants.LOW_HOOD_ANGLES[index] : TurretConstants.HIGH_HOOD_ANGLES[index]);
 
     return angle;
   }
@@ -160,13 +160,13 @@ public class TurretHood extends SubsystemBase {
    * @return The FieldZone that the robot is in
    */
   public FieldZone getCurrentFieldZone() {
-    if (blueDepotTrench.isInZone(turret.getTurretPose())) {
+    if (blueDepotTrench.isInZone(driveTrain.getPose())) {
       return blueDepotTrench;
-    } else if (blueOutpostTrench.isInZone(turret.getTurretPose())) {
+    } else if (blueOutpostTrench.isInZone(driveTrain.getPose())) {
       return blueOutpostTrench; 
-    } else if (redDepotTrench.isInZone(turret.getTurretPose())) {
+    } else if (redDepotTrench.isInZone(driveTrain.getPose())) {
       return redDepotTrench;
-    } else if (redOutpostTrench.isInZone(turret.getTurretPose())) {
+    } else if (redOutpostTrench.isInZone(driveTrain.getPose())) {
       return redOutpostTrench;
     } else {
       return noTrench;

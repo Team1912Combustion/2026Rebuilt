@@ -6,17 +6,16 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.TurretHood;
+import frc.robot.subsystems.Hood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class MoveHood extends Command {
-  TurretHood hood;
-  Turret turret;
+  Hood hood;
+  DriveTrain driveTrain;
   /** Creates a new MoveHood. */
-  public MoveHood(TurretHood h, Turret t) {
+  public MoveHood(Hood h, DriveTrain dt) {
     hood = h;
-    turret = t;
+    driveTrain = dt;
     addRequirements(hood);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -31,7 +30,7 @@ public class MoveHood extends Command {
     if (hood.duckHood()) {
       hood.setPosition(0);
     } else {
-      hood.setPosition(hood.calculateHoodAngleContinuous(turret.getDistance(turret.getTurretPose().getTranslation(), turret.getTarget().getTranslation())));
+      hood.setPosition(hood.calculateHoodAngleContinuous(driveTrain.getDistance(driveTrain.getPose().getTranslation(), driveTrain.getTarget().getTranslation())));
     }
   }
 

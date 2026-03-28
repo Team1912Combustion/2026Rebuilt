@@ -7,19 +7,16 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Turret;
-import frc.robot.subsystems.TurretHood;
+import frc.robot.subsystems.Hood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class CandleCommand extends Command {
   LEDs leds;
-  Turret turret;
-  TurretHood hood;
+  Hood hood;
   Shooter shooter;
   /** Creates a new CandleCommand. */
-  public CandleCommand(LEDs l, Turret t, TurretHood h, Shooter s) {
+  public CandleCommand(LEDs l, Hood h, Shooter s) {
     leds = l;
-    turret = t;
     hood = h;
     shooter = s;
     addRequirements(leds);

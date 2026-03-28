@@ -136,6 +136,8 @@ public class DriveTrain extends SubsystemBase {
   FieldZone neutralTopZone;
   FieldZone neutralBottomZone;
 
+  public boolean isAimed;
+
   /** Creates a new DriveTrain. */
   public DriveTrain(LimelightClimberLeft llcl, LimelightClimberRight llcr, LimelightClimberCenter llcc) {
 
@@ -229,6 +231,8 @@ public class DriveTrain extends SubsystemBase {
     neutralBottomZone = FieldZoneConstants.NEUTRAL_BOTTOM_ZONE;
 
     field = new Field2d();
+
+    isAimed = false;
   }
 
   @Override
@@ -467,6 +471,14 @@ public class DriveTrain extends SubsystemBase {
       origin.relativeTo(goal).getY(), 
       origin.relativeTo(goal).getX()
       )); 
+  }
+  /**
+   * Loops a value between -180 and 180.
+   * @param value The value to loop
+   * @return The looped value
+   */
+  public double angleModulus(double value) {
+    return MathUtil.inputModulus(value, -180, 180);
   }
   /**
    * Gets the estimated field pose from the pose estimator.
