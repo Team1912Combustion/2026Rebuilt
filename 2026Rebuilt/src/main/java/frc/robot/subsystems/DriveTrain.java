@@ -21,14 +21,18 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -56,8 +60,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.DeviceIDs;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.Constants.SensorIDs;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.FieldZone;
 import frc.robot.LimelightHelpers.PoseEstimate;
 
 public class DriveTrain extends SubsystemBase {
@@ -122,6 +128,13 @@ public class DriveTrain extends SubsystemBase {
   boolean slowMode;
 
   double lastVisionUpdate;
+
+  FieldZone blueDepotZone;
+  FieldZone blueOutpostZone;
+  FieldZone redDepotZone;
+  FieldZone redOutpostZone;
+  FieldZone neutralTopZone;
+  FieldZone neutralBottomZone;
 
   /** Creates a new DriveTrain. */
   public DriveTrain(LimelightClimberLeft llcl, LimelightClimberRight llcr, LimelightClimberCenter llcc) {
@@ -207,6 +220,15 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putData(autoChooser);
 
     lastVisionUpdate = 0;
+
+    blueDepotZone = FieldZoneConstants.BLUE_DEPOT_ZONE;
+    blueOutpostZone = FieldZoneConstants.BLUE_OUTPOST_ZONE;
+    redDepotZone = FieldZoneConstants.RED_DEPOT_ZONE;
+    redOutpostZone = FieldZoneConstants.RED_OUTPOST_ZONE;
+    neutralTopZone = FieldZoneConstants.NEUTRAL_TOP_ZONE;
+    neutralBottomZone = FieldZoneConstants.NEUTRAL_BOTTOM_ZONE;
+
+    field = new Field2d();
   }
 
   @Override
@@ -240,6 +262,8 @@ public class DriveTrain extends SubsystemBase {
 
     // update drive yaw while disabled
     if (DriverStation.isDisabled()) {
+      setShotPoints();
+
       if (flipPath()) {
         driveYawDirection = 180;
       } else {
@@ -265,8 +289,8 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("drive yaw", driveYaw);
 
     robotSpeed = new Twist2d(
-      speedXFilter.calculate((poseEstimator.getEstimatedPosition().getX() - poseX) * 50),
-      speedYFilter.calculate((poseEstimator.getEstimatedPosition().getY() - poseY) * 50),
+      speedXFilter.calculate((poseEstimator.getEstimatedPosition().getX() - poseX) * 50) * calculateTravelTime(getCurrentFieldZone().getDistanceFromShotPoint(getPose())),
+      speedYFilter.calculate((poseEstimator.getEstimatedPosition().getY() - poseY) * 50) * calculateTravelTime(getCurrentFieldZone().getDistanceFromShotPoint(getPose())),
       speedRotFilter.calculate((poseEstimator.getEstimatedPosition().getRotation().getDegrees() - poseYaw) * 10)
       );
 
@@ -276,6 +300,10 @@ public class DriveTrain extends SubsystemBase {
     poseYaw = poseEstimator.getEstimatedPosition().getRotation().getDegrees();
 
     SmartDashboard.putData("Auto?:", autoChooser);
+
+    field.setRobotPose(getPose());
+    field.getObject("target").setPose(getTarget());
+    SmartDashboard.putData(field);
 
     // This method will be called once per scheduler run
   }
@@ -583,6 +611,82 @@ public class DriveTrain extends SubsystemBase {
 
   public void setSlowMode(boolean yeah) {
     slowMode = yeah;
+  }
+
+  /**
+   * Gets the pose of the target, adjusted for the speed of the robot.
+   * @return The pose of the target
+   */
+  public Pose2d getTarget() {
+    return addVector(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
+  }
+
+  /**
+   * Gets the distance between two poses.
+   * @param origin The pose to start from
+   * @param goal The pose to end at
+   * @return The distance between the poses
+   */
+  public double getDistance(Translation2d origin, Translation2d goal) {
+    return origin.getDistance(goal);
+  }
+
+  /**
+   * Adds the robot's speed vector to a supplied pose
+   * @param pose The pose to add to
+   * @return The updated pose
+   */
+  public Pose2d addVector(Pose2d pose) {
+    return pose.exp(robotSpeed);
+  }
+
+  public double calculateTravelTime(double distance) {
+    return (0.0537952 * distance) + 1.06221;
+  }
+
+  /**
+   * Sets all shot points for each FieldZone based on the current alliance.
+   */
+  public void setShotPoints() {
+    if (DriverStation.isDSAttached()) {
+      if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        blueDepotZone.setShotPoint(FieldZoneConstants.BLUE_HUB_SHOT_POINT, false);
+        blueOutpostZone.setShotPoint(FieldZoneConstants.BLUE_HUB_SHOT_POINT, false);
+        neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT, true);
+        neutralBottomZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT, true);
+        redDepotZone.setShotPoint(FieldZoneConstants.RED_DEPOT_SHOT_POINT, true);
+        redOutpostZone.setShotPoint(FieldZoneConstants.RED_OUTPOST_SHOT_POINT, true);
+      } else {
+        blueDepotZone.setShotPoint(FieldZoneConstants.BLUE_DEPOT_SHOT_POINT, true);
+        blueOutpostZone.setShotPoint(FieldZoneConstants.BLUE_OUTPOST_SHOT_POINT, true);
+        neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_RED_SHOT_POINT, true);
+        neutralBottomZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT, true);
+        redDepotZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT, false);
+        redOutpostZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT, false);
+      }
+    }
+  }
+
+  /**
+   * Gets the FieldZone that the robot is currently in.
+   * @return The FieldZone that the robot is in
+   */
+  public FieldZone getCurrentFieldZone() {
+    if (blueDepotZone.isInZone(getPose())) {
+      return blueDepotZone;
+    } else if (blueOutpostZone.isInZone(getPose())) {
+      return blueOutpostZone; 
+    } else if (neutralTopZone.isInZone(getPose())) {
+      return neutralTopZone;
+    } else if (neutralBottomZone.isInZone(getPose())) {
+      return neutralBottomZone;
+    } else if (redDepotZone.isInZone(getPose())) {
+      return redDepotZone;
+    } else if (redOutpostZone.isInZone(getPose())) {
+      return redOutpostZone;
+    } else {
+      return blueDepotZone;
+    }
   }
 
 }
