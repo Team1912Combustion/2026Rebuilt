@@ -6,14 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Spindexer;
+import frc.robot.subsystems.Floor;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SpindexerIdle extends Command {
-  Spindexer spindexer;
+  Floor spindexer;
   Timer timer;
   /** Creates a new SpindexerIdle. */
-  public SpindexerIdle(Spindexer s) {
+  public SpindexerIdle(Floor s) {
     spindexer = s;
     addRequirements(spindexer);
 

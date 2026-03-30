@@ -27,7 +27,7 @@ import frc.robot.Constants.TurretConstants;
 
 public class Shooter extends SubsystemBase {
   DriveTrain driveTrain;
-  TalonFX shooterLeft, shooterRight;
+  TalonFX shooter1, shooter2, shooter3, shooter4;
   TalonFX kicker;
   TalonFXConfiguration shooterConfig, kickerConfig;
 
@@ -41,8 +41,10 @@ public class Shooter extends SubsystemBase {
   public Shooter(DriveTrain dt) {
     driveTrain = dt;
 
-    shooterLeft = new TalonFX(MotorIDs.SHOOTER_LEFT, new CANBus("1912CANivore"));
-    shooterRight = new TalonFX(MotorIDs.SHOOTER_RIGHT, new CANBus("1912CANivore"));
+    shooter1 = new TalonFX(MotorIDs.SHOOTER_1, new CANBus("1912CANivore"));
+    shooter2 = new TalonFX(MotorIDs.SHOOTER_2, new CANBus("1912CANivore"));
+    shooter3 = new TalonFX(MotorIDs.SHOOTER_3, new CANBus("1912CANivore"));
+    shooter4 = new TalonFX(MotorIDs.SHOOTER_4, new CANBus("1912CANivore"));
     kicker = new TalonFX(MotorIDs.KICKER, new CANBus("1912CANivore"));
 
     shooterConfig = new TalonFXConfiguration();
@@ -60,8 +62,10 @@ public class Shooter extends SubsystemBase {
     kickerConfig.Slot0.kI = 0;
     kickerConfig.Slot0.kD = 0;
 
-    shooterLeft.getConfigurator().apply(shooterConfig);
-    shooterRight.getConfigurator().apply(shooterConfig);
+    shooter1.getConfigurator().apply(shooterConfig);
+    shooter2.getConfigurator().apply(shooterConfig);
+    shooter3.getConfigurator().apply(shooterConfig);
+    shooter4.getConfigurator().apply(shooterConfig);
     kicker.getConfigurator().apply(kickerConfig);
 
     quadraticSolver = new QuadraticSolver();
@@ -87,9 +91,11 @@ public class Shooter extends SubsystemBase {
   public void setSpeed(double speed) {
     double targetSpeed = Math.min(upperLimit, Math.max(speed, lowerLimit));
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    shooterLeft.setControl(request.withVelocity(targetSpeed));
-    final Follower followerRequest = new Follower(0, MotorAlignmentValue.Opposed);
-    shooterRight.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_LEFT).withMotorAlignment(MotorAlignmentValue.Opposed));
+    shooter1.setControl(request.withVelocity(targetSpeed));
+    final Follower followerRequest = new Follower(0, MotorAlignmentValue.Aligned);
+    shooter2.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Aligned));
+    shooter3.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Aligned));
+    shooter4.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Aligned));
   }
 
   /**
@@ -97,7 +103,7 @@ public class Shooter extends SubsystemBase {
    * @return The speed of the shooter wheel, in rotations per second
    */
   public double getSpeed() {
-    return shooterLeft.getVelocity().getValueAsDouble();
+    return shooter1.getVelocity().getValueAsDouble();
   }
 
   /**
@@ -105,7 +111,7 @@ public class Shooter extends SubsystemBase {
    * @return The set velocity of the shooter, in rotations per second
    */
   public double getShooterTarget() {
-    return shooterLeft.getClosedLoopReference().getValueAsDouble();
+    return shooter1.getClosedLoopReference().getValueAsDouble();
   }
 
   /**
@@ -113,7 +119,7 @@ public class Shooter extends SubsystemBase {
    * @return True if the shooter is within in the limit, false if it isn't
    */
   public boolean shooterAtSpeed() {
-    return (Math.abs(shooterLeft.getClosedLoopError().getValueAsDouble()) < 3);
+    return (Math.abs(shooter1.getClosedLoopError().getValueAsDouble()) < 3);
   }
 
   /**
@@ -175,7 +181,7 @@ public class Shooter extends SubsystemBase {
    * @return The time the ball takes to reach the hub, in seconds
    */
   public double calculateFuelTravelTime() {
-    double rps = shooterLeft.getVelocity().getValueAsDouble();
+    double rps = shooter1.getVelocity().getValueAsDouble();
     double shootSpeed = rps * TurretConstants.SHOOTER_WHEEL_CIRCUMFERENCE;
 
     return quadraticSolver.findZeros(-4.9, shootSpeed, -1.3);
@@ -185,7 +191,7 @@ public class Shooter extends SubsystemBase {
    * Turns the shooter off.
    */
   public void shooterOff() {
-    shooterLeft.set(0);
+    shooter1.set(0);
   }
 
   /**

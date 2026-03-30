@@ -29,8 +29,6 @@ public class Intake extends SubsystemBase {
   TalonFXConfiguration rollerConfig;
   TalonFXConfiguration armConfig;
 
-  SlewRateLimiter rateLimiter;
-
   double targetPosition;
 
   public boolean armOut;
@@ -55,9 +53,7 @@ public class Intake extends SubsystemBase {
     armConfig.Slot0.kP = 11;
     armConfig.Slot0.kI = 8;
     armConfig.Slot0.kD = 0;
-    armConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    armConfig.Feedback.SensorToMechanismRatio = 20;
     armConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     // UPPER LIMIT //
     /*armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
@@ -68,8 +64,6 @@ public class Intake extends SubsystemBase {
 
     arm.getConfigurator().apply(armConfig);
     arm.setPosition(0.24); 
-
-    rateLimiter = new SlewRateLimiter(2);
 
     armOut = false;
 

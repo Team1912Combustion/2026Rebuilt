@@ -41,7 +41,7 @@ public class Hood extends SubsystemBase {
   public Hood(DriveTrain dt) {
     driveTrain = dt;
 
-    hood = new TalonFX(MotorIDs.TURRET_HOOD, new CANBus("1912CANivore"));
+    hood = new TalonFX(MotorIDs.HOOD, new CANBus("1912CANivore"));
     
     config = new TalonFXConfiguration();
     config.Slot0.kP = 0.8;

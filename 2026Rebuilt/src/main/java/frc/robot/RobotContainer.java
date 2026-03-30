@@ -34,7 +34,7 @@ import frc.robot.subsystems.LimelightClimberCenter;
 import frc.robot.subsystems.LimelightClimberLeft;
 import frc.robot.subsystems.LimelightClimberRight;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Spindexer;
+import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hood;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -67,7 +67,7 @@ public class RobotContainer {
   LimelightClimberLeft limelightClimberLeft;
   LimelightClimberRight limelightClimberRight;
   LimelightClimberCenter limelightClimberCenter;
-  Spindexer spindexer;
+  Floor spindexer;
   Intake intake;
   Hood hood;
   Shooter shooter;
@@ -107,7 +107,7 @@ public class RobotContainer {
     limelightClimberCenter = new LimelightClimberCenter();
 
     driveTrain = new DriveTrain(limelightClimberLeft, limelightClimberRight, limelightClimberCenter);
-    spindexer = new Spindexer();
+    spindexer = new Floor();
     intake = new Intake();
     hood = new Hood(driveTrain);
     shooter = new Shooter(driveTrain);

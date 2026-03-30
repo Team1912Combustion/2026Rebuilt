@@ -34,29 +34,25 @@ public final class Constants {
 
   public static class MotorIDs {
 
-    public static final int TURRET = 15;
-    public static final int TURRET_HOOD = 14;
+    public static final int HOOD = 9;
 
-    public static final int SHOOTER = 3;
-    public static final int KICKER = 9;
-    public static final int SPINDEXER = 10;
+    public static final int SHOOTER_1 = 10;
+    public static final int SHOOTER_2 = 11;
+    public static final int SHOOTER_3 = 12;
+    public static final int SHOOTER_4 = 13;
 
-    public static final int INTAKE_ROLLERS = 12;
+    public static final int KICKER = 14;
+
+    public static final int FLOOR_1 = 15;
+    public static final int FLOOR_2 = 16;
+
+    public static final int INTAKE_ROLLERS = 13;
     public static final int INTAKE_ARM = 11;
-
-    public static final int SHOOTER_LEFT = 17;
-    public static final int SHOOTER_RIGHT = 16;
 
   }
 
   public static class SensorIDs {
     public static final int GYRO = 1;
-    
-    public static final int TURRET_BEAMBREAK = 1;
-    
-    public static final int TURRET_LEFT_LIMIT_SWITCH = 1;
-    public static final int TURRET_RIGHT_LIMIT_SWITCH = 1;
-
   }
 
   public static class FieldZoneConstants {

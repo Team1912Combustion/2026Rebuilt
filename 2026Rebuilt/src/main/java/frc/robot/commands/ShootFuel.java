@@ -7,17 +7,17 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Spindexer;
+import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hood;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootFuel extends Command {
   Shooter shooter;
-  Spindexer spindexer;
+  Floor spindexer;
   DriveTrain driveTrain;
   Hood hood;
   /** Creates a new ShootFuel. */
-  public ShootFuel(Shooter s, Spindexer sp, DriveTrain dt, Hood h) {
+  public ShootFuel(Shooter s, Floor sp, DriveTrain dt, Hood h) {
     shooter = s;
     spindexer = sp;
     driveTrain = dt;
@@ -51,7 +51,7 @@ public class ShootFuel extends Command {
   public void end(boolean interrupted) {
     hood.duckHood = true;
     shooter.shooterOff();
-    spindexer.spindexerOff();
+    spindexer.floorOff();
     shooter.kickerOff();
   }
 
