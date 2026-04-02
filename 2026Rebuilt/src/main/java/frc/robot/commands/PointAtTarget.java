@@ -48,6 +48,7 @@ public class PointAtTarget extends Command {
       goalPose.relativeTo(originPose).getY(), 
       goalPose.relativeTo(originPose).getX()
       )); 
+    angle.plus(Rotation2d.k180deg);
     driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
 
     driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);

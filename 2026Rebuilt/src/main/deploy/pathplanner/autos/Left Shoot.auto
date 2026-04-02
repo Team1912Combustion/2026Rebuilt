@@ -17,6 +17,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "ArmToggle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "RunIntake"
                 }
               }
@@ -24,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "Left First Swipe to Shoot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left First Swipe to Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RevUpShooter"
+                }
+              }
+            ]
           }
         },
         {
@@ -36,13 +55,19 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 2.0
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "ShootFuel"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PointAtTarget"
                 }
               }
             ]
@@ -68,9 +93,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "Left Second Swipe to Shoot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Second Swipe to Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RevUpShooter"
+                }
+              }
+            ]
           }
         },
         {
@@ -80,13 +118,19 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 2.0
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "ShootFuel"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PointAtTarget"
                 }
               }
             ]

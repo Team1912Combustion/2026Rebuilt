@@ -24,9 +24,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "Right First Swipe to Shoot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right First Swipe to Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RevUpShooter"
+                }
+              }
+            ]
           }
         },
         {
@@ -36,13 +49,19 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 2.0
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "ShootFuel"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PointAtTarget"
                 }
               }
             ]
@@ -68,9 +87,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "Right Second Swipe to Shoot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right Second Swipe to Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RevUpShooter"
+                }
+              }
+            ]
           }
         },
         {
@@ -80,13 +112,19 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 2.0
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "ShootFuel"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PointAtTarget"
                 }
               }
             ]

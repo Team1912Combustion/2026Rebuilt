@@ -22,6 +22,7 @@ import frc.robot.commands.ShootFuel;
 import frc.robot.commands.SlowMode;
 import frc.robot.commands.ZeroGyro;
 import frc.robot.commands.ZeroHeading;
+import frc.robot.commands.AutoCommands.RevUpShooter;
 import frc.robot.commands.TuningCommands.ManualHoodDown;
 import frc.robot.commands.TuningCommands.ManualHoodUp;
 import frc.robot.commands.TuningCommands.ShooterSpeedDown;
@@ -89,6 +90,8 @@ public class RobotContainer {
   ShootFuel shootFuel;
   BoostUp boostUp;
   BoostDown boostDown;
+  RevUpShooter revUpShooter;
+
   RunIntake runIntake;
   RunReverseIntake runReverseIntake;
   IntakeArmToggle intakeArmToggle;
@@ -137,6 +140,8 @@ public class RobotContainer {
     shootFuel = new ShootFuel(shooter, spindexer, driveTrain, hood);
     boostUp = new BoostUp(shooter);
     boostDown = new BoostDown(shooter);
+    revUpShooter = new RevUpShooter(shooter);
+
     runIntake = new RunIntake(intake);
     runReverseIntake = new RunReverseIntake(intake);
     intakeArmToggle = new IntakeArmToggle(intake);
@@ -154,6 +159,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("ArmToggle", intakeArmToggle);
     NamedCommands.registerCommand("ShootFuel", shootFuel);
     NamedCommands.registerCommand("RunReverseIntake", runReverseIntake);
+    NamedCommands.registerCommand("RevUpShooter", revUpShooter);
+    NamedCommands.registerCommand("PointAtTarget", pointAtTarget);
+    NamedCommands.registerCommand("ResetPose", resetPose);
 
     driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
     driveTrain.autoChooser.addOption("Right Outpost", new PathPlannerAuto("Right Outpost"));
