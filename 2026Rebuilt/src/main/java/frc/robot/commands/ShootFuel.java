@@ -13,16 +13,16 @@ import frc.robot.subsystems.Hood;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootFuel extends Command {
   Shooter shooter;
-  Floor spindexer;
+  Floor floor;
   DriveTrain driveTrain;
   Hood hood;
   /** Creates a new ShootFuel. */
-  public ShootFuel(Shooter s, Floor sp, DriveTrain dt, Hood h) {
+  public ShootFuel(Shooter s, Floor f, DriveTrain dt, Hood h) {
     shooter = s;
-    spindexer = sp;
+    floor = f;
     driveTrain = dt;
     hood = h;
-    addRequirements(spindexer);
+    addRequirements(floor);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -39,10 +39,10 @@ public class ShootFuel extends Command {
     //shooter.setSpeed(-40);
     if (driveTrain.isAimed && hood.isInPosiiton() && shooter.shooterAtSpeed() && hood.duckHood()) {
       shooter.kickerOn();
-      spindexer.setSpeed(-40);
+      floor.setSpeed(-40);
     } else {
       shooter.kickerOff();
-      spindexer.setSpeed(0);
+      floor.setSpeed(0);
     }
   }
 
@@ -51,7 +51,7 @@ public class ShootFuel extends Command {
   public void end(boolean interrupted) {
     hood.duckHood = true;
     shooter.shooterOff();
-    spindexer.floorOff();
+    floor.floorOff();
     shooter.kickerOff();
   }
 
