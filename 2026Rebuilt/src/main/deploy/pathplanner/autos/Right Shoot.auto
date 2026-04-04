@@ -19,6 +19,12 @@
                 "data": {
                   "name": "RunIntake"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmToggle"
+                }
               }
             ]
           }
@@ -55,6 +61,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "ArmToggle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "ShootFuel"
                 }
               },
@@ -81,6 +93,12 @@
                 "type": "named",
                 "data": {
                   "name": "RunIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmToggle"
                 }
               }
             ]
@@ -113,6 +131,12 @@
                 "type": "wait",
                 "data": {
                   "waitTime": 2.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmToggle"
                 }
               },
               {
