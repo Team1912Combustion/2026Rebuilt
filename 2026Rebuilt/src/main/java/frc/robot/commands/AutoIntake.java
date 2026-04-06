@@ -12,13 +12,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.LimelightClimberLeft;
+import frc.robot.subsystems.LimelightLeft;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AutoIntake extends Command {
   DriveTrain driveTrain; 
   Intake intake;
-  LimelightClimberLeft limelight;
+  LimelightLeft limelight;
   SlewRateLimiter rotLimiter;
 
   PIDController pid;
@@ -27,7 +27,7 @@ public class AutoIntake extends Command {
 
   Pose2d ballPose;
   /** Creates a new AutoIntake. */
-  public AutoIntake(DriveTrain dt, Intake i, LimelightClimberLeft llcl) {
+  public AutoIntake(DriveTrain dt, Intake i, LimelightLeft llcl) {
     driveTrain = dt;
     intake = i;
     limelight = llcl;

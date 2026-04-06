@@ -46,8 +46,9 @@ public final class Constants {
     public static final int FLOOR_1 = 15;
     public static final int FLOOR_2 = 16;
 
-    public static final int INTAKE_ROLLERS = 13;
-    public static final int INTAKE_ARM = 11;
+    public static final int INTAKE_ROLLERS_LEFT = 17;
+    public static final int INTAKE_ROLLERS_RIGHT = 18;
+    public static final int INTAKE_ARM = 19;
 
   }
 
@@ -274,8 +275,8 @@ public final class Constants {
 
     public static final double DRIVE_SPEED = 1.0;
     public static final double RAMP_TIME = 0.15;
-    public static final double TRACK_WIDTH = 0.5325;
-    public static final double WHEEL_BASE = 0.5325;
+    public static final double TRACK_WIDTH = 0.55245;
+    public static final double WHEEL_BASE = 0.55245;
     public static final SwerveDriveKinematics DRIVE_KINEMATICS =
       new SwerveDriveKinematics(
           new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),   //FL

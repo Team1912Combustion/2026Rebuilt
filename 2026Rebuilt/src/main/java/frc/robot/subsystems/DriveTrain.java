@@ -81,9 +81,9 @@ public class DriveTrain extends SubsystemBase {
 
   public boolean fieldRelative;
 
-  LimelightClimberLeft limelightClimberLeft;
-  LimelightClimberRight limelightClimberRight;
-  LimelightClimberCenter limelightClimberCenter;
+  LimelightLeft limelightLeft;
+  LimelightRight limelightRight;
+  LimelightShooter limelightShooter;
 
   MedianFilter limelightXFilter;
   MedianFilter limelightYFilter;
@@ -138,8 +138,10 @@ public class DriveTrain extends SubsystemBase {
 
   public boolean isAimed;
 
+  String targetMode;
+
   /** Creates a new DriveTrain. */
-  public DriveTrain(LimelightClimberLeft llcl, LimelightClimberRight llcr, LimelightClimberCenter llcc) {
+  public DriveTrain(LimelightLeft llcl, LimelightRight llcr, LimelightShooter llcc) {
 
     gyroConfig = new Pigeon2Configuration();
     gyroConfig.MountPose.MountPoseYaw = 180;
@@ -155,9 +157,9 @@ public class DriveTrain extends SubsystemBase {
 
     gyro.setYaw(0);
 
-    limelightClimberLeft = llcl;
-    limelightClimberRight = llcr;
-    limelightClimberCenter = llcc;
+    limelightLeft = llcl;
+    limelightRight = llcr;
+    limelightShooter = llcc;
     limelightXFilter = new MedianFilter(3);
     limelightYFilter = new MedianFilter(3);
     limelightYawFilter = new MedianFilter(3);
@@ -233,6 +235,8 @@ public class DriveTrain extends SubsystemBase {
     field = new Field2d();
 
     isAimed = false;
+
+    targetMode = "pose";
   }
 
   @Override
@@ -257,9 +261,9 @@ public class DriveTrain extends SubsystemBase {
       lastVisionUpdate = Timer.getFPGATimestamp();
       }
     } else {*/
-      LimelightHelpers.SetRobotOrientation(limelightClimberLeft.getName(), getHeading(), 0, 0, 0, 0, 0);
-      LimelightHelpers.SetRobotOrientation(limelightClimberRight.getName(), getHeading(), 0, 0, 0, 0, 0);
-      LimelightHelpers.SetRobotOrientation(limelightClimberCenter.getName(), getHeading(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation(limelightLeft.getName(), getHeading(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation(limelightRight.getName(), getHeading(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation(limelightShooter.getName(), getHeading(), 0, 0, 0, 0, 0);
 
       processFrame();
     //}
@@ -552,33 +556,33 @@ public class DriveTrain extends SubsystemBase {
     double totalArea = 0;
     isVisionValid = false;
 
-    if (limelightClimberLeft.acceptPose() && limelightClimberLeft.getPipeline() == 0) {
-      if (limelightClimberLeft.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
-        totalArea += limelightClimberLeft.getTargetArea();
-        x += limelightClimberLeft.getBotPose2dMT2().getX() * limelightClimberLeft.getTargetArea();
-        y += limelightClimberLeft.getBotPose2dMT2().getY() * limelightClimberLeft.getTargetArea();
-        yaw += limelightClimberLeft.getBotPose2dMT2().getRotation().getDegrees() * limelightClimberLeft.getTargetArea();
-        compositeLatency += limelightClimberLeft.getLatency();
+    if (limelightLeft.acceptPose() && limelightLeft.getPipeline() == 0) {
+      if (limelightLeft.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
+        totalArea += limelightLeft.getTargetArea();
+        x += limelightLeft.getBotPose2dMT2().getX() * limelightLeft.getTargetArea();
+        y += limelightLeft.getBotPose2dMT2().getY() * limelightLeft.getTargetArea();
+        yaw += limelightLeft.getBotPose2dMT2().getRotation().getDegrees() * limelightLeft.getTargetArea();
+        compositeLatency += limelightLeft.getLatency();
       }
     } 
 
-    if (limelightClimberRight.acceptPose() && limelightClimberLeft.getPipeline() == 0) {
-      if (limelightClimberRight.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
-        totalArea += limelightClimberRight.getTargetArea();
-        x += limelightClimberRight.getBotPose2dMT2().getX() * limelightClimberRight.getTargetArea();
-        y += limelightClimberRight.getBotPose2dMT2().getY() * limelightClimberRight.getTargetArea();
-        yaw += limelightClimberRight.getBotPose2dMT2().getRotation().getDegrees() * limelightClimberRight.getTargetArea();
-        compositeLatency += limelightClimberRight.getLatency();
+    if (limelightRight.acceptPose() && limelightLeft.getPipeline() == 0) {
+      if (limelightRight.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
+        totalArea += limelightRight.getTargetArea();
+        x += limelightRight.getBotPose2dMT2().getX() * limelightRight.getTargetArea();
+        y += limelightRight.getBotPose2dMT2().getY() * limelightRight.getTargetArea();
+        yaw += limelightRight.getBotPose2dMT2().getRotation().getDegrees() * limelightRight.getTargetArea();
+        compositeLatency += limelightRight.getLatency();
       }
     }
 
-    if (limelightClimberCenter.acceptPose() && limelightClimberCenter.getPipeline() == 0) {
-      if (limelightClimberCenter.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
-        totalArea += limelightClimberCenter.getTargetArea();
-        x += limelightClimberCenter.getBotPose2dMT2().getX() * limelightClimberCenter.getTargetArea();
-        y += limelightClimberCenter.getBotPose2dMT2().getY() * limelightClimberCenter.getTargetArea();
-        yaw += limelightClimberCenter.getBotPose2dMT2().getRotation().getDegrees() * limelightClimberCenter.getTargetArea();
-        compositeLatency += limelightClimberCenter.getLatency();
+    if (limelightShooter.acceptPose() && limelightShooter.getPipeline() == 0) {
+      if (limelightShooter.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
+        totalArea += limelightShooter.getTargetArea();
+        x += limelightShooter.getBotPose2dMT2().getX() * limelightShooter.getTargetArea();
+        y += limelightShooter.getBotPose2dMT2().getY() * limelightShooter.getTargetArea();
+        yaw += limelightShooter.getBotPose2dMT2().getRotation().getDegrees() * limelightShooter.getTargetArea();
+        compositeLatency += limelightShooter.getLatency();
       }
     } 
 
@@ -604,16 +608,16 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public boolean towerReadyToAim() {
-    return towerTagIDs.contains(limelightClimberLeft.getTagId());
+    return towerTagIDs.contains(limelightLeft.getTagId());
   }
 
   public Pose2d getFuelPosition() {
-    if (limelightClimberLeft.getPipeline() == 1) {
-      Pose3d limelightRobotPose = LimelightHelpers.getCameraPose3d_RobotSpace(limelightClimberLeft.getName());
+    if (limelightLeft.getPipeline() == 1) {
+      Pose3d limelightRobotPose = LimelightHelpers.getCameraPose3d_RobotSpace(limelightLeft.getName());
       Pose2d limelightPose = getPose().transformBy(new Transform2d(limelightRobotPose.getX(), limelightRobotPose.getY(), new Rotation2d()));
 
-      double distance = limelightClimberLeft.getTargetArea();
-      double angle = (limelightClimberLeft.getXOffset() / 12) * (41);
+      double distance = limelightLeft.getTargetArea();
+      double angle = (limelightLeft.getXOffset() / 12) * (41);
 
       return limelightPose.transformBy(new Transform2d(distance * Math.cos(angle), distance * Math.sin(angle), new Rotation2d()));
     } else {
@@ -699,6 +703,18 @@ public class DriveTrain extends SubsystemBase {
     } else {
       return blueDepotZone;
     }
+  }
+
+  public void toggleTargetMode() {
+    if (targetMode == "pose") {
+      targetMode = "tag";
+    } else {
+      targetMode = "pose";
+    }
+  }
+
+  public String getTargetMode() {
+    return targetMode;
   }
 
 }

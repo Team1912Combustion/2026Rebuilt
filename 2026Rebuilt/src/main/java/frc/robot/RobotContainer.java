@@ -31,9 +31,9 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.LimelightClimberCenter;
-import frc.robot.subsystems.LimelightClimberLeft;
-import frc.robot.subsystems.LimelightClimberRight;
+import frc.robot.subsystems.LimelightShooter;
+import frc.robot.subsystems.LimelightLeft;
+import frc.robot.subsystems.LimelightRight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hood;
@@ -65,9 +65,9 @@ public class RobotContainer {
       new CommandXboxController(1);
 
   DriveTrain driveTrain;
-  LimelightClimberLeft limelightClimberLeft;
-  LimelightClimberRight limelightClimberRight;
-  LimelightClimberCenter limelightClimberCenter;
+  LimelightLeft limelightLeft;
+  LimelightRight limelightRight;
+  LimelightShooter limelightShooter;
   Floor spindexer;
   Intake intake;
   Hood hood;
@@ -105,11 +105,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    limelightClimberLeft = new LimelightClimberLeft();
-    limelightClimberRight = new LimelightClimberRight();
-    limelightClimberCenter = new LimelightClimberCenter();
+    limelightLeft = new LimelightLeft();
+    limelightRight = new LimelightRight();
+    limelightShooter = new LimelightShooter();
 
-    driveTrain = new DriveTrain(limelightClimberLeft, limelightClimberRight, limelightClimberCenter);
+    driveTrain = new DriveTrain(limelightLeft, limelightRight, limelightShooter);
     spindexer = new Floor();
     intake = new Intake();
     hood = new Hood(driveTrain);
@@ -134,7 +134,7 @@ public class RobotContainer {
     slowMode = new SlowMode(driveTrain);
     //climbAlignLeft = new ClimbAlign(driveTrain, false);
     //climbAlignRight = new ClimbAlign(driveTrain, true);
-    autoIntake = new AutoIntake(driveTrain, intake, limelightClimberLeft);
+    autoIntake = new AutoIntake(driveTrain, intake, limelightLeft);
     resetPose = new ResetPose(driveTrain);
 
     shootFuel = new ShootFuel(shooter, spindexer, driveTrain, hood);

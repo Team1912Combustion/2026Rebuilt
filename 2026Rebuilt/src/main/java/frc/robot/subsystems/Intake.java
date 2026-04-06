@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -14,6 +15,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GainSchedKpBehaviorValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
@@ -23,7 +25,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 
 public class Intake extends SubsystemBase {
-  TalonFX rollers;
+  TalonFX rollersLeft;
+  TalonFX rollersRight;
   TalonFX arm;
 
   TalonFXConfiguration rollerConfig;
@@ -35,7 +38,8 @@ public class Intake extends SubsystemBase {
 
   /** Creates a new Intake. */
   public Intake() {
-    rollers = new TalonFX(MotorIDs.INTAKE_ROLLERS,  new CANBus("1912CANivore"));
+    rollersLeft = new TalonFX(MotorIDs.INTAKE_ROLLERS_LEFT,  new CANBus("1912CANivore"));
+    rollersRight = new TalonFX(MotorIDs.INTAKE_ROLLERS_RIGHT,  new CANBus("1912CANivore"));
     arm = new TalonFX(MotorIDs.INTAKE_ARM, new CANBus("1912CANivore"));
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.Slot0.kS = 0.85;
@@ -45,7 +49,8 @@ public class Intake extends SubsystemBase {
     rollerConfig.Slot0.kD = 0;
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-    rollers.getConfigurator().apply(rollerConfig);
+    rollersLeft.getConfigurator().apply(rollerConfig);
+    rollersRight.getConfigurator().apply(rollerConfig);
 
     armConfig = new TalonFXConfiguration();
     armConfig.Slot0.kG = 0.5;
@@ -78,7 +83,9 @@ public class Intake extends SubsystemBase {
 
   public void setRollerSpeed(double speed) {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    rollers.setControl(request.withVelocity(speed));
+    rollersLeft.setControl(request.withVelocity(speed));
+    final Follower followerRequest = new Follower(MotorIDs.INTAKE_ROLLERS_LEFT, MotorAlignmentValue.Aligned);
+    rollersRight.setControl(followerRequest);
   }
 
   public void intake() {
@@ -90,7 +97,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean rollersAtSpeed() {
-    return (Math.abs(rollers.getClosedLoopError().getValueAsDouble()) < 20);
+    return (Math.abs(rollersLeft.getClosedLoopError().getValueAsDouble()) < 20);
   }
 
   public void setArmPosition(double position) {

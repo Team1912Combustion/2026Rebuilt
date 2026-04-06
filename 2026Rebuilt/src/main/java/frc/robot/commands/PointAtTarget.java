@@ -11,22 +11,30 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.LimelightShooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PointAtTarget extends Command {
   DriveTrain driveTrain;
+  LimelightShooter limelightShooter;
 
   PIDController rotPID;
+  PIDController tagPID;
   Pose2d originPose;
   Pose2d goalPose;
   
   /** Creates a new PointAtTarget. */
-  public PointAtTarget(DriveTrain dt) {
+  public PointAtTarget(DriveTrain dt, LimelightShooter lls) {
     driveTrain = dt;
+    limelightShooter = lls;
     addRequirements(driveTrain);
 
     rotPID = new PIDController(0.01, 0, 0);
     rotPID.enableContinuousInput(-180, 180);
+    rotPID.setTolerance(5);
+
+    tagPID = new PIDController(0.1, 0, 0);
+    tagPID.setTolerance(1);
 
     originPose = new Pose2d(driveTrain.getPose().getTranslation(), new Rotation2d());
     goalPose = new Pose2d(driveTrain.getCurrentFieldZone().getShotPoint(), new Rotation2d());
@@ -35,9 +43,7 @@ public class PointAtTarget extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    rotPID.setTolerance(5);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -49,15 +55,32 @@ public class PointAtTarget extends Command {
       goalPose.relativeTo(originPose).getX()
       )); 
     angle.plus(Rotation2d.k180deg);
-    driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
 
-    driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
+    double tx = limelightShooter.getXOffset();
+
+    if (driveTrain.getTargetMode() == "tag") {
+      limelightShooter.setPipeline(1);
+      if (limelightShooter.getTagId() > 0) {
+        driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), tagPID.calculate(tx, 0), true);
+        driveTrain.isAimed = (tagPID.atSetpoint() ? true : false);
+      } else {
+        driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
+        driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
+      }
+      
+    } else {
+      limelightShooter.setPipeline(0);
+
+      driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
+      driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     driveTrain.isAimed = false;
+    limelightShooter.setPipeline(0);
   }
 
   // Returns true when the command should end.

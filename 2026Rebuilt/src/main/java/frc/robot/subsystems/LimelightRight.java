@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 /** Add your docs here. */
-public class LimelightClimberRight extends LimelightClimberLeft {
+public class LimelightRight extends LimelightLeft {
 
     @Override
     // IP IS - 10.19.12.13:5801 //
@@ -15,7 +15,7 @@ public class LimelightClimberRight extends LimelightClimberLeft {
     * @return The name of the limelight as a string
     */
     public String getName() {
-        return "limelight-cr";
+        return "limelight-r";
     }
     
     @Override
@@ -24,7 +24,7 @@ public class LimelightClimberRight extends LimelightClimberLeft {
     * @return The position of the limelight as a string
     */
     public String getPosition() {
-        return "climberRight";
+        return "right";
     }
 
 }

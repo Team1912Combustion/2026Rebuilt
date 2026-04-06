@@ -20,7 +20,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 
-public class LimelightClimberLeft extends SubsystemBase {
+public class LimelightLeft extends SubsystemBase {
   private final NetworkTable table =
 	  NetworkTableInstance.getDefault().getTable(getName());
   private final NetworkTableEntry pipeline = table.getEntry("pipeline");
@@ -37,7 +37,7 @@ public class LimelightClimberLeft extends SubsystemBase {
   private int currentTagId = 0;
 
   /** Creates a new LimelightFrontLeft. */
-  public LimelightClimberLeft() {
+  public LimelightLeft() {
     setPipeline(0);
 
     //LimelightHelpers.setRewindEnabled(getName(), true);
@@ -71,7 +71,7 @@ public class LimelightClimberLeft extends SubsystemBase {
    * @return The name of the limelight as a string
    */
   public String getName() {
-    return "limelight-cl";
+    return "limelight-l";
   }
 
   /**
@@ -79,7 +79,7 @@ public class LimelightClimberLeft extends SubsystemBase {
    * @return The position of the limelight as a string
    */
   public String getPosition() {
-    return "climberLeft";
+    return "left";
   }
   /**
    * Toggles between pipeline 0 and 1.
