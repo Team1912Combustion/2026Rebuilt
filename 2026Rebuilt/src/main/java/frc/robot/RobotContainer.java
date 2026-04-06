@@ -20,6 +20,7 @@ import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunReverseIntake;
 import frc.robot.commands.ShootFuel;
 import frc.robot.commands.SlowMode;
+import frc.robot.commands.ToggleTargetMode;
 import frc.robot.commands.ZeroGyro;
 import frc.robot.commands.ZeroHeading;
 import frc.robot.commands.AutoCommands.RevUpShooter;
@@ -78,6 +79,7 @@ public class RobotContainer {
   CandleCommand candleCommand;
 
   PointAtTarget pointAtTarget;
+  ToggleTargetMode toggleTargetMode;
 
   ZeroHeading zeroHeading;
   ZeroGyro zeroGyro;
@@ -120,7 +122,8 @@ public class RobotContainer {
     candleCommand = new CandleCommand(leds, hood, shooter);
     leds.setDefaultCommand(candleCommand);
 
-    pointAtTarget = new PointAtTarget(driveTrain);
+    pointAtTarget = new PointAtTarget(driveTrain, limelightShooter);
+    toggleTargetMode = new ToggleTargetMode(driveTrain);
 
     driveTrain.setDefaultCommand(new RunCommand( () -> driveTrain.drive(
         -driverController.getLeftY(), 
@@ -164,11 +167,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("ResetPose", resetPose);
 
     driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
-    driveTrain.autoChooser.addOption("Right Outpost", new PathPlannerAuto("Right Outpost"));
-    driveTrain.autoChooser.addOption("Right Shoot", new PathPlannerAuto("Right Shoot"));
-    driveTrain.autoChooser.addOption("Right Lob", new PathPlannerAuto("Right Lob"));
-    driveTrain.autoChooser.addOption("Left Shoot", new PathPlannerAuto("Left Shoot"));
-    driveTrain.autoChooser.addOption("Left Lob", new PathPlannerAuto("Left Lob"));
+    driveTrain.autoChooser.addOption("Right Shoot Trench", new PathPlannerAuto("Right Shoot Trench"));
+    driveTrain.autoChooser.addOption("Left Shoot Trench", new PathPlannerAuto("Left Shoot Trench"));
+    driveTrain.autoChooser.addOption("Right Shoot Bump", new PathPlannerAuto("Right Shoot Bump"));
+    driveTrain.autoChooser.addOption("Left Shoot Bump", new PathPlannerAuto("Left Shoot Bump"));
 
     // Configure the trigger bindings
     configureBindings();
