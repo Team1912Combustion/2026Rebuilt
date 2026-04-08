@@ -124,12 +124,12 @@ public class RobotContainer {
     //autoIntake = new AutoIntake(driveTrain, intakeRollers, intakeArm, limelightLeft);
     resetPose = new ResetPose(driveTrain);
 
-    shootFuel = new ShootFuel(shooter, floor, driveTrain, hood);
+    shootFuel = new ShootFuel(shooter, floor, driveTrain, hood, intakeRollers, intakeArm);
     boostUp = new BoostUp(shooter);
     boostDown = new BoostDown(shooter);
     revUpShooter = new RevUpShooter(shooter);
 
-    runIntake = new RunIntake(intakeRollers);
+    runIntake = new RunIntake(intakeRollers, intakeArm);
     runReverseIntake = new RunReverseIntake(intakeRollers);
     intakeArmToggle = new IntakeArmToggle(intakeArm);
 
@@ -146,11 +146,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("PointAtTarget", pointAtTarget);
     NamedCommands.registerCommand("ResetPose", resetPose);
 
-    /*driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
+    driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
     driveTrain.autoChooser.addOption("Right Shoot Trench", new PathPlannerAuto("Right Shoot Trench"));
     driveTrain.autoChooser.addOption("Left Shoot Trench", new PathPlannerAuto("Left Shoot Trench"));
     driveTrain.autoChooser.addOption("Right Shoot Bump", new PathPlannerAuto("Right Shoot Bump"));
-    driveTrain.autoChooser.addOption("Left Shoot Bump", new PathPlannerAuto("Left Shoot Bump"));*/
+    driveTrain.autoChooser.addOption("Left Shoot Bump", new PathPlannerAuto("Left Shoot Bump"));
 
     // Configure the trigger bindings
     configureBindings();

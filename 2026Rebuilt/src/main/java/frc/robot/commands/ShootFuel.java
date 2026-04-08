@@ -9,6 +9,8 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.IntakeArm;
+import frc.robot.subsystems.IntakeRollers;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class ShootFuel extends Command {
@@ -16,13 +18,17 @@ public class ShootFuel extends Command {
   Floor floor;
   DriveTrain driveTrain;
   Hood hood;
+  IntakeRollers intakeRollers;
+  IntakeArm intakeArm;
   /** Creates a new ShootFuel. */
-  public ShootFuel(Shooter s, Floor f, DriveTrain dt, Hood h) {
+  public ShootFuel(Shooter s, Floor f, DriveTrain dt, Hood h, IntakeRollers ir, IntakeArm ia) {
     shooter = s;
     floor = f;
     driveTrain = dt;
     hood = h;
-    addRequirements(shooter, floor);
+    intakeRollers = ir;
+    intakeArm = ia;
+    addRequirements(shooter, floor, intakeRollers, intakeArm);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -30,6 +36,8 @@ public class ShootFuel extends Command {
   @Override
   public void initialize() {
     hood.duckHood = false;
+    intakeArm.armIn();
+    intakeRollers.intake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -52,6 +60,8 @@ public class ShootFuel extends Command {
     shooter.shooterOff();
     floor.floorOff();
     shooter.kickerOff();
+    intakeArm.armOut();
+    intakeRollers.setRollerSpeed(0);
   }
 
   // Returns true when the command should end.
