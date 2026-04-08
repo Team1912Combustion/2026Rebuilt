@@ -26,9 +26,9 @@ public class Floor extends SubsystemBase {
     floor2 = new TalonFX(MotorIDs.FLOOR_2, new CANBus("1912CANivore"));
     floorConfig = new TalonFXConfiguration();
 
-    floorConfig.Slot0.kS = 0.2;
+    floorConfig.Slot0.kS = 1.2;
     floorConfig.Slot0.kV = 0.1;
-    floorConfig.Slot0.kP = 0.25;
+    floorConfig.Slot0.kP = 0.12;
     floorConfig.Slot0.kI = 0;
     floorConfig.Slot0.kD = 0;
     floorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -60,7 +60,7 @@ public class Floor extends SubsystemBase {
    * @return True if the floor is within in the limit, false if it isn't
    */
   public boolean floorAtSpeed() {
-    return (floor1.getClosedLoopError().getValueAsDouble() < 20);
+    return (floor1.getClosedLoopError().getValueAsDouble() < 10);
   }
 
   /**

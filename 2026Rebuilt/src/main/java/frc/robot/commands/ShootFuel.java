@@ -22,7 +22,7 @@ public class ShootFuel extends Command {
     floor = f;
     driveTrain = dt;
     hood = h;
-    addRequirements(floor);
+    addRequirements(shooter, floor);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -36,10 +36,9 @@ public class ShootFuel extends Command {
   @Override
   public void execute() {
     shooter.setSpeed(shooter.calculateSpeedContinuous(driveTrain.getDistance(driveTrain.getPose().getTranslation(), driveTrain.getTarget().getTranslation())));
-    //shooter.setSpeed(-40);
     if (driveTrain.isAimed && hood.isInPosiiton() && shooter.shooterAtSpeed() && hood.duckHood()) {
       shooter.kickerOn();
-      floor.setSpeed(-40);
+      floor.setSpeed(20);
     } else {
       shooter.kickerOff();
       floor.setSpeed(0);

@@ -44,15 +44,15 @@ public class Hood extends SubsystemBase {
     hood = new TalonFX(MotorIDs.HOOD, new CANBus("1912CANivore"));
     
     config = new TalonFXConfiguration();
-    config.Slot0.kP = 0.8;
-    config.Slot0.kI = 0.25;
+    config.Slot0.kP = 7;
+    config.Slot0.kI = 0.;
     config.Slot0.kD = 0;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     hood.getConfigurator().apply(config);
     hood.setPosition(0);
 
-    upperLimit = 12.5;
+    upperLimit = 1.2;
     lowerLimit = 0;
     currentPosition = hood.getPosition().getValueAsDouble();
     targetPosition = 0;
@@ -116,7 +116,7 @@ public class Hood extends SubsystemBase {
    * @return The ideal hood angle
    */
   public double calculateHoodAngleContinuous(double distance) {
-    double angle = (2.09074 * distance) - 1.23796;
+    double angle = 0.0278589 * Math.pow(2.09567, distance);
     
     return angle;
   }

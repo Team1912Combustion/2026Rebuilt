@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.DeviceIdentifier;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -48,19 +49,21 @@ public class Shooter extends SubsystemBase {
     kicker = new TalonFX(MotorIDs.KICKER, new CANBus("1912CANivore"));
 
     shooterConfig = new TalonFXConfiguration();
-    shooterConfig.Slot0.kS = 0.4;
+    shooterConfig.Slot0.kS = 0.25;
     shooterConfig.Slot0.kV = 0.12;
-    shooterConfig.Slot0.kP = 0.4;
+    shooterConfig.Slot0.kP = 0.25;
     shooterConfig.Slot0.kI = 0;
     shooterConfig.Slot0.kD = 0;
+    shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     
     kickerConfig = new TalonFXConfiguration();
-    kickerConfig.Slot0.kS = 0.3;
-    kickerConfig.Slot0.kV = 0.12;
-    kickerConfig.Slot0.kP = 0.3;
+    kickerConfig.Slot0.kS = 0.4;
+    kickerConfig.Slot0.kV = 0.1;
+    kickerConfig.Slot0.kP = 0.28;
     kickerConfig.Slot0.kI = 0;
     kickerConfig.Slot0.kD = 0;
+    kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     shooter1.getConfigurator().apply(shooterConfig);
     shooter2.getConfigurator().apply(shooterConfig);
@@ -73,7 +76,7 @@ public class Shooter extends SubsystemBase {
     upperLimit = 100;
     lowerLimit = -100;
 
-    boost = 0.1;
+    boost = 0;
   }
 
   @Override
@@ -94,8 +97,8 @@ public class Shooter extends SubsystemBase {
     shooter1.setControl(request.withVelocity(targetSpeed));
     final Follower followerRequest = new Follower(0, MotorAlignmentValue.Aligned);
     shooter2.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Aligned));
-    shooter3.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Aligned));
-    shooter4.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Aligned));
+    shooter3.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Opposed));
+    shooter4.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Opposed));
   }
 
   /**
@@ -127,7 +130,7 @@ public class Shooter extends SubsystemBase {
    */
   public void kickerOn() {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    kicker.setControl(request.withVelocity(100));
+    kicker.setControl(request.withVelocity(-50));
   }
 
   /**
@@ -171,7 +174,7 @@ public class Shooter extends SubsystemBase {
    * @return The ideal speed
    */
   public double calculateSpeedContinuous(double distance) {
-    double speed = (-2.71615 * (distance + boost)) - 31.97454;
+    double speed = -28.61997 - (11.55667 * Math.log(distance + boost));
 
     return speed;
   }

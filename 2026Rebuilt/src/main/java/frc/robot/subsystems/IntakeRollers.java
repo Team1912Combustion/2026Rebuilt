@@ -24,55 +24,28 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 
-public class Intake extends SubsystemBase {
+public class IntakeRollers extends SubsystemBase {
   TalonFX rollersLeft;
   TalonFX rollersRight;
-  TalonFX arm;
 
   TalonFXConfiguration rollerConfig;
-  TalonFXConfiguration armConfig;
 
   double targetPosition;
 
-  public boolean armOut;
-
-  /** Creates a new Intake. */
-  public Intake() {
+  /** Creates a new IntakeRollers. */
+  public IntakeRollers() {
     rollersLeft = new TalonFX(MotorIDs.INTAKE_ROLLERS_LEFT,  new CANBus("1912CANivore"));
     rollersRight = new TalonFX(MotorIDs.INTAKE_ROLLERS_RIGHT,  new CANBus("1912CANivore"));
-    arm = new TalonFX(MotorIDs.INTAKE_ARM, new CANBus("1912CANivore"));
     rollerConfig = new TalonFXConfiguration();
-    rollerConfig.Slot0.kS = 0.85;
-    rollerConfig.Slot0.kV = 0.12;
-    rollerConfig.Slot0.kP = 0.4;
+    rollerConfig.Slot0.kS = 0;
+    rollerConfig.Slot0.kV = 0;
+    rollerConfig.Slot0.kP = 0;
     rollerConfig.Slot0.kI = 0;
     rollerConfig.Slot0.kD = 0;
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     rollersLeft.getConfigurator().apply(rollerConfig);
     rollersRight.getConfigurator().apply(rollerConfig);
-
-    armConfig = new TalonFXConfiguration();
-    armConfig.Slot0.kG = 0.5;
-    armConfig.Slot0.kS = 0.2;
-    armConfig.Slot0.kP = 11;
-    armConfig.Slot0.kI = 8;
-    armConfig.Slot0.kD = 0;
-    armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    armConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-    // UPPER LIMIT //
-    /*armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    armConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0;
-    // LOWER LIMIT //
-    armConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 4.2;*/
-
-    arm.getConfigurator().apply(armConfig);
-    arm.setPosition(0.24); 
-
-    armOut = false;
-
-    armIn();
     
   }
 
@@ -84,42 +57,20 @@ public class Intake extends SubsystemBase {
   public void setRollerSpeed(double speed) {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
     rollersLeft.setControl(request.withVelocity(speed));
-    final Follower followerRequest = new Follower(MotorIDs.INTAKE_ROLLERS_LEFT, MotorAlignmentValue.Aligned);
+    final Follower followerRequest = new Follower(MotorIDs.INTAKE_ROLLERS_LEFT, MotorAlignmentValue.Opposed);
     rollersRight.setControl(followerRequest);
   }
 
   public void intake() {
-    setRollerSpeed(70);
+    setRollerSpeed(-50);
   }
 
   public void expel() {
-    setRollerSpeed(-40);
+    setRollerSpeed(40);
   }
 
   public boolean rollersAtSpeed() {
     return (Math.abs(rollersLeft.getClosedLoopError().getValueAsDouble()) < 20);
   }
 
-  public void setArmPosition(double position) {
-    final PositionVoltage request = new PositionVoltage(0).withSlot(0);
-    arm.setControl(request.withPosition(position));
-  }
-
-  public void armOut() {
-    armOut = true;
-    setArmPosition(0);
-  }
-
-  public void armIn() {
-    armOut = false;
-    setArmPosition(0.24);
-  }
-
-  public void armWiggle() {
-    setArmPosition(0.18);
-  }
-
-  public boolean armInPosition() {
-    return (Math.abs(arm.getClosedLoopError().getValueAsDouble()) < 0.3);
-  }
 }

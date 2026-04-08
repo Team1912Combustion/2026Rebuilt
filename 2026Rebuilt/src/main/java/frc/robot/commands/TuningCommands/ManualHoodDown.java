@@ -24,7 +24,7 @@ public class ManualHoodDown extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    hood.setPosition(hood.getTarget() - 0.05);
+    hood.setPosition(hood.getTarget() - 0.01);
   }
 
   // Called once the command ends or is interrupted.

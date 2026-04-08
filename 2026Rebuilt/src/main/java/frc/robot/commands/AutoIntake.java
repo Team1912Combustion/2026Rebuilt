@@ -11,13 +11,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeArm;
+import frc.robot.subsystems.IntakeRollers;
 import frc.robot.subsystems.LimelightLeft;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AutoIntake extends Command {
-  DriveTrain driveTrain; 
-  Intake intake;
+  DriveTrain driveTrain;
+  IntakeRollers intakeRollers; 
+  IntakeArm intakeArm;
   LimelightLeft limelight;
   SlewRateLimiter rotLimiter;
 
@@ -27,11 +29,12 @@ public class AutoIntake extends Command {
 
   Pose2d ballPose;
   /** Creates a new AutoIntake. */
-  public AutoIntake(DriveTrain dt, Intake i, LimelightLeft llcl) {
+  public AutoIntake(DriveTrain dt, IntakeRollers ir, IntakeArm ia, LimelightLeft llcl) {
     driveTrain = dt;
-    intake = i;
+    intakeRollers = ir;
+    intakeArm = ia;
     limelight = llcl;
-    addRequirements(driveTrain, intake);
+    addRequirements(driveTrain, intakeRollers, intakeArm);
 
     pid = new PIDController(0.01, 0, 0);
 
@@ -39,7 +42,8 @@ public class AutoIntake extends Command {
 
     intakeTimer = new Timer();
 
-    ballPose = driveTrain.getFuelPosition();
+    //ballPose = driveTrain.getFuelPosition();
+    ballPose = new Pose2d();
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -48,19 +52,19 @@ public class AutoIntake extends Command {
   public void initialize() {
     pid.setTolerance(5);
     limelight.setPipeline(1);
-    intake.armOut();
-    intake.intake();
+    intakeArm.armOut();
+    intakeRollers.intake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
-    if (Math.abs(ballPose.getTranslation().getDistance(driveTrain.getFuelPosition().getTranslation())) > 0.4) {
+    if (Math.abs(ballPose.getTranslation().getDistance(ballPose.getTranslation())) > 0.4) {
       intakeTimer.start();
     }
 
-    ballPose = driveTrain.getFuelPosition();
+    ballPose = new Pose2d();
 
     driveTrain.drive(0.15, 0, pid.calculate(driveTrain.getHeading(), (intakeTimer.get() < 0.5) ? driveTrain.getDirection(driveTrain.getPose(), ballPose).getDegrees() : 0), false);
 
@@ -75,8 +79,8 @@ public class AutoIntake extends Command {
   public void end(boolean interrupted) {
     limelight.setPipeline(0);
     driveTrain.drive(0, 0, 0, true);
-    intake.setRollerSpeed(0);
-    intake.armIn();
+    intakeRollers.setRollerSpeed(0);
+    intakeArm.armIn();
   }
 
   // Returns true when the command should end.

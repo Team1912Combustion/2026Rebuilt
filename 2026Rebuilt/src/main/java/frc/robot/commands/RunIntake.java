@@ -5,15 +5,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeArm;
+import frc.robot.subsystems.IntakeRollers;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RunIntake extends Command {
-  Intake intake;
+  IntakeRollers intakeRollers;
+  IntakeArm intakeArm;
   /** Creates a new RunIntake. */
-  public RunIntake(Intake i) {
-    intake = i;
-    addRequirements(intake);
+  public RunIntake(IntakeRollers ir, IntakeArm ia) {
+    intakeRollers = ir;
+    intakeArm = ia;
+    addRequirements(intakeRollers);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -24,13 +27,17 @@ public class RunIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intake.intake();
+    if (intakeArm.armInPosition()) {
+      intakeRollers.intake();
+    } else {
+      intakeRollers.setRollerSpeed(0);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intake.setRollerSpeed(0);
+    intakeRollers.setRollerSpeed(0);
   }
 
   // Returns true when the command should end.

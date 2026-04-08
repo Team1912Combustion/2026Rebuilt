@@ -30,7 +30,7 @@ import frc.robot.commands.TuningCommands.ShooterSpeedDown;
 import frc.robot.commands.TuningCommands.ShooterSpeedUp;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeRollers;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.LimelightShooter;
 import frc.robot.subsystems.LimelightLeft;
@@ -38,6 +38,7 @@ import frc.robot.subsystems.LimelightRight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hood;
+import frc.robot.subsystems.IntakeArm;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -66,15 +67,12 @@ public class RobotContainer {
       new CommandXboxController(1);
 
   DriveTrain driveTrain;
-  LimelightLeft limelightLeft;
-  LimelightRight limelightRight;
   LimelightShooter limelightShooter;
-  Floor spindexer;
-  Intake intake;
+  Floor floor;
+  IntakeRollers intakeRollers;
+  IntakeArm intakeArm;
   Hood hood;
   Shooter shooter;
-  LEDs leds;
-  //Climber climber;
 
   CandleCommand candleCommand;
 
@@ -84,9 +82,7 @@ public class RobotContainer {
   ZeroHeading zeroHeading;
   ZeroGyro zeroGyro;
   SlowMode slowMode;
-  //ClimbAlign climbAlignLeft;
-  //ClimbAlign climbAlignRight;
-  AutoIntake autoIntake;
+  //AutoIntake autoIntake;
   ResetPose resetPose;
 
   ShootFuel shootFuel;
@@ -101,26 +97,16 @@ public class RobotContainer {
   MoveHood moveHood;
   DuckHood duckHood;
 
-  //ClimberUp climberUp;
-  //ClimberDown climberDown;
-  //ClimberClimb climberClimb;
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    limelightLeft = new LimelightLeft();
-    limelightRight = new LimelightRight();
     limelightShooter = new LimelightShooter();
 
-    driveTrain = new DriveTrain(limelightLeft, limelightRight, limelightShooter);
-    spindexer = new Floor();
-    intake = new Intake();
+    driveTrain = new DriveTrain(limelightShooter);
+    floor = new Floor();
+    intakeRollers = new IntakeRollers();
+    intakeArm = new IntakeArm();
     hood = new Hood(driveTrain);
     shooter = new Shooter(driveTrain);
-    leds = new LEDs(driveTrain);
-    //climber = new Climber();
-
-    candleCommand = new CandleCommand(leds, hood, shooter);
-    leds.setDefaultCommand(candleCommand);
 
     pointAtTarget = new PointAtTarget(driveTrain, limelightShooter);
     toggleTargetMode = new ToggleTargetMode(driveTrain);
@@ -135,28 +121,22 @@ public class RobotContainer {
     zeroHeading = new ZeroHeading(driveTrain);
     zeroGyro = new ZeroGyro(driveTrain);
     slowMode = new SlowMode(driveTrain);
-    //climbAlignLeft = new ClimbAlign(driveTrain, false);
-    //climbAlignRight = new ClimbAlign(driveTrain, true);
-    autoIntake = new AutoIntake(driveTrain, intake, limelightLeft);
+    //autoIntake = new AutoIntake(driveTrain, intakeRollers, intakeArm, limelightLeft);
     resetPose = new ResetPose(driveTrain);
 
-    shootFuel = new ShootFuel(shooter, spindexer, driveTrain, hood);
+    shootFuel = new ShootFuel(shooter, floor, driveTrain, hood);
     boostUp = new BoostUp(shooter);
     boostDown = new BoostDown(shooter);
     revUpShooter = new RevUpShooter(shooter);
 
-    runIntake = new RunIntake(intake);
-    runReverseIntake = new RunReverseIntake(intake);
-    intakeArmToggle = new IntakeArmToggle(intake);
+    runIntake = new RunIntake(intakeRollers);
+    runReverseIntake = new RunReverseIntake(intakeRollers);
+    intakeArmToggle = new IntakeArmToggle(intakeArm);
 
     moveHood = new MoveHood(hood, driveTrain);
     hood.setDefaultCommand(moveHood);
 
     duckHood = new DuckHood(hood);
-
-    //climberUp = new ClimberUp(climber);
-    //climberDown = new ClimberDown(climber);
-    //climberClimb = new ClimberClimb(climber);
 
     NamedCommands.registerCommand("RunIntake", runIntake);
     NamedCommands.registerCommand("ArmToggle", intakeArmToggle);
@@ -166,11 +146,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("PointAtTarget", pointAtTarget);
     NamedCommands.registerCommand("ResetPose", resetPose);
 
-    driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
+    /*driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
     driveTrain.autoChooser.addOption("Right Shoot Trench", new PathPlannerAuto("Right Shoot Trench"));
     driveTrain.autoChooser.addOption("Left Shoot Trench", new PathPlannerAuto("Left Shoot Trench"));
     driveTrain.autoChooser.addOption("Right Shoot Bump", new PathPlannerAuto("Right Shoot Bump"));
-    driveTrain.autoChooser.addOption("Left Shoot Bump", new PathPlannerAuto("Left Shoot Bump"));
+    driveTrain.autoChooser.addOption("Left Shoot Bump", new PathPlannerAuto("Left Shoot Bump"));*/
 
     // Configure the trigger bindings
     configureBindings();
@@ -193,8 +173,8 @@ public class RobotContainer {
     driverController.back().onTrue(resetPose);
 
     driverController.rightBumper().whileTrue(shootFuel);
-    driverController.leftStick().whileTrue(intakeArmToggle);
-    driverController.rightStick().whileTrue(pointAtTarget);
+    driverController.leftStick().whileTrue(pointAtTarget);
+    driverController.rightStick().whileTrue(shootFuel);
     //driverController.x().whileTrue(runIntake);
     driverController.y().whileTrue(runReverseIntake);
 
@@ -217,6 +197,14 @@ public class RobotContainer {
 
     operatorController.a().whileTrue(duckHood);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES
+
+    /*driverController.pov(0).whileTrue(new ShooterSpeedUp(shooter));
+    driverController.pov(180).whileTrue(new ShooterSpeedDown(shooter));
+    driverController.pov(90).whileTrue(new ManualHoodUp(hood));
+    driverController.pov(270).whileTrue(new ManualHoodDown(hood));
+
+    driverController.rightBumper().whileTrue(shootFuel);
+    driverController.start().onTrue(zeroHeading);*/
 
   }
 

@@ -5,25 +5,26 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeArm;
+import frc.robot.subsystems.IntakeRollers;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeArmToggle extends Command {
-  Intake intake;
+  IntakeArm intakeArm;
   /** Creates a new IntakeArmToggle. */
-  public IntakeArmToggle(Intake i) {
-    intake = i;
-    addRequirements(intake);
+  public IntakeArmToggle(IntakeArm ia) {
+    intakeArm = ia;
+    addRequirements(intakeArm);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (intake.armOut) {
-      intake.armIn();
+    if (intakeArm.armOut) {
+      intakeArm.armIn();
     } else {
-      intake.armOut();
+      intakeArm.armOut();
     }
   }
 

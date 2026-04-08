@@ -81,8 +81,6 @@ public class DriveTrain extends SubsystemBase {
 
   public boolean fieldRelative;
 
-  LimelightLeft limelightLeft;
-  LimelightRight limelightRight;
   LimelightShooter limelightShooter;
 
   MedianFilter limelightXFilter;
@@ -141,7 +139,7 @@ public class DriveTrain extends SubsystemBase {
   String targetMode;
 
   /** Creates a new DriveTrain. */
-  public DriveTrain(LimelightLeft llcl, LimelightRight llcr, LimelightShooter llcc) {
+  public DriveTrain(LimelightShooter lls) {
 
     gyroConfig = new Pigeon2Configuration();
     gyroConfig.MountPose.MountPoseYaw = 180;
@@ -157,9 +155,7 @@ public class DriveTrain extends SubsystemBase {
 
     gyro.setYaw(0);
 
-    limelightLeft = llcl;
-    limelightRight = llcr;
-    limelightShooter = llcc;
+    limelightShooter = lls;
     limelightXFilter = new MedianFilter(3);
     limelightYFilter = new MedianFilter(3);
     limelightYawFilter = new MedianFilter(3);
@@ -261,8 +257,6 @@ public class DriveTrain extends SubsystemBase {
       lastVisionUpdate = Timer.getFPGATimestamp();
       }
     } else {*/
-      LimelightHelpers.SetRobotOrientation(limelightLeft.getName(), getHeading(), 0, 0, 0, 0, 0);
-      LimelightHelpers.SetRobotOrientation(limelightRight.getName(), getHeading(), 0, 0, 0, 0, 0);
       LimelightHelpers.SetRobotOrientation(limelightShooter.getName(), getHeading(), 0, 0, 0, 0, 0);
 
       processFrame();
@@ -556,26 +550,6 @@ public class DriveTrain extends SubsystemBase {
     double totalArea = 0;
     isVisionValid = false;
 
-    if (limelightLeft.acceptPose() && limelightLeft.getPipeline() == 0) {
-      if (limelightLeft.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
-        totalArea += limelightLeft.getTargetArea();
-        x += limelightLeft.getBotPose2dMT2().getX() * limelightLeft.getTargetArea();
-        y += limelightLeft.getBotPose2dMT2().getY() * limelightLeft.getTargetArea();
-        yaw += limelightLeft.getBotPose2dMT2().getRotation().getDegrees() * limelightLeft.getTargetArea();
-        compositeLatency += limelightLeft.getLatency();
-      }
-    } 
-
-    if (limelightRight.acceptPose() && limelightLeft.getPipeline() == 0) {
-      if (limelightRight.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
-        totalArea += limelightRight.getTargetArea();
-        x += limelightRight.getBotPose2dMT2().getX() * limelightRight.getTargetArea();
-        y += limelightRight.getBotPose2dMT2().getY() * limelightRight.getTargetArea();
-        yaw += limelightRight.getBotPose2dMT2().getRotation().getDegrees() * limelightRight.getTargetArea();
-        compositeLatency += limelightRight.getLatency();
-      }
-    }
-
     if (limelightShooter.acceptPose() && limelightShooter.getPipeline() == 0) {
       if (limelightShooter.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
         totalArea += limelightShooter.getTargetArea();
@@ -607,11 +581,7 @@ public class DriveTrain extends SubsystemBase {
 
   }
 
-  public boolean towerReadyToAim() {
-    return towerTagIDs.contains(limelightLeft.getTagId());
-  }
-
-  public Pose2d getFuelPosition() {
+  /*public Pose2d getFuelPosition() {
     if (limelightLeft.getPipeline() == 1) {
       Pose3d limelightRobotPose = LimelightHelpers.getCameraPose3d_RobotSpace(limelightLeft.getName());
       Pose2d limelightPose = getPose().transformBy(new Transform2d(limelightRobotPose.getX(), limelightRobotPose.getY(), new Rotation2d()));
@@ -623,7 +593,7 @@ public class DriveTrain extends SubsystemBase {
     } else {
       return new Pose2d();
     }
-  }
+  }*/
 
   public void setSlowMode(boolean yeah) {
     slowMode = yeah;
@@ -657,7 +627,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public double calculateTravelTime(double distance) {
-    return (0.0537952 * distance) + 1.06221;
+    return (0.102857 * distance) + 0.930751;
   }
 
   /**
