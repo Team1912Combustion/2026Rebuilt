@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 
@@ -20,6 +21,9 @@ public class IntakeArm extends SubsystemBase {
   TalonFXConfiguration armConfig;
 
   public boolean armOut;
+
+  double outPosition, inPosition;
+  public double intakeAdjust;
 
   /** Creates a new IntakeArm. */
   public IntakeArm() {
@@ -39,6 +43,10 @@ public class IntakeArm extends SubsystemBase {
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 4.2;*/
 
+    outPosition = -12;
+    inPosition = 0;
+    intakeAdjust = 0;
+
     arm.getConfigurator().apply(armConfig);
     arm.setPosition(0); 
 
@@ -49,22 +57,25 @@ public class IntakeArm extends SubsystemBase {
 
   @Override
   public void periodic() {
+    setArmPosition(armOut ? outPosition + intakeAdjust : inPosition);
+
+    SmartDashboard.putNumber("intake arm adjust", intakeAdjust);
     // This method will be called once per scheduler run
   }
 
   public void setArmPosition(double position) {
     final PositionVoltage request = new PositionVoltage(0).withSlot(0);
-    arm.setControl(request.withPosition(position));
+    arm.setControl(request.withPosition(position).withEnableFOC(true));
   }
 
   public void armOut() {
     armOut = true;
-    setArmPosition(-10);
+    setArmPosition(outPosition);
   }
 
   public void armIn() {
     armOut = false;
-    setArmPosition(0);
+    setArmPosition(inPosition);
   }
 
   public void armWiggle() {
@@ -72,6 +83,6 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public boolean armInPosition() {
-    return (Math.abs(arm.getClosedLoopError().getValueAsDouble()) < 1);
+    return (Math.abs(arm.getClosedLoopError().getValueAsDouble()) < 5);
   }
 }

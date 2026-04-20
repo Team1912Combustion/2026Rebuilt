@@ -4,57 +4,61 @@
 
 package frc.robot.commands.AutoCommands;
 
+import com.fasterxml.jackson.databind.node.POJONode;
+
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveToPosition extends Command {
   DriveTrain driveTrain;
-  double x, y, rot;
+  Pose2d pose;
   double xSpeed, ySpeed, rotSpeed;
   boolean flipPath;
 
-  ProfiledPIDController xController, yController, rotController;
+  PIDController xController, yController, rotController;
   HolonomicDriveController pid;
   /** Creates a new DriveToPosition. */
-  public DriveToPosition(DriveTrain dt, double x, double y, double rot, boolean flipPath) {
+  public DriveToPosition(DriveTrain dt, Pose2d pose) {
     driveTrain = dt;
     addRequirements(driveTrain);
-    this.flipPath = flipPath;
-    this.x = (flipPath ? driveTrain.flipCoordinates(new Pose2d(new Translation2d(x, y), new Rotation2d(rot))).getX() : x);
-    this.y = (flipPath ? driveTrain.flipCoordinates(new Pose2d(new Translation2d(x, y), new Rotation2d(rot))).getY() : y);
-    this.rot = (flipPath ? driveTrain.flipCoordinates(new Pose2d(new Translation2d(x, y), new Rotation2d(rot))).getRotation().getDegrees() : rot);
+    
+    this.pose = pose;
     xSpeed = 0;
     ySpeed = 0;
     rotSpeed = 0;
 
-    xController = new ProfiledPIDController(0.01, 0, 0, new Constraints(0, 0));
-    xController.setTolerance(0.06);
-    yController = new ProfiledPIDController(0.01, 0, 0, new Constraints(0, 0));
-    yController.setTolerance(0.06);
-    rotController = new ProfiledPIDController(0.01, 0, 0, new Constraints(0, 0));
-    rotController.setTolerance(2);
+    xController = new PIDController(0.01, 0, 0);
+    xController.setTolerance(0.2);
+    yController = new PIDController(0.01, 0, 0);
+    yController.setTolerance(0.2);
+    rotController = new PIDController(0.01, 0, 0);
+    rotController.setTolerance(5);
     rotController.enableContinuousInput(-180, 180);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    if (driveTrain.flipPath()) { pose = driveTrain.flipCoordinates(pose); }
+
+    xController.setSetpoint(pose.getX());
+    yController.setSetpoint(pose.getY());
+    rotController.setSetpoint(pose.getRotation().getDegrees());
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    xSpeed = xController.calculate(driveTrain.getPose().getX(), x);
-    ySpeed = yController.calculate(driveTrain.getPose().getY(), y);
-    rotSpeed = rotController.calculate(driveTrain.getPose().getRotation().getDegrees(), rot);
+    xSpeed = xController.calculate(driveTrain.getPose().getX());
+    ySpeed = yController.calculate(driveTrain.getPose().getY());
+    rotSpeed = rotController.calculate(driveTrain.getPose().getRotation().getDegrees());
 
     driveTrain.driveAuto(xSpeed, ySpeed, rotSpeed, true);
   }

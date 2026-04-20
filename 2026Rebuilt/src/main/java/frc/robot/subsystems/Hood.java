@@ -52,7 +52,7 @@ public class Hood extends SubsystemBase {
     hood.getConfigurator().apply(config);
     hood.setPosition(0);
 
-    upperLimit = 1.2;
+    upperLimit = 4;
     lowerLimit = 0;
     currentPosition = hood.getPosition().getValueAsDouble();
     targetPosition = 0;
@@ -116,7 +116,7 @@ public class Hood extends SubsystemBase {
    * @return The ideal hood angle
    */
   public double calculateHoodAngleContinuous(double distance) {
-    double angle = 0.0278589 * Math.pow(2.09567, distance);
+    double angle = 0.053185 * Math.pow(2.09567, distance);
     
     return angle;
   }
@@ -128,7 +128,7 @@ public class Hood extends SubsystemBase {
   public void setPosition(double target) {
     double targetPosition = Math.min(upperLimit, Math.max(target, lowerLimit));
     final PositionVoltage request = new PositionVoltage(0);
-    hood.setControl(request.withPosition(targetPosition));
+    hood.setControl(request.withPosition(targetPosition).withEnableFOC(true));
   }
 
   /**

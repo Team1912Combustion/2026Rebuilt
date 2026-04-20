@@ -94,7 +94,7 @@ public class DriveTrain extends SubsystemBase {
   public SwerveDrivePoseEstimator poseEstimator;
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(.1));
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(50));
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.35, 0.35, Units.degreesToRadians(999.));
   private static final Vector<N3> visionStdDevsDisabled = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(1));
 
   public SendableChooser<Command> autoChooser;
@@ -117,9 +117,9 @@ public class DriveTrain extends SubsystemBase {
 
   RobotConfig cfg;
 
-  Integer[] towerTagArray = {15, 31};
+  Integer[] hubTagArray = {2, 5, 8, 9 ,10, 11, 18, 21, 24, 25, 26, 27};
 
-  List<Integer> towerTagIDs = Arrays.asList(towerTagArray);
+  List<Integer> hubTagIDs = Arrays.asList(hubTagArray);
 
   Field2d field;
 
@@ -203,9 +203,9 @@ public class DriveTrain extends SubsystemBase {
       this::resetPose,
       this::getChassisSpeeds,
       this::drive,
-      new PPHolonomicDriveController(new PIDConstants(10, 0, 0), new PIDConstants(2.5, 0, 0)), 
+      new PPHolonomicDriveController(new PIDConstants(2, 0, 0), new PIDConstants(2, 0, 0)), 
       cfg, 
-      this::flipPath, 
+      this::flipPath,
       this
     );
 
@@ -267,17 +267,15 @@ public class DriveTrain extends SubsystemBase {
       setShotPoints();
 
       if (flipPath()) {
-        driveYawDirection = 180;
+        driveYawOffset = 180;
       } else {
-        driveYawDirection = 0;
+        driveYawOffset = 0;
       }
 
-      driveYawOffset = (getHeading() + driveYawDirection);
+      //driveYawOffset = 0 - (getHeading() + driveYawDirection);
       
       fixPose();
-      if (!isVisionValid) {
-        poseEstimator.resetPose(new Pose2d(new Translation2d(4, 4), new Rotation2d()));
-      }
+
       //poseEstimator.resetPose(new Pose2d(compositeVisionPose.getTranslation(), Rotation2d.fromDegrees(getHeading())));
       //poseEstimator.addVisionMeasurement(compositeVisionPose, Timer.getFPGATimestamp() - (compositeLatency / 1000), visionStdDevsDisabled);
     }
@@ -289,11 +287,13 @@ public class DriveTrain extends SubsystemBase {
 
     SmartDashboard.putBoolean("can reset pose?", isVisionValid);
     SmartDashboard.putNumber("drive yaw", driveYaw);
+    SmartDashboard.putString("target mode", targetMode);
+    SmartDashboard.putBoolean("is aimed?", isAimed);
 
     robotSpeed = new Twist2d(
       speedXFilter.calculate((poseEstimator.getEstimatedPosition().getX() - poseX) * 50) * calculateTravelTime(getCurrentFieldZone().getDistanceFromShotPoint(getPose())),
       speedYFilter.calculate((poseEstimator.getEstimatedPosition().getY() - poseY) * 50) * calculateTravelTime(getCurrentFieldZone().getDistanceFromShotPoint(getPose())),
-      speedRotFilter.calculate((poseEstimator.getEstimatedPosition().getRotation().getDegrees() - poseYaw) * 10)
+      speedRotFilter.calculate((poseEstimator.getEstimatedPosition().getRotation().getDegrees() - poseYaw) * 0)
       );
 
     // update pose variables
@@ -328,7 +328,7 @@ public class DriveTrain extends SubsystemBase {
 
       m_xSpeed = xSpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND * (slowMode ? 0.5 : 1);
       m_ySpeed = ySpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND * (slowMode ? 0.5 : 1);
-      m_rot = rot * (DriveConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND * 0.7) * (slowMode ? 0.5 : 1);
+      m_rot = rot * (DriveConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND) * (slowMode ? 0.5 : 1);
 
       m_xSpeed = xRateLimiter.calculate(m_xSpeed);
       m_ySpeed = yRateLimiter.calculate(m_ySpeed);
@@ -550,7 +550,7 @@ public class DriveTrain extends SubsystemBase {
     double totalArea = 0;
     isVisionValid = false;
 
-    if (limelightShooter.acceptPose() && limelightShooter.getPipeline() == 0) {
+    if (limelightShooter.acceptPose()) {
       if (limelightShooter.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
         totalArea += limelightShooter.getTargetArea();
         x += limelightShooter.getBotPose2dMT2().getX() * limelightShooter.getTargetArea();
@@ -623,7 +623,8 @@ public class DriveTrain extends SubsystemBase {
    * @return The updated pose
    */
   public Pose2d addVector(Pose2d pose) {
-    return pose.exp(robotSpeed);
+    Twist2d twist = new Twist2d(-robotSpeed.dx, -robotSpeed.dy, 0);
+    return pose.exp(twist);
   }
 
   public double calculateTravelTime(double distance) {
@@ -685,6 +686,10 @@ public class DriveTrain extends SubsystemBase {
 
   public String getTargetMode() {
     return targetMode;
+  }
+
+  public boolean isHubTag(int tagID) {
+    return hubTagIDs.contains(tagID);
   }
 
 }

@@ -37,12 +37,14 @@ public class IntakeRollers extends SubsystemBase {
     rollersLeft = new TalonFX(MotorIDs.INTAKE_ROLLERS_LEFT,  new CANBus("1912CANivore"));
     rollersRight = new TalonFX(MotorIDs.INTAKE_ROLLERS_RIGHT,  new CANBus("1912CANivore"));
     rollerConfig = new TalonFXConfiguration();
-    rollerConfig.Slot0.kS = 0;
-    rollerConfig.Slot0.kV = 0;
-    rollerConfig.Slot0.kP = 0;
-    rollerConfig.Slot0.kI = 0;
+    rollerConfig.Slot0.kS = 0.4;
+    rollerConfig.Slot0.kV = 0.1;
+    rollerConfig.Slot0.kP = 0.35;
+    rollerConfig.Slot0.kI = 0.2;
     rollerConfig.Slot0.kD = 0;
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    rollerConfig.CurrentLimits.SupplyCurrentLimit = 40;
+    rollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     rollersLeft.getConfigurator().apply(rollerConfig);
     rollersRight.getConfigurator().apply(rollerConfig);
@@ -56,17 +58,21 @@ public class IntakeRollers extends SubsystemBase {
 
   public void setRollerSpeed(double speed) {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    rollersLeft.setControl(request.withVelocity(speed));
+    rollersLeft.setControl(request.withVelocity(speed).withEnableFOC(true));
     final Follower followerRequest = new Follower(MotorIDs.INTAKE_ROLLERS_LEFT, MotorAlignmentValue.Opposed);
     rollersRight.setControl(followerRequest);
   }
 
   public void intake() {
-    setRollerSpeed(-50);
+    setRollerSpeed(75);
+  }
+
+  public void intakeSlow() {
+    setRollerSpeed(50);
   }
 
   public void expel() {
-    setRollerSpeed(40);
+    setRollerSpeed(-40);
   }
 
   public boolean rollersAtSpeed() {

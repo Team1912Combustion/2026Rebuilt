@@ -5,10 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.subsystems.DriveTrain;
@@ -23,6 +25,9 @@ public class PointAtTarget extends Command {
   PIDController tagPID;
   Pose2d originPose;
   Pose2d goalPose;
+
+  Timer timer;
+  boolean poseFixed;
   
   /** Creates a new PointAtTarget. */
   public PointAtTarget(DriveTrain dt, LimelightShooter lls) {
@@ -30,53 +35,65 @@ public class PointAtTarget extends Command {
     limelightShooter = lls;
     addRequirements(driveTrain);
 
-    rotPID = new PIDController(0.01, 0, 0);
+    rotPID = new PIDController(0.03, 0, 0.0015);
     rotPID.enableContinuousInput(-180, 180);
-    rotPID.setTolerance(5);
+    rotPID.setTolerance(2);
 
-    tagPID = new PIDController(0.1, 0, 0);
+    tagPID = new PIDController(0.04, 0, 0.0);
     tagPID.setTolerance(1);
 
     originPose = new Pose2d(driveTrain.getPose().getTranslation(), new Rotation2d());
     goalPose = new Pose2d(driveTrain.getCurrentFieldZone().getShotPoint(), new Rotation2d());
+
+    timer = new Timer();
+    poseFixed = false;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    driveTrain.fixPose();
+    timer.reset();
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     originPose = new Pose2d(driveTrain.getPose().getTranslation(), new Rotation2d());
+    goalPose = new Pose2d(driveTrain.getCurrentFieldZone().getShotPoint(), new Rotation2d());
 
     Rotation2d angle = Rotation2d.fromRadians(Math.atan2(
       goalPose.relativeTo(originPose).getY(), 
       goalPose.relativeTo(originPose).getX()
       )); 
-    angle.plus(Rotation2d.k180deg);
+    //angle.plus(Rotation2d.fromDegrees(180));
 
     double tx = limelightShooter.getXOffset();
 
+    if (driveTrain.isHubTag(limelightShooter.getTagId()) && !poseFixed) {
+      driveTrain.fixPose();
+      poseFixed = true;
+    }
+
+    if (timer.get() > 2) {
+      poseFixed = false;
+      timer.reset();
+    }
+
     if (driveTrain.getTargetMode() == "tag") {
       limelightShooter.setPipeline(1);
-      if (limelightShooter.getTagId() > 0) {
-        driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), tagPID.calculate(tx, 0), true);
-        driveTrain.isAimed = (tagPID.atSetpoint() ? true : false);
-      } else {
-        driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
-        driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
-      }
-      
+      driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), tagPID.calculate(tx, 0), true);
+      driveTrain.isAimed = (tagPID.atSetpoint() ? true : false);
     } else {
-      limelightShooter.setPipeline(0);
+      limelightShooter.setPipeline(1);
 
-      driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
+      driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees() + 180), angle.getDegrees()), true);
+      //driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate((driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
       driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
     }
+
+    poseFixed = false;
   }
 
   // Called once the command ends or is interrupted.

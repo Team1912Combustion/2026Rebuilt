@@ -11,19 +11,19 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left First Swipe"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmToggle"
+                  "pathName": "Right First Swipe"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "RunIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmToggle"
                 }
               }
             ]
@@ -36,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left First Swipe Over Bump"
+                  "pathName": "Right First Swipe to Shoot"
                 }
               }
             ]
@@ -68,19 +68,13 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Drive to (3.0, 7.4, 0)"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Second Swipe From Bump"
+                  "pathName": "Right Shoot to Outpost"
                 }
               },
               {
@@ -93,16 +87,15 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "wait",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left Second Swipe to Shoot Over Bump"
-                }
-              }
-            ]
+            "waitTime": 2.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost to Shoot"
           }
         },
         {
@@ -112,7 +105,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.0
+                  "waitTime": 2.5
                 }
               },
               {

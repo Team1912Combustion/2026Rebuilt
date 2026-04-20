@@ -55,6 +55,8 @@ public class Shooter extends SubsystemBase {
     shooterConfig.Slot0.kI = 0;
     shooterConfig.Slot0.kD = 0;
     shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    shooterConfig.CurrentLimits.SupplyCurrentLimit = 40;
+    shooterConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     
     kickerConfig = new TalonFXConfiguration();
@@ -64,6 +66,8 @@ public class Shooter extends SubsystemBase {
     kickerConfig.Slot0.kI = 0;
     kickerConfig.Slot0.kD = 0;
     kickerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    kickerConfig.CurrentLimits.SupplyCurrentLimit = 40;
+    kickerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     shooter1.getConfigurator().apply(shooterConfig);
     shooter2.getConfigurator().apply(shooterConfig);
@@ -76,7 +80,7 @@ public class Shooter extends SubsystemBase {
     upperLimit = 100;
     lowerLimit = -100;
 
-    boost = 0;
+    boost = -0.3;
   }
 
   @Override
@@ -94,7 +98,7 @@ public class Shooter extends SubsystemBase {
   public void setSpeed(double speed) {
     double targetSpeed = Math.min(upperLimit, Math.max(speed, lowerLimit));
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    shooter1.setControl(request.withVelocity(targetSpeed));
+    shooter1.setControl(request.withVelocity(targetSpeed).withEnableFOC(true));
     final Follower followerRequest = new Follower(0, MotorAlignmentValue.Aligned);
     shooter2.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Aligned));
     shooter3.setControl(followerRequest.withLeaderID(MotorIDs.SHOOTER_1).withMotorAlignment(MotorAlignmentValue.Opposed));
@@ -122,7 +126,7 @@ public class Shooter extends SubsystemBase {
    * @return True if the shooter is within in the limit, false if it isn't
    */
   public boolean shooterAtSpeed() {
-    return (Math.abs(shooter1.getClosedLoopError().getValueAsDouble()) < 3);
+    return (Math.abs(shooter1.getClosedLoopError().getValueAsDouble()) < 1.5);
   }
 
   /**
@@ -130,7 +134,7 @@ public class Shooter extends SubsystemBase {
    */
   public void kickerOn() {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    kicker.setControl(request.withVelocity(-50));
+    kicker.setControl(request.withVelocity(-80));
   }
 
   /**

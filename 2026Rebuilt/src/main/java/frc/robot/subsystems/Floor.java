@@ -32,8 +32,8 @@ public class Floor extends SubsystemBase {
     floorConfig.Slot0.kI = 0;
     floorConfig.Slot0.kD = 0;
     floorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    floorConfig.HardwareLimitSwitch.ForwardLimitEnable = false;
-    floorConfig.HardwareLimitSwitch.ReverseLimitEnable = false;
+    floorConfig.CurrentLimits.SupplyCurrentLimit = 40;
+    floorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     floor1.getConfigurator().apply(floorConfig);
     floor2.getConfigurator().apply(floorConfig);
@@ -50,7 +50,7 @@ public class Floor extends SubsystemBase {
    */
   public void setSpeed(double speed) {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    floor1.setControl(request.withVelocity(speed));
+    floor1.setControl(request.withVelocity(speed).withEnableFOC(true));
     final Follower followerRequest = new Follower(0, MotorAlignmentValue.Aligned);
     floor2.setControl(followerRequest.withLeaderID(MotorIDs.FLOOR_2).withMotorAlignment(MotorAlignmentValue.Aligned));
   }

@@ -12,6 +12,8 @@ import frc.robot.commands.BoostUp;
 import frc.robot.commands.CandleCommand;
 import frc.robot.commands.DuckHood;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.IntakeAdjustIn;
+import frc.robot.commands.IntakeAdjustOut;
 import frc.robot.commands.IntakeArmToggle;
 import frc.robot.commands.MoveHood;
 import frc.robot.commands.PointAtTarget;
@@ -23,6 +25,7 @@ import frc.robot.commands.SlowMode;
 import frc.robot.commands.ToggleTargetMode;
 import frc.robot.commands.ZeroGyro;
 import frc.robot.commands.ZeroHeading;
+import frc.robot.commands.AutoCommands.DriveToPosition;
 import frc.robot.commands.AutoCommands.RevUpShooter;
 import frc.robot.commands.TuningCommands.ManualHoodDown;
 import frc.robot.commands.TuningCommands.ManualHoodUp;
@@ -44,6 +47,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -90,6 +96,9 @@ public class RobotContainer {
   BoostDown boostDown;
   RevUpShooter revUpShooter;
 
+  IntakeAdjustIn intakeAdjustIn;
+  IntakeAdjustOut intakeAdjustOut;
+
   RunIntake runIntake;
   RunReverseIntake runReverseIntake;
   IntakeArmToggle intakeArmToggle;
@@ -129,6 +138,9 @@ public class RobotContainer {
     boostDown = new BoostDown(shooter);
     revUpShooter = new RevUpShooter(shooter);
 
+    intakeAdjustIn = new IntakeAdjustIn(intakeArm);
+    intakeAdjustOut = new IntakeAdjustOut(intakeArm);
+
     runIntake = new RunIntake(intakeRollers, intakeArm);
     runReverseIntake = new RunReverseIntake(intakeRollers);
     intakeArmToggle = new IntakeArmToggle(intakeArm);
@@ -146,11 +158,17 @@ public class RobotContainer {
     NamedCommands.registerCommand("PointAtTarget", pointAtTarget);
     NamedCommands.registerCommand("ResetPose", resetPose);
 
+    NamedCommands.registerCommand("Drive to (3.0, 7.4, 0)", new DriveToPosition(driveTrain, new Pose2d(new Translation2d(3.0, 7.4), Rotation2d.fromDegrees(0))));
+    NamedCommands.registerCommand("Drive to (3.0, 0.6, 0)", new DriveToPosition(driveTrain, new Pose2d(new Translation2d(3.0, 0.6), Rotation2d.fromDegrees(0))));
+
     driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
     driveTrain.autoChooser.addOption("Right Shoot Trench", new PathPlannerAuto("Right Shoot Trench"));
     driveTrain.autoChooser.addOption("Left Shoot Trench", new PathPlannerAuto("Left Shoot Trench"));
     driveTrain.autoChooser.addOption("Right Shoot Bump", new PathPlannerAuto("Right Shoot Bump"));
     driveTrain.autoChooser.addOption("Left Shoot Bump", new PathPlannerAuto("Left Shoot Bump"));
+    driveTrain.autoChooser.addOption("Right Shoot Trench Long Swipe", new PathPlannerAuto("Right Shoot Trench Long Swipe"));
+    driveTrain.autoChooser.addOption("Left Shoot Trench Long Swipe", new PathPlannerAuto("Left Shoot Trench Long Swipe"));
+    driveTrain.autoChooser.addOption("Right Shoot Outpost", new PathPlannerAuto("Right Shoot Outpost"));
 
     // Configure the trigger bindings
     configureBindings();
@@ -183,9 +201,9 @@ public class RobotContainer {
     // OPERATOR //
 
     operatorController.rightBumper().whileTrue(shootFuel);
-    //operatorController.leftStick().whileTrue(intakeArmToggle);
-    operatorController.leftStick().whileTrue(shootFuel);
-    operatorController.rightStick().whileTrue(runIntake);
+    operatorController.leftBumper().whileTrue(intakeArmToggle);
+    operatorController.leftStick().whileTrue(runIntake);
+    operatorController.rightStick().whileTrue(shootFuel);
     operatorController.x().whileTrue(runIntake);
     operatorController.y().whileTrue(runReverseIntake);
 
@@ -194,8 +212,11 @@ public class RobotContainer {
 
     operatorController.pov(0).whileTrue(boostUp);
     operatorController.pov(180).whileTrue(boostDown);
+    operatorController.pov(90).whileTrue(intakeAdjustOut);
+    operatorController.pov(270).whileTrue(intakeAdjustIn);
 
     operatorController.a().whileTrue(duckHood);
+    operatorController.b().onTrue(toggleTargetMode);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES
 
     /*driverController.pov(0).whileTrue(new ShooterSpeedUp(shooter));

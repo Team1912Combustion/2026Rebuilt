@@ -274,7 +274,7 @@ public final class Constants {
     public static final double AUTO_ROTATION_ERROR = 3;
 
     public static final double DRIVE_SPEED = 1.0;
-    public static final double RAMP_TIME = 0.15;
+    public static final double RAMP_TIME = 0.1;
     public static final double TRACK_WIDTH = 0.55245;
     public static final double WHEEL_BASE = 0.55245;
     public static final SwerveDriveKinematics DRIVE_KINEMATICS =
@@ -284,8 +284,14 @@ public final class Constants {
           new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2),  //RL
           new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)); //RR
 
+    /*
+      POSSIBLE FEEDFORWARD ISSUE
     public static final double S_VOLTS = 1;
     public static final double V_VOLT_SECONDS_PER_METER = 0.8;
+    public static final double A_VOLT_SECONDS_SQUARED_PER_METER = 0.15;*/
+
+    public static final double S_VOLTS = 0.2;
+    public static final double V_VOLT_SECONDS_PER_METER = 2.4;
     public static final double A_VOLT_SECONDS_SQUARED_PER_METER = 0.15;
       
     public static final double MAX_SPEED_METERS_PER_SECOND = 5;

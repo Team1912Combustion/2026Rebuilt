@@ -30,11 +30,11 @@ public class SwerveModule {
     private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(Constants.DriveConstants.S_VOLTS, Constants.DriveConstants.V_VOLT_SECONDS_PER_METER, Constants.DriveConstants.A_VOLT_SECONDS_SQUARED_PER_METER);
 
     /* drive motor control requests */
-    private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0);
-    private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
+    private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0).withEnableFOC(true);
+    private final VelocityVoltage driveVelocity = new VelocityVoltage(0).withEnableFOC(true);
 
     /* angle motor control requests */
-    private final PositionVoltage anglePosition = new PositionVoltage(0).withSlot(0);
+    private final PositionVoltage anglePosition = new PositionVoltage(0).withSlot(0).withEnableFOC(true);
 
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
         this.moduleNumber = moduleNumber;
@@ -64,19 +64,19 @@ public class SwerveModule {
     @SuppressWarnings("deprecation")
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle); 
-        mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()));
+        mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()).withEnableFOC(true));
         setSpeed(desiredState, isOpenLoop);
     }
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
         if(isOpenLoop){
             driveDutyCycle.Output = desiredState.speedMetersPerSecond / Constants.DriveConstants.MAX_SPEED_METERS_PER_SECOND;
-            mDriveMotor.setControl(driveDutyCycle);
+            mDriveMotor.setControl(driveDutyCycle.withEnableFOC(true));
         }
         else {
             driveVelocity.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, Constants.ModuleConstants.WHEEL_CIRCRUMFERENCE_METERS);
             driveVelocity.FeedForward = driveFeedForward.calculate(desiredState.speedMetersPerSecond);
-            mDriveMotor.setControl(driveVelocity);
+            mDriveMotor.setControl(driveVelocity.withEnableFOC(true));
         }
     }
 

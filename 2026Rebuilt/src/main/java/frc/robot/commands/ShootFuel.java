@@ -28,7 +28,7 @@ public class ShootFuel extends Command {
     hood = h;
     intakeRollers = ir;
     intakeArm = ia;
-    addRequirements(shooter, floor, intakeRollers, intakeArm);
+    addRequirements(shooter, floor, intakeRollers);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -36,17 +36,17 @@ public class ShootFuel extends Command {
   @Override
   public void initialize() {
     hood.duckHood = false;
-    intakeArm.armIn();
-    intakeRollers.intake();
+    intakeArm.armOut = false;
+    intakeRollers.intakeSlow();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     shooter.setSpeed(shooter.calculateSpeedContinuous(driveTrain.getDistance(driveTrain.getPose().getTranslation(), driveTrain.getTarget().getTranslation())));
-    if (driveTrain.isAimed && hood.isInPosiiton() && shooter.shooterAtSpeed() && hood.duckHood()) {
+    if (hood.isInPosiiton() && shooter.shooterAtSpeed() && !hood.duckHood()) {
       shooter.kickerOn();
-      floor.setSpeed(20);
+      floor.setSpeed(40);
     } else {
       shooter.kickerOff();
       floor.setSpeed(0);
@@ -60,7 +60,7 @@ public class ShootFuel extends Command {
     shooter.shooterOff();
     floor.floorOff();
     shooter.kickerOff();
-    intakeArm.armOut();
+    intakeArm.armOut = true;
     intakeRollers.setRollerSpeed(0);
   }
 
