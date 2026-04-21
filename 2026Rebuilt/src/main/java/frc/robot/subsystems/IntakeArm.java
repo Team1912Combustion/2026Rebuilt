@@ -11,6 +11,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
@@ -24,6 +27,8 @@ public class IntakeArm extends SubsystemBase {
 
   double outPosition, inPosition;
   public double intakeAdjust;
+
+  Debouncer debouncer;
 
   /** Creates a new IntakeArm. */
   public IntakeArm() {
@@ -53,6 +58,8 @@ public class IntakeArm extends SubsystemBase {
     armOut = false;
 
     armIn();
+
+    debouncer = new Debouncer(0.5);
   }
 
   @Override
@@ -79,7 +86,11 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void armWiggle() {
-    setArmPosition(0.18);
+    if (debouncer.calculate(armOut)) {
+      armIn();
+    } else {
+      armOut();
+    }
   }
 
   public boolean armInPosition() {

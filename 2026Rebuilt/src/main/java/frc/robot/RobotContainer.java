@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ArmWiggle;
 import frc.robot.commands.AutoIntake;
 import frc.robot.commands.Autos;
 import frc.robot.commands.BoostDown;
@@ -102,6 +103,7 @@ public class RobotContainer {
   RunIntake runIntake;
   RunReverseIntake runReverseIntake;
   IntakeArmToggle intakeArmToggle;
+  ArmWiggle armWiggle;
 
   MoveHood moveHood;
   DuckHood duckHood;
@@ -144,6 +146,7 @@ public class RobotContainer {
     runIntake = new RunIntake(intakeRollers, intakeArm);
     runReverseIntake = new RunReverseIntake(intakeRollers);
     intakeArmToggle = new IntakeArmToggle(intakeArm);
+    armWiggle = new ArmWiggle(intakeArm);
 
     moveHood = new MoveHood(hood, driveTrain);
     hood.setDefaultCommand(moveHood);
@@ -157,6 +160,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("RevUpShooter", revUpShooter);
     NamedCommands.registerCommand("PointAtTarget", pointAtTarget);
     NamedCommands.registerCommand("ResetPose", resetPose);
+    NamedCommands.registerCommand("ArmWiggle", armWiggle);
 
     NamedCommands.registerCommand("Drive to (3.0, 7.4, 0)", new DriveToPosition(driveTrain, new Pose2d(new Translation2d(3.0, 7.4), Rotation2d.fromDegrees(0))));
     NamedCommands.registerCommand("Drive to (3.0, 0.6, 0)", new DriveToPosition(driveTrain, new Pose2d(new Translation2d(3.0, 0.6), Rotation2d.fromDegrees(0))));
@@ -202,6 +206,7 @@ public class RobotContainer {
 
     operatorController.rightBumper().whileTrue(shootFuel);
     operatorController.leftBumper().whileTrue(intakeArmToggle);
+    operatorController.leftTrigger(0.2).whileTrue(armWiggle);
     operatorController.leftStick().whileTrue(runIntake);
     operatorController.rightStick().whileTrue(shootFuel);
     operatorController.x().whileTrue(runIntake);

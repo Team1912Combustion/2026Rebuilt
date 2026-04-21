@@ -76,7 +76,7 @@ public class PointAtTarget extends Command {
       poseFixed = true;
     }
 
-    if (timer.get() > 2) {
+    if (timer.get() > 2 && poseFixed) {
       poseFixed = false;
       timer.reset();
     }

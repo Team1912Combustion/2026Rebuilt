@@ -63,6 +63,12 @@
                 "data": {
                   "name": "PointAtTarget"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmWiggle"
+                }
               }
             ]
           }
@@ -125,6 +131,12 @@
                 "type": "named",
                 "data": {
                   "name": "PointAtTarget"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmWiggle"
                 }
               }
             ]
