@@ -36,7 +36,7 @@ public class ShootFuel extends Command {
   @Override
   public void initialize() {
     hood.duckHood = false;
-    intakeArm.armOut = false;
+    //intakeArm.armOut = false;
     intakeRollers.intakeSlow();
   }
 
@@ -46,7 +46,7 @@ public class ShootFuel extends Command {
     shooter.setSpeed(shooter.calculateSpeedContinuous(driveTrain.getDistance(driveTrain.getPose().getTranslation(), driveTrain.getTarget().getTranslation())));
     if (hood.isInPosiiton() && shooter.shooterAtSpeed() && !hood.duckHood()) {
       shooter.kickerOn();
-      floor.setSpeed(40);
+      floor.setSpeed(90);
     } else {
       shooter.kickerOff();
       floor.setSpeed(0);

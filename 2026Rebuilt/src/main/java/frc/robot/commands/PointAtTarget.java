@@ -60,6 +60,7 @@ public class PointAtTarget extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    limelightShooter.setPipeline(1);
     originPose = new Pose2d(driveTrain.getPose().getTranslation(), new Rotation2d());
     goalPose = new Pose2d(driveTrain.getCurrentFieldZone().getShotPoint(), new Rotation2d());
 
@@ -82,11 +83,9 @@ public class PointAtTarget extends Command {
     }
 
     if (driveTrain.getTargetMode() == "tag") {
-      limelightShooter.setPipeline(1);
       driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), tagPID.calculate(tx, 0), true);
       driveTrain.isAimed = (tagPID.atSetpoint() ? true : false);
     } else {
-      limelightShooter.setPipeline(1);
 
       driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees() + 180), angle.getDegrees()), true);
       //driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate((driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);

@@ -604,7 +604,8 @@ public class DriveTrain extends SubsystemBase {
    * @return The pose of the target
    */
   public Pose2d getTarget() {
-    return addVector(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
+    //return addVector(new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d()));
+    return new Pose2d(getCurrentFieldZone().getShotPoint(), new Rotation2d());
   }
 
   /**

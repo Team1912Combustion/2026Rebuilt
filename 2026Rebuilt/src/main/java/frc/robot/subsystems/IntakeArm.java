@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,13 +31,16 @@ public class IntakeArm extends SubsystemBase {
 
   Debouncer debouncer;
 
+  SlewRateLimiter intakeRateLimiter;
+  double rateLimitedPosition;
+
   /** Creates a new IntakeArm. */
   public IntakeArm() {
     arm = new TalonFX(MotorIDs.INTAKE_ARM, new CANBus("1912CANivore"));
 
     armConfig = new TalonFXConfiguration();
-    armConfig.Slot0.kS = 0.1;
-    armConfig.Slot0.kP = 0.55;
+    armConfig.Slot0.kS = 0.3;
+    armConfig.Slot0.kP = 0.7;
     armConfig.Slot0.kI = 0;
     armConfig.Slot0.kD = 0;
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -48,7 +52,7 @@ public class IntakeArm extends SubsystemBase {
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 4.2;*/
 
-    outPosition = -12;
+    outPosition = -11.5;
     inPosition = 0;
     intakeAdjust = 0;
 
@@ -57,16 +61,21 @@ public class IntakeArm extends SubsystemBase {
 
     armOut = false;
 
-    armIn();
-
     debouncer = new Debouncer(0.5);
+
+    intakeRateLimiter = new SlewRateLimiter(1);
+    rateLimitedPosition = 0;
+
+    armIn();
   }
 
   @Override
   public void periodic() {
-    setArmPosition(armOut ? outPosition + intakeAdjust : inPosition);
+    //rateLimitedPosition = intakeRateLimiter.calculate(arm.getClosedLoopReference().getValueAsDouble());
+    setArmPosition(armOut ? outPosition : inPosition);
 
     SmartDashboard.putNumber("intake arm adjust", intakeAdjust);
+    SmartDashboard.putNumber("rate limited intake position", rateLimitedPosition);
     // This method will be called once per scheduler run
   }
 
@@ -75,14 +84,19 @@ public class IntakeArm extends SubsystemBase {
     arm.setControl(request.withPosition(position).withEnableFOC(true));
   }
 
-  public void armOut() {
-    armOut = true;
-    setArmPosition(outPosition);
-  }
-
   public void armIn() {
     armOut = false;
-    setArmPosition(inPosition);
+    //setArmPosition(rateLimitedPosition);
+  }
+
+  public void armOut() {
+    armOut = true;
+    //setArmPosition(outPosition);
+  }
+
+  public void armInSlow() {
+    armOut = false;
+    setArmPosition(rateLimitedPosition);
   }
 
   public void armWiggle() {

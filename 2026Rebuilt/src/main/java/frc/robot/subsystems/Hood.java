@@ -11,7 +11,9 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -46,13 +48,15 @@ public class Hood extends SubsystemBase {
     config = new TalonFXConfiguration();
     config.Slot0.kP = 7;
     config.Slot0.kI = 0.;
-    config.Slot0.kD = 0;
+    config.Slot0.kD = 0.05;
+    config.Slot0.kG = 0.4;
+    config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     hood.getConfigurator().apply(config);
     hood.setPosition(0);
 
-    upperLimit = 4;
+    upperLimit = 2.0;
     lowerLimit = 0;
     currentPosition = hood.getPosition().getValueAsDouble();
     targetPosition = 0;
