@@ -42,9 +42,9 @@ public class ShootFuel extends Command {
   public void initialize() {
     intakeArm.intakeConfigSlow();
     hood.duckHood = false;
-    //intakeArm.armOut = false;
-    intakeRollers.intakeSlow();
-    timer.start();
+    intakeArm.armOut = false;
+    intakeArm.armPulling = true;
+    //intakeRollers.intakeSlow();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,11 +54,7 @@ public class ShootFuel extends Command {
     if (hood.isInPosiiton() && shooter.shooterAtSpeed() && !hood.duckHood()) {
       shooter.kickerOn();
       floor.setSpeed(90);
-      if (Math.floor(timer.get()) % 2 == 0) {
-        intakeArm.armOut = false;
-      } else {
-        intakeArm.armOut = true;
-      }
+      intakeArm.armInSlow();
     } else {
       shooter.kickerOff();
       floor.setSpeed(0);
@@ -74,9 +70,8 @@ public class ShootFuel extends Command {
     floor.floorOff();
     shooter.kickerOff();
     intakeArm.armOut = true;
+    intakeArm.armPulling = false;
     intakeRollers.setRollerSpeed(0);
-    timer.stop();
-    timer.reset();
   }
 
   // Returns true when the command should end.

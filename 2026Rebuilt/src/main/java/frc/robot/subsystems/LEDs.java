@@ -71,18 +71,24 @@ public class LEDs extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (DriverStation.isAutonomous()) {
-      matchPeriod = 1;
-    } else if (DriverStation.getMatchTime() > 130) {
-      matchPeriod = 2;
-    } else if (DriverStation.getMatchTime() > 30) {
-      matchPeriod = 6 - Math.floorDiv((int) DriverStation.getMatchTime() - 30, 25);
-    } else {
-      matchPeriod = 7;
-    }
+    if (DriverStation.isDSAttached()) {
+      if (DriverStation.isAutonomous()) {
+        matchPeriod = 1;
+      } else if (DriverStation.getMatchTime() > 130) {
+        matchPeriod = 2;
+      } else if (DriverStation.getMatchTime() > 30) {
+        matchPeriod = 6 - Math.floorDiv((int) DriverStation.getMatchTime() - 30, 25);
+      } else {
+        matchPeriod = 7;
+      }
 
-    if (DriverStation.isDisabled() && DriverStation.isDSAttached()) {
-      alliance = getAlliance();
+      if (DriverStation.isDisabled()) {
+        alliance = getAlliance();
+      }
+
+      SmartDashboard.putBoolean("Is hub active?", (getActiveHub() == getAlliance()) || allHubsActive.contains(matchPeriod));
+      SmartDashboard.putNumber("Current Shift", getMatchPeriod());
+      SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
     /*if (DriverStation.isDisabled()) {
@@ -97,9 +103,6 @@ public class LEDs extends SubsystemBase {
 
     //distanceFromStart = driveTrain.getPose().getTranslation().getDistance(driveTrain.autoChooser.getSelected().getStartingPose().getTranslation());
 
-    SmartDashboard.putBoolean("Is hub active?", (getActiveHub() == getAlliance()) || allHubsActive.contains(matchPeriod));
-    SmartDashboard.putNumber("Current Shift", getMatchPeriod());
-    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     // This method will be called once per scheduler run
   }
   /* 

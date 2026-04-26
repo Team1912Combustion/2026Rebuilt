@@ -126,7 +126,7 @@ public class Shooter extends SubsystemBase {
    * @return True if the shooter is within in the limit, false if it isn't
    */
   public boolean shooterAtSpeed() {
-    return (Math.abs(shooter1.getClosedLoopError().getValueAsDouble()) < 1);
+    return (Math.abs(shooter1.getClosedLoopError().getValueAsDouble()) < 0.5);
   }
 
   /**
@@ -134,7 +134,7 @@ public class Shooter extends SubsystemBase {
    */
   public void kickerOn() {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    kicker.setControl(request.withVelocity(-90));
+    kicker.setControl(request.withVelocity(-110));
   }
 
   /**

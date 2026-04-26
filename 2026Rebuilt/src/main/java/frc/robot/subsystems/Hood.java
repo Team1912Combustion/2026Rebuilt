@@ -53,6 +53,9 @@ public class Hood extends SubsystemBase {
     config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 40;
+
     hood.getConfigurator().apply(config);
     hood.setPosition(0);
 
