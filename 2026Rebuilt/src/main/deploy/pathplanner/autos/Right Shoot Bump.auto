@@ -63,14 +63,14 @@
                 "data": {
                   "name": "PointAtTarget"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmWiggle"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Drive to (3.0, 0.6, 0)"
           }
         },
         {
@@ -125,12 +125,6 @@
                 "type": "named",
                 "data": {
                   "name": "PointAtTarget"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ArmWiggle"
                 }
               }
             ]

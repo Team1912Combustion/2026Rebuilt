@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.ColorFlowAnimation;
@@ -23,8 +26,8 @@ import frc.robot.Constants.DeviceIDs;
 import frc.robot.Constants.DriveConstants;
 
 public class LEDs extends SubsystemBase {
-  CANdle candle;
-  CANdleConfiguration config;
+  //CANdle candle;
+  //CANdleConfiguration config;
 
   DriveTrain driveTrain;
 
@@ -32,6 +35,11 @@ public class LEDs extends SubsystemBase {
   String alliance;
 
   double distanceFromStart;
+
+  Integer[] allHubsActiveArray = {1, 2, 7};
+
+  List<Integer> allHubsActive = Arrays.asList(allHubsActiveArray);
+
   // 1 - AUTO
   // 2 - TRANSITION SHIFT
   // 3 - SHIFT 1
@@ -41,10 +49,10 @@ public class LEDs extends SubsystemBase {
   // 7 - END GAME
   /** Creates a new LEDs. */
   public LEDs(DriveTrain dt) {
-    candle = new CANdle(9, "1912CANivore");
-    config = new CANdleConfiguration();
-    config.stripType = LEDStripType.GRB;
-    candle.configAllSettings(config);
+    //candle = new CANdle(9, "1912CANivore");
+    //config = new CANdleConfiguration();
+    //config.stripType = LEDStripType.GRB;
+    //candle.configAllSettings(config);
     /*config = new CANdleConfiguration();
     config.LED.BrightnessScalar = 1;
     config.LED.StripType = StripTypeValue.RGB;
@@ -55,7 +63,7 @@ public class LEDs extends SubsystemBase {
     matchPeriod = 1;
     alliance = "B";
 
-    setBlueStatic();
+    //setBlueStatic();
 
     distanceFromStart = 0;
 
@@ -89,42 +97,35 @@ public class LEDs extends SubsystemBase {
 
     //distanceFromStart = driveTrain.getPose().getTranslation().getDistance(driveTrain.autoChooser.getSelected().getStartingPose().getTranslation());
 
-    SmartDashboard.putNumber("distance from auto start", distanceFromStart);
+    SmartDashboard.putBoolean("Is hub active?", (getActiveHub() == getAlliance()) || allHubsActive.contains(matchPeriod));
+    SmartDashboard.putNumber("Current Shift", getMatchPeriod());
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     // This method will be called once per scheduler run
   }
-
+  /* 
   public void setBlueStatic() {
-    /*final SolidColor request = new SolidColor(0, 380);
-    candle.setControl(request.withColor(new RGBWColor(0, 140, 220)));*/
     candle.clearAnimation(0);
     candle.setLEDs(0, 0, 255);
   }
 
   public void setOrangeStatic() {
-    /*final SolidColor request = new SolidColor(0, 380);
-    candle.setControl(request.withColor(new RGBWColor(0, 140, 220)));*/
     candle.clearAnimation(0);
     candle.setLEDs(230, 40, 0);
   }
 
   public void setOrangeFlashing() {
-    //candle.setControl(request.withColor(new RGBWColor(230, 40, 0)));
     candle.animate(new ColorFlowAnimation(230, 40, 0, 255, 1, 300, Direction.Forward));
   }
 
   public void setRedStatic() {
-    /*final SolidColor request = new SolidColor(0, 380);
-    candle.setControl(request.withColor(new RGBWColor(230, 10, 10)));*/
     candle.clearAnimation(0);
     candle.setLEDs(230, 40, 0);
   }
 
   public void setGreenStatic() {
-    /*final SolidColor request = new SolidColor(0, 380);
-    candle.setControl(request.withColor(new RGBWColor(10, 230, 20)));*/
     candle.clearAnimation(0);
     candle.setLEDs(10, 230, 20);
-  }
+  }*/
 
   public int getMatchPeriod() {
     return matchPeriod;

@@ -5,15 +5,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.IntakeRollers;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class RunReverseIntake extends Command {
   IntakeRollers intakeRollers;
+  Floor floor;
   /** Creates a new RunReverseIndex. */
-  public RunReverseIntake(IntakeRollers ir) {
+  public RunReverseIntake(IntakeRollers ir, Floor f) {
     intakeRollers = ir;
-    addRequirements(intakeRollers);
+    floor = f;
+    addRequirements(intakeRollers, floor);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -25,12 +28,14 @@ public class RunReverseIntake extends Command {
   @Override
   public void execute() {
     intakeRollers.expel();
+    floor.setSpeed(-70);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     intakeRollers.setRollerSpeed(0);
+    floor.floorOff();
   }
 
   // Returns true when the command should end.

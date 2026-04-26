@@ -184,7 +184,7 @@ public class DriveTrain extends SubsystemBase {
     compositeLatency = 0;
     compositeVisionPose = new Pose2d();
 
-    isVisionValid = false;
+    isVisionValid = true;
 
     xRateLimiter = new SlewRateLimiter(1 / DriveConstants.RAMP_TIME);
     yRateLimiter = new SlewRateLimiter(1 / DriveConstants.RAMP_TIME);

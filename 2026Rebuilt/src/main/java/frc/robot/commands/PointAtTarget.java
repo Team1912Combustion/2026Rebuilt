@@ -35,7 +35,7 @@ public class PointAtTarget extends Command {
     limelightShooter = lls;
     addRequirements(driveTrain);
 
-    rotPID = new PIDController(0.03, 0, 0.0015);
+    rotPID = new PIDController(0.03, 0, 0.004);
     rotPID.enableContinuousInput(-180, 180);
     rotPID.setTolerance(2);
 
@@ -72,15 +72,14 @@ public class PointAtTarget extends Command {
 
     double tx = limelightShooter.getXOffset();
 
-    if (driveTrain.isHubTag(limelightShooter.getTagId()) && !poseFixed) {
+    if (driveTrain.isHubTag(limelightShooter.getTagId())) {
       driveTrain.fixPose();
-      poseFixed = true;
     }
 
-    if (timer.get() > 2 && poseFixed) {
+    /*if (timer.get() > 2 && poseFixed) {
       poseFixed = false;
       timer.reset();
-    }
+    }*/
 
     if (driveTrain.getTargetMode() == "tag") {
       driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), tagPID.calculate(tx, 0), true);

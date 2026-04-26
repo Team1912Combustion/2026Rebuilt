@@ -42,7 +42,7 @@ public class CandleCommand extends Command {
       leds.setOrangeFlashing();
     }*/
 
-    leds.setBlueStatic();
+    //leds.setBlueStatic();
   }
 
   // Called once the command ends or is interrupted.

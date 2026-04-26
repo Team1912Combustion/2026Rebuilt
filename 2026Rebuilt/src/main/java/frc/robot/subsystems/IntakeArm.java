@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -39,31 +40,35 @@ public class IntakeArm extends SubsystemBase {
     arm = new TalonFX(MotorIDs.INTAKE_ARM, new CANBus("1912CANivore"));
 
     armConfig = new TalonFXConfiguration();
-    armConfig.Slot0.kS = 0.3;
+    armConfig.Slot0.kS = 0.4;
+    armConfig.Slot0.kV = 0.01;
+    armConfig.Slot0.kA = 0.01;
     armConfig.Slot0.kP = 0.7;
     armConfig.Slot0.kI = 0;
     armConfig.Slot0.kD = 0;
     armConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     armConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     // UPPER LIMIT //
-    /*armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    armConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     armConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0;
     // LOWER LIMIT //
     armConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 4.2;*/
+    armConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = -11.5;
+
+    armConfig.MotionMagic.MotionMagicCruiseVelocity = 800;
+    armConfig.MotionMagic.MotionMagicAcceleration = 800;
 
     outPosition = -11.5;
-    inPosition = 0;
+    inPosition = -2;
     intakeAdjust = 0;
 
     arm.getConfigurator().apply(armConfig);
-    arm.setPosition(0); 
+    arm.setPosition(-11.5); 
 
     armOut = false;
 
     debouncer = new Debouncer(0.5);
 
-    intakeRateLimiter = new SlewRateLimiter(1);
     rateLimitedPosition = 0;
 
     armIn();
@@ -72,7 +77,7 @@ public class IntakeArm extends SubsystemBase {
   @Override
   public void periodic() {
     //rateLimitedPosition = intakeRateLimiter.calculate(arm.getClosedLoopReference().getValueAsDouble());
-    setArmPosition(armOut ? outPosition : inPosition);
+    setArmPosition(armOut ? outPosition + intakeAdjust : inPosition);
 
     SmartDashboard.putNumber("intake arm adjust", intakeAdjust);
     SmartDashboard.putNumber("rate limited intake position", rateLimitedPosition);
@@ -109,5 +114,15 @@ public class IntakeArm extends SubsystemBase {
 
   public boolean armInPosition() {
     return (Math.abs(arm.getClosedLoopError().getValueAsDouble()) < 5);
+  }
+
+  public void intakeConfigSlow() {
+    armConfig.MotionMagic.MotionMagicCruiseVelocity = 6;
+    arm.getConfigurator().apply(armConfig);
+  }
+
+  public void intakeConfigRegular() {
+    armConfig.MotionMagic.MotionMagicCruiseVelocity = 800;
+    arm.getConfigurator().apply(armConfig);
   }
 }

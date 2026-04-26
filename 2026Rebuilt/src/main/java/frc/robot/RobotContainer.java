@@ -80,8 +80,7 @@ public class RobotContainer {
   IntakeArm intakeArm;
   Hood hood;
   Shooter shooter;
-
-  CandleCommand candleCommand;
+  LEDs leds;
 
   PointAtTarget pointAtTarget;
   ToggleTargetMode toggleTargetMode;
@@ -118,6 +117,7 @@ public class RobotContainer {
     intakeArm = new IntakeArm();
     hood = new Hood(driveTrain);
     shooter = new Shooter(driveTrain);
+    leds = new LEDs(driveTrain);
 
     pointAtTarget = new PointAtTarget(driveTrain, limelightShooter);
     toggleTargetMode = new ToggleTargetMode(driveTrain);
@@ -144,7 +144,7 @@ public class RobotContainer {
     intakeAdjustOut = new IntakeAdjustOut(intakeArm);
 
     runIntake = new RunIntake(intakeRollers, intakeArm);
-    runReverseIntake = new RunReverseIntake(intakeRollers);
+    runReverseIntake = new RunReverseIntake(intakeRollers, floor);
     intakeArmToggle = new IntakeArmToggle(intakeArm);
     armWiggle = new ArmWiggle(intakeArm);
 
@@ -162,8 +162,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("ResetPose", resetPose);
     NamedCommands.registerCommand("ArmWiggle", armWiggle);
 
-    NamedCommands.registerCommand("Drive to (3.0, 7.4, 0)", new DriveToPosition(driveTrain, new Pose2d(new Translation2d(3.0, 7.4), Rotation2d.fromDegrees(0))));
-    NamedCommands.registerCommand("Drive to (3.0, 0.6, 0)", new DriveToPosition(driveTrain, new Pose2d(new Translation2d(3.0, 0.6), Rotation2d.fromDegrees(0))));
+    NamedCommands.registerCommand("Drive to (3.0, 7.4, 0)", new DriveToPosition(driveTrain, new Pose2d(new Translation2d(3.0, 8), Rotation2d.fromDegrees(0))));
+    NamedCommands.registerCommand("Drive to (3.0, 0.6, 0)", new DriveToPosition(driveTrain, new Pose2d(new Translation2d(3.0, 0), Rotation2d.fromDegrees(0))));
 
     driveTrain.autoChooser = AutoBuilder.buildAutoChooser("");
     driveTrain.autoChooser.addOption("Right Shoot Trench", new PathPlannerAuto("Right Shoot Trench"));

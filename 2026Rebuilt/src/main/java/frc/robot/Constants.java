@@ -274,7 +274,7 @@ public final class Constants {
     public static final double AUTO_ROTATION_ERROR = 3;
 
     public static final double DRIVE_SPEED = 1.0;
-    public static final double RAMP_TIME = 0.1;
+    public static final double RAMP_TIME = 0.05;
     public static final double TRACK_WIDTH = 0.55245;
     public static final double WHEEL_BASE = 0.55245;
     public static final SwerveDriveKinematics DRIVE_KINEMATICS =

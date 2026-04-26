@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.Shooter;
@@ -20,6 +21,8 @@ public class ShootFuel extends Command {
   Hood hood;
   IntakeRollers intakeRollers;
   IntakeArm intakeArm;
+
+  Timer timer;
   /** Creates a new ShootFuel. */
   public ShootFuel(Shooter s, Floor f, DriveTrain dt, Hood h, IntakeRollers ir, IntakeArm ia) {
     shooter = s;
@@ -29,15 +32,19 @@ public class ShootFuel extends Command {
     intakeRollers = ir;
     intakeArm = ia;
     addRequirements(shooter, floor, intakeRollers);
+
+    timer = new Timer();
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    intakeArm.intakeConfigSlow();
     hood.duckHood = false;
     //intakeArm.armOut = false;
     intakeRollers.intakeSlow();
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -47,6 +54,11 @@ public class ShootFuel extends Command {
     if (hood.isInPosiiton() && shooter.shooterAtSpeed() && !hood.duckHood()) {
       shooter.kickerOn();
       floor.setSpeed(90);
+      if (Math.floor(timer.get()) % 2 == 0) {
+        intakeArm.armOut = false;
+      } else {
+        intakeArm.armOut = true;
+      }
     } else {
       shooter.kickerOff();
       floor.setSpeed(0);
@@ -56,12 +68,15 @@ public class ShootFuel extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    intakeArm.intakeConfigRegular();
     hood.duckHood = true;
     shooter.shooterOff();
     floor.floorOff();
     shooter.kickerOff();
     intakeArm.armOut = true;
     intakeRollers.setRollerSpeed(0);
+    timer.stop();
+    timer.reset();
   }
 
   // Returns true when the command should end.

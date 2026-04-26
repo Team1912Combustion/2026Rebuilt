@@ -33,11 +33,11 @@ public class DriveToPosition extends Command {
     ySpeed = 0;
     rotSpeed = 0;
 
-    xController = new PIDController(0.01, 0, 0);
-    xController.setTolerance(0.2);
-    yController = new PIDController(0.01, 0, 0);
-    yController.setTolerance(0.2);
-    rotController = new PIDController(0.01, 0, 0);
+    xController = new PIDController(0.42, 0, 0);
+    xController.setTolerance(0.1);
+    yController = new PIDController(0.42, 0, 0);
+    yController.setTolerance(0.1);
+    rotController = new PIDController(0.015, 0, 0);
     rotController.setTolerance(5);
     rotController.enableContinuousInput(-180, 180);
     // Use addRequirements() here to declare subsystem dependencies.
