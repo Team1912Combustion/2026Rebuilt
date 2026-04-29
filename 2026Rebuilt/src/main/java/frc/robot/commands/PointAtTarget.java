@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -28,6 +29,8 @@ public class PointAtTarget extends Command {
 
   Timer timer;
   boolean poseFixed;
+
+  Debouncer debouncer;
   
   /** Creates a new PointAtTarget. */
   public PointAtTarget(DriveTrain dt, LimelightShooter lls) {
@@ -47,6 +50,8 @@ public class PointAtTarget extends Command {
 
     timer = new Timer();
     poseFixed = false;
+
+    debouncer = new Debouncer(0.2, DebounceType.kBoth);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -54,7 +59,6 @@ public class PointAtTarget extends Command {
   @Override
   public void initialize() {
     timer.reset();
-    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -81,15 +85,16 @@ public class PointAtTarget extends Command {
       timer.reset();
     }*/
 
-    if (driveTrain.getTargetMode() == "tag") {
-      driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), tagPID.calculate(tx, 0), true);
-      driveTrain.isAimed = (tagPID.atSetpoint() ? true : false);
-    } else {
+    double output = rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees() + 180), angle.getDegrees());
 
+    if (debouncer.calculate(Math.abs(output) > 0.06) || Math.abs(driveTrain.driverController.getLeftY()) > 0.01 || Math.abs(driveTrain.driverController.getLeftX()) > 0.01) {
       driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees() + 180), angle.getDegrees()), true);
-      //driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate((driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
-      driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
+    } else {
+      driveTrain.setXBrake();
     }
+
+    driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
+    //driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate((driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
 
     poseFixed = false;
   }

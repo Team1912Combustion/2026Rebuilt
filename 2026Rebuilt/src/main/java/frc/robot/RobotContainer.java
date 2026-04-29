@@ -197,7 +197,7 @@ public class RobotContainer {
     driverController.rightBumper().whileTrue(shootFuel);
     driverController.leftStick().whileTrue(pointAtTarget);
     driverController.rightStick().whileTrue(shootFuel);
-    //driverController.x().whileTrue(runIntake);
+    driverController.x().whileTrue(runIntake);
     driverController.y().whileTrue(runReverseIntake);
 
     //driverController.pov(180).whileTrue(autoIntake);

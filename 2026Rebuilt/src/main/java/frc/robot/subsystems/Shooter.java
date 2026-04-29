@@ -134,7 +134,7 @@ public class Shooter extends SubsystemBase {
    */
   public void kickerOn() {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    kicker.setControl(request.withVelocity(-110));
+    kicker.setControl(request.withVelocity(-115));
   }
 
   /**

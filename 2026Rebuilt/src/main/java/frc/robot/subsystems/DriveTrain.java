@@ -412,6 +412,17 @@ public class DriveTrain extends SubsystemBase {
     rearLeft.setDesiredState(desiredStates[2], isOpenLoop);
     rearRight.setDesiredState(desiredStates[3], isOpenLoop);
   }
+
+  public void setXBrake() {
+    var moduleStates = new SwerveModuleState[4];
+    moduleStates[0] = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
+    moduleStates[1] = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
+    moduleStates[2] = new SwerveModuleState(0, Rotation2d.fromDegrees(-45));
+    moduleStates[3] = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
+
+    setModuleStates(moduleStates, true);
+  }
+
   /**
    * Gets the chassis speeds of all 4 swerve modules.
    * @return The chassis speeds of all swerves

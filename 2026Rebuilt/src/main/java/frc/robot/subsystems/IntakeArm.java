@@ -120,7 +120,7 @@ public class IntakeArm extends SubsystemBase {
   public void armInSlow() {
     armPulling = true;
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(1);
-    arm.setControl(request.withVelocity(9).withEnableFOC(true));
+    arm.setControl(request.withVelocity(10).withEnableFOC(true));
   }
 
   public void armWiggle() {

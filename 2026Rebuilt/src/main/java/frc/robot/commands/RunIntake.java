@@ -27,11 +27,7 @@ public class RunIntake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (intakeArm.armInPosition()) {
-      intakeRollers.intake();
-    } else {
-      intakeRollers.setRollerSpeed(0);
-    }
+    intakeRollers.intake();
   }
 
   // Called once the command ends or is interrupted.
