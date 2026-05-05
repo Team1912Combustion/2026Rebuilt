@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveTrain;
@@ -54,8 +56,8 @@ public class ShootFuel extends Command {
     shooter.setSpeed(shooter.calculateSpeedContinuous(driveTrain.getDistance(driveTrain.getPose().getTranslation(), driveTrain.getTarget().getTranslation())));
     if (hood.isInPosiiton() && shooter.shooterAtSpeed() && !hood.duckHood()) {
       shooter.kickerOn();
-      floor.setSpeed(50);
-      if (timer.get() > 1) {
+      floor.setSpeed(floor.floorSpeed);
+      if (timer.get() > 0.5) {
         intakeArm.armInSlow();
       }
     } else {

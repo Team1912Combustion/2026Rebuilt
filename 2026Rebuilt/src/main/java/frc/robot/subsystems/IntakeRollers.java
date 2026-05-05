@@ -68,7 +68,7 @@ public class IntakeRollers extends SubsystemBase {
   }
 
   public void intakeSlow() {
-    setRollerSpeed(40);
+    setRollerSpeed(15);
   }
 
   public void expel() {

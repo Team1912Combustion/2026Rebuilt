@@ -653,11 +653,11 @@ public class DriveTrain extends SubsystemBase {
         blueOutpostZone.setShotPoint(FieldZoneConstants.BLUE_HUB_SHOT_POINT, false);
         neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT, true);
         neutralBottomZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT, true);
-        redDepotZone.setShotPoint(FieldZoneConstants.RED_DEPOT_SHOT_POINT, true);
-        redOutpostZone.setShotPoint(FieldZoneConstants.RED_OUTPOST_SHOT_POINT, true);
+        redDepotZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_BLUE_SHOT_POINT, true);
+        redOutpostZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_BLUE_SHOT_POINT, true);
       } else {
-        blueDepotZone.setShotPoint(FieldZoneConstants.BLUE_DEPOT_SHOT_POINT, true);
-        blueOutpostZone.setShotPoint(FieldZoneConstants.BLUE_OUTPOST_SHOT_POINT, true);
+        blueDepotZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_RED_SHOT_POINT, true);
+        blueOutpostZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT, true);
         neutralTopZone.setShotPoint(FieldZoneConstants.NEUTRAL_TOP_ZONE_RED_SHOT_POINT, true);
         neutralBottomZone.setShotPoint(FieldZoneConstants.NEUTRAL_BOTTOM_ZONE_RED_SHOT_POINT, true);
         redDepotZone.setShotPoint(FieldZoneConstants.RED_HUB_SHOT_POINT, false);

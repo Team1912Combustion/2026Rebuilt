@@ -28,6 +28,8 @@ import frc.robot.commands.ZeroGyro;
 import frc.robot.commands.ZeroHeading;
 import frc.robot.commands.AutoCommands.DriveToPosition;
 import frc.robot.commands.AutoCommands.RevUpShooter;
+import frc.robot.commands.TuningCommands.FloorSpeedDown;
+import frc.robot.commands.TuningCommands.FloorSpeedUp;
 import frc.robot.commands.TuningCommands.ManualHoodDown;
 import frc.robot.commands.TuningCommands.ManualHoodUp;
 import frc.robot.commands.TuningCommands.ShooterSpeedDown;
@@ -143,7 +145,7 @@ public class RobotContainer {
     intakeAdjustIn = new IntakeAdjustIn(intakeArm);
     intakeAdjustOut = new IntakeAdjustOut(intakeArm);
 
-    runIntake = new RunIntake(intakeRollers, intakeArm);
+    runIntake = new RunIntake(intakeRollers, intakeArm, floor, shooter);
     runReverseIntake = new RunReverseIntake(intakeRollers, floor);
     intakeArmToggle = new IntakeArmToggle(intakeArm);
     armWiggle = new ArmWiggle(intakeArm);
@@ -173,6 +175,7 @@ public class RobotContainer {
     driveTrain.autoChooser.addOption("Right Shoot Trench Long Swipe", new PathPlannerAuto("Right Shoot Trench Long Swipe"));
     driveTrain.autoChooser.addOption("Left Shoot Trench Long Swipe", new PathPlannerAuto("Left Shoot Trench Long Swipe"));
     driveTrain.autoChooser.addOption("Right Shoot Outpost", new PathPlannerAuto("Right Shoot Outpost"));
+    driveTrain.autoChooser.addOption("Center Shoot", new PathPlannerAuto("Center Shoot"));
 
     // Configure the trigger bindings
     configureBindings();
@@ -217,8 +220,8 @@ public class RobotContainer {
 
     operatorController.pov(0).whileTrue(boostUp);
     operatorController.pov(180).whileTrue(boostDown);
-    operatorController.pov(90).whileTrue(intakeAdjustOut);
-    operatorController.pov(270).whileTrue(intakeAdjustIn);
+    operatorController.pov(90).whileTrue(new FloorSpeedUp(floor));
+    operatorController.pov(270).whileTrue(new FloorSpeedDown(floor));
 
     operatorController.a().whileTrue(duckHood);
     operatorController.b().onTrue(toggleTargetMode);

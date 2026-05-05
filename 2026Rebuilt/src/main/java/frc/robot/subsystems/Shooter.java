@@ -16,6 +16,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -37,6 +39,8 @@ public class Shooter extends SubsystemBase {
   double upperLimit, lowerLimit;
 
   public double boost;
+
+  Debouncer debouncer = new Debouncer(0.1, DebounceType.kFalling);
 
   /** Creates a new Shooter. */
   public Shooter(DriveTrain dt) {
@@ -126,7 +130,7 @@ public class Shooter extends SubsystemBase {
    * @return True if the shooter is within in the limit, false if it isn't
    */
   public boolean shooterAtSpeed() {
-    return (Math.abs(shooter1.getClosedLoopError().getValueAsDouble()) < 0.5);
+    return debouncer.calculate((Math.abs(shooter1.getClosedLoopError().getValueAsDouble()) < 0.5));
   }
 
   /**
@@ -134,7 +138,15 @@ public class Shooter extends SubsystemBase {
    */
   public void kickerOn() {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    kicker.setControl(request.withVelocity(-115));
+    kicker.setControl(request.withVelocity(-115).withEnableFOC(true));
+  }
+
+  /**
+   * Runs the kicker at a specific speed.
+   */
+  public void kickerReverse() {
+    final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
+    kicker.setControl(request.withVelocity(20).withEnableFOC(true));
   }
 
   /**

@@ -20,6 +20,8 @@ import frc.robot.Constants.MotorIDs;
 public class Floor extends SubsystemBase {
   TalonFX floor1, floor2;
   TalonFXConfiguration floorConfig;
+
+  public double floorSpeed;
   /** Creates a new Floor. */
   public Floor() {
     floor1 = new TalonFX(MotorIDs.FLOOR_1, new CANBus("1912CANivore"));
@@ -37,10 +39,13 @@ public class Floor extends SubsystemBase {
 
     floor1.getConfigurator().apply(floorConfig);
     floor2.getConfigurator().apply(floorConfig);
+
+    floorSpeed = 115;
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("floor speed", floorSpeed);
     // This method will be called once per scheduler run
   }
 
@@ -50,9 +55,9 @@ public class Floor extends SubsystemBase {
    */
   public void setSpeed(double speed) {
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(0);
-    floor1.setControl(request.withVelocity(speed).withEnableFOC(true));
+    floor1.setControl(request.withVelocity(speed).withEnableFOC(false));
     final Follower followerRequest = new Follower(0, MotorAlignmentValue.Aligned);
-    floor2.setControl(followerRequest.withLeaderID(MotorIDs.FLOOR_2).withMotorAlignment(MotorAlignmentValue.Aligned));
+    floor2.setControl(followerRequest.withLeaderID(MotorIDs.FLOOR_1).withMotorAlignment(MotorAlignmentValue.Aligned));
   }
 
   /**
