@@ -48,7 +48,8 @@ public final class Constants {
 
     public static final int INTAKE_ROLLERS_LEFT = 17;
     public static final int INTAKE_ROLLERS_RIGHT = 18;
-    public static final int INTAKE_ARM = 19;
+    public static final int INTAKE_ARM_LEFT = 19;
+    public static final int INTAKE_ARM_RIGHT = 20;
 
   }
 

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
@@ -22,9 +23,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 
 public class IntakeArm extends SubsystemBase {
-  TalonFX arm;
+  TalonFX left_arm;
+  TalonFX right_arm;
 
   TalonFXConfiguration armConfig;
+  TalonFXConfiguration armConfig_right;
 
   public boolean armOut, armPulling;
 
@@ -38,9 +41,13 @@ public class IntakeArm extends SubsystemBase {
 
   Timer timer;
 
+  double stall_current = 1.;
+  double stall_velocity = 1.;
+
   /** Creates a new IntakeArm. */
   public IntakeArm() {
-    arm = new TalonFX(MotorIDs.INTAKE_ARM, new CANBus("1912CANivore"));
+    left_arm = new TalonFX(MotorIDs.INTAKE_ARM_LEFT, new CANBus("1912CANivore"));
+    right_arm = new TalonFX(MotorIDs.INTAKE_ARM_RIGHT, new CANBus("1912CANivore"));
 
     armConfig = new TalonFXConfiguration();
     armConfig.Slot0.kS = 0.3;
@@ -75,8 +82,15 @@ public class IntakeArm extends SubsystemBase {
     inPosition = 0;
     intakeAdjust = 0;
 
-    arm.getConfigurator().apply(armConfig);
-    arm.setPosition(0); 
+    left_arm.getConfigurator().apply(armConfig);
+    left_arm.setPosition(0); 
+
+    // left arm motor has the default CounterClockwise_Positive;
+    // right arm motor is inverted so Clockwise_Positive;
+    armConfig_right = armConfig;
+    armConfig_right.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    right_arm.getConfigurator().apply(armConfig_right);
+    right_arm.setPosition(0); 
 
     armOut = false;
     armPulling = false;
@@ -94,17 +108,47 @@ public class IntakeArm extends SubsystemBase {
   public void periodic() {
     //rateLimitedPosition = intakeRateLimiter.calculate(arm.getClosedLoopReference().getValueAsDouble());
     if (!armPulling) {
+      //check_arm_stall(left_arm);
+      //check_arm_stall(right_arm);
       setArmPosition(armOut ? outPosition + intakeAdjust : inPosition);
     }
+
+    SmartDashboard.putNumber("left arm current",
+      left_arm.getStatorCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("right arm current",
+      right_arm.getStatorCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("left arm velocity",
+      left_arm.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("right arm velocity",
+      right_arm.getVelocity().getValueAsDouble());
+    SmartDashboard.putBoolean("right arm stall", arm_stall(right_arm));
+    SmartDashboard.putBoolean("left arm stall", arm_stall(left_arm));
 
     SmartDashboard.putNumber("intake arm adjust", intakeAdjust);
     SmartDashboard.putNumber("rate limited intake position", rateLimitedPosition);
     // This method will be called once per scheduler run
   }
 
+  public boolean arm_stall(TalonFX arm) {
+    double current = arm.getStatorCurrent().getValueAsDouble();
+    double velocity = arm.getVelocity().getValueAsDouble();
+    if (current > stall_current && Math.abs(velocity) < stall_velocity) return true;
+    return false;
+  }
+
+  public void check_arm_stall(TalonFX arm) {
+    double current = arm.getStatorCurrent().getValueAsDouble();
+    double velocity = arm.getVelocity().getValueAsDouble();
+    if (current > stall_current && Math.abs(velocity) < stall_velocity) {
+      if (armOut) arm.setPosition(outPosition);
+      if (!armOut) arm.setPosition(0.);
+    }
+  }
+
   public void setArmPosition(double position) {
     final PositionVoltage request = new PositionVoltage(0).withSlot(0);
-    arm.setControl(request.withPosition(position).withEnableFOC(true));
+    left_arm.setControl(request.withPosition(position).withEnableFOC(true));
+    right_arm.setControl(request.withPosition(position).withEnableFOC(true));
   }
 
   public void armIn() {
@@ -120,7 +164,8 @@ public class IntakeArm extends SubsystemBase {
   public void armInSlow() {
     armPulling = true;
     final VelocityVoltage request = new VelocityVoltage(0).withSlot(1);
-    arm.setControl(request.withVelocity(10).withEnableFOC(true));
+    left_arm.setControl(request.withVelocity(10).withEnableFOC(true));
+    right_arm.setControl(request.withVelocity(10).withEnableFOC(true));
   }
 
   public void armWiggle() {
@@ -131,17 +176,24 @@ public class IntakeArm extends SubsystemBase {
     }
   }
 
-  public boolean armInPosition() {
-    return (Math.abs(arm.getClosedLoopError().getValueAsDouble()) < 5);
+  public boolean leftInPosition() {
+    return (Math.abs(left_arm.getClosedLoopError().getValueAsDouble()) < 5);
+  }
+  public boolean rightInPosition() {
+    return (Math.abs(right_arm.getClosedLoopError().getValueAsDouble()) < 5);
   }
 
   public void intakeConfigSlow() {
     armConfig.MotionMagic.MotionMagicCruiseVelocity = 6;
-    arm.getConfigurator().apply(armConfig);
+    armConfig_right.MotionMagic.MotionMagicCruiseVelocity = 6;
+    left_arm.getConfigurator().apply(armConfig);
+    right_arm.getConfigurator().apply(armConfig_right);
   }
 
   public void intakeConfigRegular() {
     armConfig.MotionMagic.MotionMagicCruiseVelocity = 800;
-    arm.getConfigurator().apply(armConfig);
+    armConfig_right.MotionMagic.MotionMagicCruiseVelocity = 800;
+    left_arm.getConfigurator().apply(armConfig);
+    right_arm.getConfigurator().apply(armConfig_right);
   }
 }
