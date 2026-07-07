@@ -530,7 +530,7 @@ public class DriveTrain extends SubsystemBase {
     return robotSpeed;
   }
   /**
-   * Gets whether or not to flip autonomous paths.
+   * Gets whether or not to flip autonomous p aths.
    * @return True means paths should be flipped, false means not
    */
   public boolean flipPath() {

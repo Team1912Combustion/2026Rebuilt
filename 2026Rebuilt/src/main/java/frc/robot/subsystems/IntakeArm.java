@@ -91,6 +91,7 @@ public class IntakeArm extends SubsystemBase {
     armConfig_right.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     right_arm.getConfigurator().apply(armConfig_right);
     right_arm.setPosition(0); 
+  
 
     armOut = false;
     armPulling = false;
@@ -123,6 +124,10 @@ public class IntakeArm extends SubsystemBase {
       right_arm.getVelocity().getValueAsDouble());
     SmartDashboard.putBoolean("right arm stall", arm_stall(right_arm));
     SmartDashboard.putBoolean("left arm stall", arm_stall(left_arm));
+    SmartDashboard.putNumber("left arm position",
+      left_arm.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("right arm position",
+      right_arm.getPosition().getValueAsDouble());
 
     SmartDashboard.putNumber("intake arm adjust", intakeAdjust);
     SmartDashboard.putNumber("rate limited intake position", rateLimitedPosition);
@@ -148,7 +153,8 @@ public class IntakeArm extends SubsystemBase {
   public void setArmPosition(double position) {
     final PositionVoltage request = new PositionVoltage(0).withSlot(0);
     left_arm.setControl(request.withPosition(position).withEnableFOC(true));
-    right_arm.setControl(request.withPosition(position).withEnableFOC(true));
+    final PositionVoltage request2 = new PositionVoltage(0).withSlot(0);
+    right_arm.setControl(request2.withPosition(position).withEnableFOC(true));
   }
 
   public void armIn() {
