@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -16,7 +15,6 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,6 +25,7 @@ public class IntakeArm extends SubsystemBase {
   TalonFX right_arm;
 
   TalonFXConfiguration armConfig;
+  TalonFXConfiguration armConfig_left;
   TalonFXConfiguration armConfig_right;
 
   public boolean armOut, armPulling;
@@ -82,16 +81,17 @@ public class IntakeArm extends SubsystemBase {
     inPosition = 0;
     intakeAdjust = 0;
 
-    left_arm.getConfigurator().apply(armConfig);
+    armConfig_left = armConfig.clone();
+    left_arm.getConfigurator().apply(armConfig_left);
     left_arm.setPosition(0); 
 
-    // left arm motor has the default CounterClockwise_Positive;
-    // right arm motor is inverted so Clockwise_Positive;
-    armConfig_right = armConfig;
-    armConfig_right.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    armConfig_right = armConfig.clone()
+      .withMotorOutput(
+        armConfig.MotorOutput.clone().withInverted(InvertedValue.Clockwise_Positive)
+      );
+
     right_arm.getConfigurator().apply(armConfig_right);
     right_arm.setPosition(0); 
-  
 
     armOut = false;
     armPulling = false;
@@ -115,19 +115,21 @@ public class IntakeArm extends SubsystemBase {
     }
 
     SmartDashboard.putNumber("left arm current",
-      left_arm.getStatorCurrent().getValueAsDouble());
+        left_arm.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("right arm current",
-      right_arm.getStatorCurrent().getValueAsDouble());
+        right_arm.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("left arm velocity",
-      left_arm.getVelocity().getValueAsDouble());
+        left_arm.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("right arm velocity",
-      right_arm.getVelocity().getValueAsDouble());
-    SmartDashboard.putBoolean("right arm stall", arm_stall(right_arm));
-    SmartDashboard.putBoolean("left arm stall", arm_stall(left_arm));
+        right_arm.getVelocity().getValueAsDouble());
+    SmartDashboard.putBoolean("right arm stall",
+        arm_stall(right_arm));
+    SmartDashboard.putBoolean("left arm stall",
+        arm_stall(left_arm));
     SmartDashboard.putNumber("left arm position",
-      left_arm.getPosition().getValueAsDouble());
+        left_arm.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("right arm position",
-      right_arm.getPosition().getValueAsDouble());
+        right_arm.getPosition().getValueAsDouble());
 
     SmartDashboard.putNumber("intake arm adjust", intakeAdjust);
     SmartDashboard.putNumber("rate limited intake position", rateLimitedPosition);
@@ -151,27 +153,26 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void setArmPosition(double position) {
-    final PositionVoltage request = new PositionVoltage(0).withSlot(0);
-    left_arm.setControl(request.withPosition(position).withEnableFOC(true));
-    final PositionVoltage request2 = new PositionVoltage(0).withSlot(0);
-    right_arm.setControl(request2.withPosition(position).withEnableFOC(true));
+    final PositionVoltage requestl = new PositionVoltage(0).withSlot(0);
+    left_arm.setControl(requestl.withPosition(position).withEnableFOC(true));
+    final PositionVoltage requestr = new PositionVoltage(0).withSlot(0);
+    right_arm.setControl(requestr.withPosition(position).withEnableFOC(true));
   }
 
   public void armIn() {
     armOut = false;
-    //setArmPosition(rateLimitedPosition);
   }
 
   public void armOut() {
     armOut = true;
-    //setArmPosition(outPosition);
   }
 
   public void armInSlow() {
     armPulling = true;
-    final VelocityVoltage request = new VelocityVoltage(0).withSlot(1);
-    left_arm.setControl(request.withVelocity(10).withEnableFOC(true));
-    right_arm.setControl(request.withVelocity(10).withEnableFOC(true));
+    final VelocityVoltage requestl = new VelocityVoltage(0).withSlot(1);
+    left_arm.setControl(requestl.withVelocity(10).withEnableFOC(true));
+    final VelocityVoltage requestr = new VelocityVoltage(0).withSlot(1);
+    right_arm.setControl(requestr.withVelocity(10).withEnableFOC(true));
   }
 
   public void armWiggle() {
@@ -190,16 +191,16 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void intakeConfigSlow() {
-    armConfig.MotionMagic.MotionMagicCruiseVelocity = 6;
+    armConfig_left.MotionMagic.MotionMagicCruiseVelocity = 6;
     armConfig_right.MotionMagic.MotionMagicCruiseVelocity = 6;
-    left_arm.getConfigurator().apply(armConfig);
+    left_arm.getConfigurator().apply(armConfig_left);
     right_arm.getConfigurator().apply(armConfig_right);
   }
 
   public void intakeConfigRegular() {
-    armConfig.MotionMagic.MotionMagicCruiseVelocity = 800;
+    armConfig_left.MotionMagic.MotionMagicCruiseVelocity = 800;
     armConfig_right.MotionMagic.MotionMagicCruiseVelocity = 800;
-    left_arm.getConfigurator().apply(armConfig);
+    left_arm.getConfigurator().apply(armConfig_left);
     right_arm.getConfigurator().apply(armConfig_right);
   }
 }
