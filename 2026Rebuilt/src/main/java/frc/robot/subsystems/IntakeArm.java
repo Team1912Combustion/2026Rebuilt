@@ -49,16 +49,16 @@ public class IntakeArm extends SubsystemBase {
     right_arm = new TalonFX(MotorIDs.INTAKE_ARM_RIGHT, new CANBus("1912CANivore"));
 
     armConfig = new TalonFXConfiguration();
-    armConfig.Slot0.kS = 0.3;
+    armConfig.Slot0.kS = 1;
     armConfig.Slot0.kV = 0;
     armConfig.Slot0.kA = 0;
-    armConfig.Slot0.kP = 0.7;
+    armConfig.Slot0.kP = 1.2;
     armConfig.Slot0.kI = 0;
     armConfig.Slot0.kD = 0;
     armConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
-    armConfig.Slot1.kS = 1.5;
-    armConfig.Slot1.kV = 0.06;
-    armConfig.Slot1.kA = 0.01;
+    armConfig.Slot1.kS = 1.84;
+    armConfig.Slot1.kV = 0.073;
+    armConfig.Slot1.kA = 0.0122;
     armConfig.Slot1.kP = 0.3;
     armConfig.Slot1.kI = 0;
     armConfig.Slot1.kD = 0;
@@ -77,7 +77,7 @@ public class IntakeArm extends SubsystemBase {
     armConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     armConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
-    outPosition = -11.5;
+    outPosition = -8.7;
     inPosition = 0;
     intakeAdjust = 0;
 
@@ -150,6 +150,14 @@ public class IntakeArm extends SubsystemBase {
       if (armOut) arm.setPosition(outPosition);
       if (!armOut) arm.setPosition(0.);
     }
+  }
+
+  public void leftOffset(){
+    left_arm.setPosition(left_arm.getPosition().getValueAsDouble()-.05);
+  }
+
+  public void rightOffset(){
+    right_arm.setPosition(right_arm.getPosition().getValueAsDouble()-.05);
   }
 
   public void setArmPosition(double position) {
