@@ -58,6 +58,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -205,9 +206,9 @@ public class RobotContainer {
     driverController.start().onTrue(zeroHeading);
     driverController.back().onTrue(resetPose);
 
-    driverController.rightBumper().whileTrue(shootFuel);
+    //driverController.rightBumper().whileTrue(shootFuel);
     driverController.leftStick().whileTrue(pointAtTarget);
-    driverController.rightStick().whileTrue(shootFuel);
+    //driverController.rightStick().whileTrue(shootFuel);
     driverController.x().whileTrue(runIntake);
     driverController.y().whileTrue(runReverseIntake);
 
@@ -222,6 +223,18 @@ public class RobotContainer {
     operatorController.rightStick().whileTrue(resetRightOffset);
     operatorController.x().whileTrue(runIntake);
     operatorController.y().whileTrue(runReverseIntake);
+
+    Command leftOffsetIn = new InstantCommand(()->IntakeArm.offsetIn(intakeArm.left_arm),intakeArm);
+    operatorController.axisLessThan(1, -.2).whileTrue(leftOffsetIn);
+
+    Command rightOffsetIn = new InstantCommand(()->IntakeArm.offsetIn(intakeArm.right_arm),intakeArm);
+    operatorController.axisLessThan(5, -.2).whileTrue(rightOffsetIn);
+
+    Command leftOffsetOut = new InstantCommand(()->IntakeArm.offsetOut(intakeArm.left_arm),intakeArm);
+    operatorController.axisGreaterThan(1, .2).whileTrue(leftOffsetOut);
+
+    Command rightOffsetOut = new InstantCommand(()->IntakeArm.offsetOut(intakeArm.right_arm),intakeArm);
+    operatorController.axisGreaterThan(5, .2).whileTrue(rightOffsetOut);
 
     operatorController.start().onTrue(resetPose);
     operatorController.back().multiPress(2, 0.5).onTrue(zeroGyro);

@@ -21,14 +21,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MotorIDs;
 
 public class IntakeArm extends SubsystemBase {
-  TalonFX left_arm;
-  TalonFX right_arm;
+  public TalonFX left_arm;
+  public TalonFX right_arm;
 
   TalonFXConfiguration armConfig;
   TalonFXConfiguration armConfig_left;
   TalonFXConfiguration armConfig_right;
 
   public boolean armOut, armPulling;
+  boolean armIsStalled;
 
   double outPosition, inPosition;
   public double intakeAdjust;
@@ -73,11 +74,11 @@ public class IntakeArm extends SubsystemBase {
 
     armConfig.MotionMagic.MotionMagicCruiseVelocity = 800;
     armConfig.MotionMagic.MotionMagicAcceleration = 800;
-
+  
     armConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     armConfig.CurrentLimits.SupplyCurrentLimit = 40;
 
-    outPosition = -8.7;
+    outPosition = -9.4;
     inPosition = 0;
     intakeAdjust = 0;
 
@@ -100,7 +101,7 @@ public class IntakeArm extends SubsystemBase {
 
     rateLimitedPosition = 0;
 
-    armIn();
+
 
     timer = new Timer();
   }
@@ -109,9 +110,15 @@ public class IntakeArm extends SubsystemBase {
   public void periodic() {
     //rateLimitedPosition = intakeRateLimiter.calculate(arm.getClosedLoopReference().getValueAsDouble());
     if (!armPulling) {
-      //check_arm_stall(left_arm);
-      //check_arm_stall(right_arm);
-      setArmPosition(armOut ? outPosition + intakeAdjust : inPosition);
+      check_arm_stall(left_arm);
+      check_arm_stall(right_arm);
+
+      if (debouncer.calculate(armIsStalled)) {
+        stopArmIfStalling(left_arm);
+        stopArmIfStalling(right_arm);
+      } else {
+        setArmPosition(armOut ? outPosition + intakeAdjust : inPosition);
+      }
     }
 
     SmartDashboard.putNumber("left arm current",
@@ -144,23 +151,54 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void check_arm_stall(TalonFX arm) {
-    double current = arm.getStatorCurrent().getValueAsDouble();
-    double velocity = arm.getVelocity().getValueAsDouble();
-    if (current > stall_current && Math.abs(velocity) < stall_velocity) {
+      if (arm_stall(arm)) {
+        armIsStalled = true;
+      }
+
+      /*
       if (armOut) arm.setPosition(outPosition);
       if (!armOut) arm.setPosition(0.);
+      */
     }
   }
 
-  public void leftOffset(){
+  public static void offsetIn(TalonFX arm){
+    arm.setPosition(arm.getPosition().getValueAsDouble()-.05);
+  }
+  public static void offsetOut(TalonFX arm){
+    arm.setPosition(arm.getPosition().getValueAsDouble()+.05);
+  }
+
+  public void leftOffsetIn(){
     left_arm.setPosition(left_arm.getPosition().getValueAsDouble()-.05);
   }
 
-  public void rightOffset(){
+  public void leftOffsetOut(){
+    left_arm.setPosition(left_arm.getPosition().getValueAsDouble()+.05);
+  }
+
+  public void rightOffsetIn(){
     right_arm.setPosition(right_arm.getPosition().getValueAsDouble()-.05);
   }
 
+  public void rightOffsetOut(){
+    right_arm.setPosition(right_arm.getPosition().getValueAsDouble()+.05);
+  }
+
+  public void stopArmIfStalling(TalonFX arm){
+    /*
+    if (arm_stall(arm)){
+      arm.setPosition(arm.getPosition().getValueAsDouble());
+    }
+    */
+
+    arm.setPosition(arm.getPosition().getValueAsDouble());
+  
+  }
+
+
   public void setArmPosition(double position) {
+    armIsStalled = false;
     final PositionVoltage requestl = new PositionVoltage(0).withSlot(0);
     left_arm.setControl(requestl.withPosition(position).withEnableFOC(true));
     final PositionVoltage requestr = new PositionVoltage(0).withSlot(0);

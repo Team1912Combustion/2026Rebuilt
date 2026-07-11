@@ -262,7 +262,7 @@ public class DriveTrain extends SubsystemBase {
       processFrame();
     //}
 
-    // update drive yaw while disabled
+    // update drive yaw while disable
     if (DriverStation.isDisabled()) {
       setShotPoints();
 
