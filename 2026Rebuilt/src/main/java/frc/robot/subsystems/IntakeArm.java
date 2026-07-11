@@ -29,6 +29,7 @@ public class IntakeArm extends SubsystemBase {
   TalonFXConfiguration armConfig_right;
 
   public boolean armOut, armPulling;
+  boolean armIsStalled;
 
   double outPosition, inPosition;
   public double intakeAdjust;
@@ -109,11 +110,15 @@ public class IntakeArm extends SubsystemBase {
   public void periodic() {
     //rateLimitedPosition = intakeRateLimiter.calculate(arm.getClosedLoopReference().getValueAsDouble());
     if (!armPulling) {
-      //check_arm_stall(left_arm);
-      //check_arm_stall(right_arm);
-      setArmPosition(armOut ? outPosition + intakeAdjust : inPosition);
-      stopArmIfStalling(left_arm);
-      stopArmIfStalling(right_arm);
+      check_arm_stall(left_arm);
+      check_arm_stall(right_arm);
+
+      if (debouncer.calculate(armIsStalled)) {
+        stopArmIfStalling(left_arm);
+        stopArmIfStalling(right_arm);
+      } else {
+        setArmPosition(armOut ? outPosition + intakeAdjust : inPosition);
+      }
     }
 
     SmartDashboard.putNumber("left arm current",
@@ -146,9 +151,14 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void check_arm_stall(TalonFX arm) {
-    if (arm_stall(arm)) {
+      if (arm_stall(arm)) {
+        armIsStalled = true;
+      }
+
+      /*
       if (armOut) arm.setPosition(outPosition);
       if (!armOut) arm.setPosition(0.);
+      */
     }
   }
 
@@ -176,12 +186,19 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void stopArmIfStalling(TalonFX arm){
+    /*
     if (arm_stall(arm)){
       arm.setPosition(arm.getPosition().getValueAsDouble());
     }
+    */
+
+    arm.setPosition(arm.getPosition().getValueAsDouble());
+  
   }
 
+
   public void setArmPosition(double position) {
+    armIsStalled = false;
     final PositionVoltage requestl = new PositionVoltage(0).withSlot(0);
     left_arm.setControl(requestl.withPosition(position).withEnableFOC(true));
     final PositionVoltage requestr = new PositionVoltage(0).withSlot(0);
