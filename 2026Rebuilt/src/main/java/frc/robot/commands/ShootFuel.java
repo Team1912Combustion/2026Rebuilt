@@ -44,7 +44,7 @@ public class ShootFuel extends Command {
   public void initialize() {
     intakeArm.intakeConfigSlow();
     hood.duckHood = false;
-    intakeArm.armOut = false;
+    intakeArm.armIn();
     intakeArm.armPulling = true;
     intakeRollers.intakeSlow();
     timer.start();
@@ -74,7 +74,7 @@ public class ShootFuel extends Command {
     shooter.shooterOff();
     floor.floorOff();
     shooter.kickerOff();
-    intakeArm.armOut = true;
+    intakeArm.armOut();
     intakeArm.armPulling = false;
     intakeRollers.setRollerSpeed(0);
     timer.stop();
