@@ -41,7 +41,7 @@ public class IntakeArm extends SubsystemBase {
 
   Timer timer;
 
-  double stall_current = 1.;
+  double stall_current = 15.;
   double stall_velocity = 1.;
 
   /** Creates a new IntakeArm. */
@@ -114,14 +114,14 @@ public class IntakeArm extends SubsystemBase {
       check_arm_stall(left_arm);
       check_arm_stall(right_arm);
 
-      if (stallDebouncer.calculate(armIsStalled)) {
-        stopArmIfStalling(right_arm);
-        stopArmIfStalling(left_arm);
-      } else {
+      //if (stallDebouncer.calculate(armIsStalled)) {
+      //  stopArmIfStalling(right_arm);
+      //  stopArmIfStalling(left_arm);
+      //} else {
         double newPosition = armOut ? outPosition + intakeAdjust : inPosition;
         setArmPosition(right_arm, newPosition);
         setArmPosition(left_arm, newPosition);
-      }
+     // }
     }
 
     SmartDashboard.putNumber("left arm current",
@@ -132,10 +132,9 @@ public class IntakeArm extends SubsystemBase {
         left_arm.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("right arm velocity",
         right_arm.getVelocity().getValueAsDouble());
-    SmartDashboard.putBoolean("right arm stall",
-        arm_stall(right_arm));
-    SmartDashboard.putBoolean("left arm stall",
-        arm_stall(left_arm));
+    SmartDashboard.putBoolean("right arm stall", arm_stall(right_arm));
+    SmartDashboard.putBoolean("left arm stall", arm_stall(left_arm));
+    SmartDashboard.putBoolean("stall check", armIsStalled);
     SmartDashboard.putNumber("left arm position",
         left_arm.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("right arm position",

@@ -206,7 +206,7 @@ public class RobotContainer {
     driverController.start().onTrue(zeroHeading);
     driverController.back().onTrue(resetPose);
 
-    //driverController.rightBumper().whileTrue(shootFuel);
+    driverController.rightBumper().whileTrue(shootFuel);
     driverController.leftStick().whileTrue(pointAtTarget);
     //driverController.rightStick().whileTrue(shootFuel);
     driverController.x().whileTrue(runIntake);
