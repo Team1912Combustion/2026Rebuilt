@@ -41,8 +41,8 @@ public class IntakeArm extends SubsystemBase {
 
   Timer timer;
 
-  double stall_current = 15.;
-  double stall_velocity = 1.;
+  double stall_current = 20.;
+  double stall_velocity = 0.5;
 
   /** Creates a new IntakeArm. */
   public IntakeArm() {
@@ -96,6 +96,7 @@ public class IntakeArm extends SubsystemBase {
 
     armOut = false;
     armPulling = false;
+    armIsStalled = false;
 
     wiggleDebouncer = new Debouncer(0.5);
     stallDebouncer = new Debouncer(1.5);
@@ -148,8 +149,11 @@ public class IntakeArm extends SubsystemBase {
   public boolean arm_stall(TalonFX arm) {
     double current = arm.getStatorCurrent().getValueAsDouble();
     double velocity = arm.getVelocity().getValueAsDouble();
-    if (current > stall_current && Math.abs(velocity) < stall_velocity) return true;
-    return false;
+    if (current > stall_current && Math.abs(velocity) < stall_velocity) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public void check_arm_stall(TalonFX arm) {
@@ -232,7 +236,6 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void intakeConfigSlow() {
-    resetStallState();
     armConfig_left.MotionMagic.MotionMagicCruiseVelocity = 6;
     armConfig_right.MotionMagic.MotionMagicCruiseVelocity = 6;
     left_arm.getConfigurator().apply(armConfig_left);
@@ -240,7 +243,6 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void intakeConfigRegular() {
-    resetStallState();
     armConfig_left.MotionMagic.MotionMagicCruiseVelocity = 800;
     armConfig_right.MotionMagic.MotionMagicCruiseVelocity = 800;
     left_arm.getConfigurator().apply(armConfig_left);
