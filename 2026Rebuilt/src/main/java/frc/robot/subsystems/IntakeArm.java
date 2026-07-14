@@ -188,9 +188,9 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void stopArmIfStalling(TalonFX arm) {
-    arm.setPosition(arm.getPosition().getValueAsDouble());
+    double newPosition = arm.getPosition().getValueAsDouble();
+    setArmPosition(arm, newPosition);
   }
-
 
   public void setArmPosition(TalonFX arm, double position) {
     final PositionVoltage request = new PositionVoltage(0).withSlot(0);
