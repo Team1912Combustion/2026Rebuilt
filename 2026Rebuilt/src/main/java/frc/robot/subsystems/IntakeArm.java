@@ -97,8 +97,6 @@ public class IntakeArm extends SubsystemBase {
 
     armOut = false;
     armPulling = false;
-    leftIsStalled = false;
-    rightIsStalled = false;
 
     wiggleDebouncer = new Debouncer(0.5);
     stallDebouncer = new Debouncer(1.5);
@@ -114,7 +112,7 @@ public class IntakeArm extends SubsystemBase {
   public void periodic() {
     //rateLimitedPosition = intakeRateLimiter.calculate(arm.getClosedLoopReference().getValueAsDouble());
     if (!armPulling) {
-      if (stallDebouncer.calculate(leftIsStalled || rightIsStalled)) {
+      if (stallDebouncer.calculate(armIsStalled)) {
         stopArmIfStalling(right_arm);
         stopArmIfStalling(left_arm);
       } else {
@@ -160,12 +158,16 @@ public class IntakeArm extends SubsystemBase {
     }
   }
 
-  public static void offsetIn(TalonFX arm){
-    arm.setPosition(arm.getPosition().getValueAsDouble() - .05);
+  private static void offsetArm(TalonFX arm, double offsetAmount) {
+    arm.setPosition(arm.getPosition().getValueAsDouble() + offsetAmount);
   }
 
-  public static void offsetOut(TalonFX arm){
-    arm.setPosition(arm.getPosition().getValueAsDouble() + .05);
+  public static void offsetIn(TalonFX arm) {
+    offsetArm(arm, -.05);
+  }
+
+  public static void offsetOut(TalonFX arm) {
+    offsetArm(arm, .05);
   }
 
   public void leftOffsetIn() {
@@ -193,6 +195,11 @@ public class IntakeArm extends SubsystemBase {
   public void setArmPosition(TalonFX arm, double position) {
     final PositionVoltage request = new PositionVoltage(0).withSlot(0);
     arm.setControl(request.withPosition(position).withEnableFOC(true));
+  }
+
+  public void armToggle() {
+    armOut = !armOut;
+    resetStallState();
   }
 
   public void armIn() {
