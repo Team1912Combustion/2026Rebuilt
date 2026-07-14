@@ -65,6 +65,7 @@ import frc.robot.Constants.SensorIDs;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.FieldZone;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.subsystems.LimelightShooty;
 
 public class DriveTrain extends SubsystemBase {
   private final SwerveModule frontLeft = new SwerveModule(0, DeviceIDs.FRONT_LEFT.constants);
@@ -81,7 +82,7 @@ public class DriveTrain extends SubsystemBase {
 
   public boolean fieldRelative;
 
-  LimelightShooter limelightShooter;
+  LimelightShooty limelightShooter;
 
   MedianFilter limelightXFilter;
   MedianFilter limelightYFilter;
@@ -139,7 +140,7 @@ public class DriveTrain extends SubsystemBase {
   String targetMode;
 
   /** Creates a new DriveTrain. */
-  public DriveTrain(LimelightShooter lls) {
+  public DriveTrain(LimelightShooty lls) {
 
     gyroConfig = new Pigeon2Configuration();
     gyroConfig.MountPose.MountPoseYaw = 180;

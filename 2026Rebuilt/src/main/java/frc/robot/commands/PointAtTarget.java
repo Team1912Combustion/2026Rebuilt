@@ -15,12 +15,12 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.LimelightShooter;
+import frc.robot.subsystems.LimelightShooty;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PointAtTarget extends Command {
   DriveTrain driveTrain;
-  LimelightShooter limelightShooter;
+  LimelightShooty limelightShooter;
 
   PIDController rotPID;
   PIDController tagPID;
@@ -33,7 +33,7 @@ public class PointAtTarget extends Command {
   Debouncer debouncer;
   
   /** Creates a new PointAtTarget. */
-  public PointAtTarget(DriveTrain dt, LimelightShooter lls) {
+  public PointAtTarget(DriveTrain dt, LimelightShooty lls) {
     driveTrain = dt;
     limelightShooter = lls;
     addRequirements(driveTrain);

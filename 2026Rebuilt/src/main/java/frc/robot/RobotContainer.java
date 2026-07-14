@@ -40,9 +40,7 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeRollers;
 import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.LimelightShooter;
-import frc.robot.subsystems.LimelightLeft;
-import frc.robot.subsystems.LimelightRight;
+import frc.robot.subsystems.LimelightShooty;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hood;
@@ -72,6 +70,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
+  // why instantiate here and not in the constructor
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController driverController =
       new CommandXboxController(0);
@@ -79,7 +78,7 @@ public class RobotContainer {
       new CommandXboxController(1);
 
   DriveTrain driveTrain;
-  LimelightShooter limelightShooter;
+  LimelightShooty limelightShooter;
   Floor floor;
   IntakeRollers intakeRollers;
   IntakeArm intakeArm;
@@ -117,7 +116,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    limelightShooter = new LimelightShooter();
+    limelightShooter = new LimelightShooty();
 
     driveTrain = new DriveTrain(limelightShooter);
     floor = new Floor();
