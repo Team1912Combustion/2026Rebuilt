@@ -96,6 +96,7 @@ public class IntakeArm extends SubsystemBase {
 
     armOut = false;
     armPulling = false;
+    armIsStalled = false;
 
     wiggleDebouncer = new Debouncer(0.5);
     stallDebouncer = new Debouncer(1.5);
@@ -111,17 +112,21 @@ public class IntakeArm extends SubsystemBase {
   public void periodic() {
     //rateLimitedPosition = intakeRateLimiter.calculate(arm.getClosedLoopReference().getValueAsDouble());
     if (!armPulling) {
-      check_arm_stall(left_arm);
-      check_arm_stall(right_arm);
 
-      //if (stallDebouncer.calculate(armIsStalled)) {
-      //  stopArmIfStalling(right_arm);
-      //  stopArmIfStalling(left_arm);
-      //} else {
+      // comment out if arm stalling is weird
+      if (stallDebouncer.calculate(armIsStalled)) {
+        stopArmIfStalling(right_arm);
+        stopArmIfStalling(left_arm);
+      } else {
+
         double newPosition = armOut ? outPosition + intakeAdjust : inPosition;
         setArmPosition(right_arm, newPosition);
         setArmPosition(left_arm, newPosition);
-     // }
+
+      }
+
+      check_arm_stall(left_arm);
+      check_arm_stall(right_arm);
     }
 
     SmartDashboard.putNumber("left arm current",

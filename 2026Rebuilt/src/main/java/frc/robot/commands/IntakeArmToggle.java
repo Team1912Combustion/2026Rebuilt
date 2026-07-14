@@ -21,6 +21,7 @@ public class IntakeArmToggle extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // here because the direct toggle doesn't actually trigger the reset of the stall boolean
     intakeArm.resetStallState();
     intakeArm.armOut = !intakeArm.armOut;
   }
