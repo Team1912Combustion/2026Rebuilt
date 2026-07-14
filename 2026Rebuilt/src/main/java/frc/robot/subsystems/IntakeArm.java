@@ -28,7 +28,8 @@ public class IntakeArm extends SubsystemBase {
   TalonFXConfiguration armConfig_left;
   TalonFXConfiguration armConfig_right;
 
-  public boolean armOut, armPulling, armIsStalled;
+  public boolean armOut, armPulling;
+  boolean leftIsStalled, rightIsStalled;
 
   double outPosition, inPosition;
   public double intakeAdjust;
@@ -96,7 +97,8 @@ public class IntakeArm extends SubsystemBase {
 
     armOut = false;
     armPulling = false;
-    armIsStalled = false;
+    leftIsStalled = false;
+    rightIsStalled = false;
 
     wiggleDebouncer = new Debouncer(0.5);
     stallDebouncer = new Debouncer(1.5);
@@ -112,17 +114,17 @@ public class IntakeArm extends SubsystemBase {
   public void periodic() {
     //rateLimitedPosition = intakeRateLimiter.calculate(arm.getClosedLoopReference().getValueAsDouble());
     if (!armPulling) {
-      check_arm_stall(left_arm);
-      check_arm_stall(right_arm);
-
-      //if (stallDebouncer.calculate(armIsStalled)) {
-      //  stopArmIfStalling(right_arm);
-      //  stopArmIfStalling(left_arm);
-      //} else {
+      if (stallDebouncer.calculate(leftIsStalled || rightIsStalled)) {
+        stopArmIfStalling(right_arm);
+        stopArmIfStalling(left_arm);
+      } else {
         double newPosition = armOut ? outPosition + intakeAdjust : inPosition;
         setArmPosition(right_arm, newPosition);
         setArmPosition(left_arm, newPosition);
-     // }
+      }
+
+      check_arm_stall(left_arm);
+      check_arm_stall(right_arm);
     }
 
     SmartDashboard.putNumber("left arm current",
@@ -149,11 +151,7 @@ public class IntakeArm extends SubsystemBase {
   public boolean arm_stall(TalonFX arm) {
     double current = arm.getStatorCurrent().getValueAsDouble();
     double velocity = arm.getVelocity().getValueAsDouble();
-    if (current > stall_current && Math.abs(velocity) < stall_velocity) {
-      return true;
-    } else {
-      return false;
-    }
+    return current > stall_current && Math.abs(velocity) < stall_velocity;
   }
 
   public void check_arm_stall(TalonFX arm) {
@@ -187,7 +185,8 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void stopArmIfStalling(TalonFX arm) {
-    arm.setPosition(arm.getPosition().getValueAsDouble());
+    final VelocityVoltage request = new VelocityVoltage(0).withSlot(1);
+    arm.setControl(requestr.withVelocity(0).withEnableFOC(true));
   }
 
 
