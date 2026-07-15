@@ -20,7 +20,6 @@ public class LimelightLeft extends SubsystemBase {
   private final NetworkTable table;
   private final NetworkTableEntry latency;
   private final NetworkTableEntry tagId;
-  private double[] lastBotPose = new double[6];
   private int currentTagId = 0;
 
   /** Creates a new LimelightFrontLeft. */
@@ -37,8 +36,9 @@ public class LimelightLeft extends SubsystemBase {
   @Override
   public void periodic() {
     currentTagId = getTagId();
-    lastBotPose = getBotPoseMT1();
     if(currentTagId > 0) {
+      // double[] lastBotPose = new double[6];
+      // lastBotPose = getBotPoseMT1();
       // // Pose2d lastPose2d = new Pose2d(lastBotPose[0],lastBotPose[1], new Rotation2d(lastBotPose[5]));
       // SmartDashboard.putNumber(getPosition()+"Botpose X: ",lastBotPose[0]);
       // SmartDashboard.putNumber(getPosition()+"Botpose Y: ",lastBotPose[1]);
