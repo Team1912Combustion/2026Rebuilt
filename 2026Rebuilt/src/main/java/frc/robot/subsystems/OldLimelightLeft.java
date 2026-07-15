@@ -4,7 +4,12 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.apriltag.AprilTagPoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -15,20 +20,25 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 
-public class LimelightLeft extends SubsystemBase {
-
-  private final NetworkTable table;
-  private final NetworkTableEntry latency;
-  private final NetworkTableEntry tagId;
+public class OldLimelightLeft extends SubsystemBase {
+  private final NetworkTable table =
+	  NetworkTableInstance.getDefault().getTable(getName());
+  private final NetworkTableEntry pipeline = table.getEntry("pipeline");
+  private final NetworkTableEntry xOffset = table.getEntry("tx");
+  private final NetworkTableEntry yOffset = table.getEntry("ty");
+  private final NetworkTableEntry latency = table.getEntry("tl");
+  private final NetworkTableEntry botPoseTargetSpace = table.getEntry("botpose_targetspace");
+  private final NetworkTableEntry botPose = table.getEntry("botpose_wpiblue");
+  private final NetworkTableEntry tagId = table.getEntry("tid");
+  private final NetworkTableEntry targetArea = table.getEntry("ta");
+  private final NetworkTableEntry json = table.getEntry("json");
   private double[] lastBotPose = new double[6];
+  private int currentPipeline = 0;
   private int currentTagId = 0;
 
   /** Creates a new LimelightFrontLeft. */
-  public LimelightLeft() {
+  public OldLimelightLeft() {
     setPipeline(0);
-    table = NetworkTableInstance.getDefault().getTable(getName());
-    latency = table.getEntry("tl");
-    tagId = table.getEntry("tid");
 
     //LimelightHelpers.setRewindEnabled(getName(), true);
     //LimelightHelpers.triggerRewindCapture(getName(), 20);
@@ -39,16 +49,20 @@ public class LimelightLeft extends SubsystemBase {
     currentTagId = getTagId();
     lastBotPose = getBotPoseMT1();
     if(currentTagId > 0) {
-      // // Pose2d lastPose2d = new Pose2d(lastBotPose[0],lastBotPose[1], new Rotation2d(lastBotPose[5]));
-      // SmartDashboard.putNumber(getPosition()+"Botpose X: ",lastBotPose[0]);
-      // SmartDashboard.putNumber(getPosition()+"Botpose Y: ",lastBotPose[1]);
-      // SmartDashboard.putNumber(getPosition()+"Botpose Yaw: ",lastBotPose[5]);
+     // lastPose2d = new Pose2d(lastBotPose[0],lastBotPose[1], new Rotation2d(lastBotPose[5]));
+      //SmartDashboard.putNumber(getPosition()+"Botpose X: ",lastBotPose[0]);
+      //SmartDashboard.putNumber(getPosition()+"Botpose Y: ",lastBotPose[1]);
+
+      //SmartDashboard.putNumber(getPosition()+"Botpose Yaw: ",lastBotPose[5]);
+
     }       
     SmartDashboard.putNumber(getPosition()+"Latency: ",(double) latency.getNumber(0));
     SmartDashboard.putNumber(getPosition()+"TagID: ",tagId.getInteger(-1));
     SmartDashboard.putBoolean(getPosition()+"HasBotPose: ",(currentTagId>0));
-    // SmartDashboard.putNumber(getPosition()+"Limelight Xoffset: ",getXOffset());
-    // SmartDashboard.putNumber(getPosition()+"Limelight Yoffset: ",getYOffset());
+    //SmartDashboard.putNumber(getPosition()+"Limelight Xoffset: ",getXOffset());
+    //SmartDashboard.putNumber(getPosition()+"Limelight Yoffset: ",getYOffset());
+
+    // This method will be called once per scheduler run
   }
   // IP IS - 10.19.12.11:5801 //
 
