@@ -19,22 +19,24 @@ import frc.robot.LimelightHelpers.PoseEstimate;
 public class LimelightShooty extends SubsystemBase {
   private final NetworkTable table;
   private final NetworkTableEntry tagId;
-  private double[] lastBotPose = new double[6];
-  private int currentPipeline = 0;
+  private final NetworkTableEntry latency;
+  //private double[] lastBotPose = new double[6];
+  //private int currentPipeline = 0;
   private int currentTagId = 0;
 
   /** Creates a new LimelightShooter. */
   public LimelightShooty() {
     setPipeline(0);
 	  table = NetworkTableInstance.getDefault().getTable(getName());
-    tagId = table.getEntry("tid")
+    tagId = table.getEntry("tid");
+    latency = table.getEntry("tl");
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     currentTagId = getTagId();
-    lastBotPose = getBotPoseMT1();
+    //lastBotPose = getBotPoseMT1();
     SmartDashboard.putNumber(getPosition()+"Latency: ",(double) latency.getNumber(0));
     SmartDashboard.putNumber(getPosition()+"TagID: ",tagId.getInteger(-1));
     SmartDashboard.putBoolean(getPosition()+"HasBotPose: ",(currentTagId>0));
