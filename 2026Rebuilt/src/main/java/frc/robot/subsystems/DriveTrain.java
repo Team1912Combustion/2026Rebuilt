@@ -247,21 +247,9 @@ public class DriveTrain extends SubsystemBase {
     // update pose estimator
     poseEstimator.update(getRotation2d(), get_positions());
 
-    /*if (DriverStation.isFMSAttached() && DriverStation.isAutonomousEnabled()) {
-      if ((Timer.getFPGATimestamp() - lastVisionUpdate) > 0.05) {
+    LimelightHelpers.SetRobotOrientation(limelightShooter.getName(), getHeading(), 0, 0, 0, 0, 0);
 
-      LimelightHelpers.SetRobotOrientation(limelightClimberLeft.getName(), getHeading(), 0, 0, 0, 0, 0);
-      LimelightHelpers.SetRobotOrientation(limelightClimberRight.getName(), getHeading(), 0, 0, 0, 0, 0);
-
-      processFrame();
-
-      lastVisionUpdate = Timer.getFPGATimestamp();
-      }
-    } else {*/
-      LimelightHelpers.SetRobotOrientation(limelightShooter.getName(), getHeading(), 0, 0, 0, 0, 0);
-
-      processFrame();
-    //}
+    processFrame();
 
     // update drive yaw while disabled
     if (DriverStation.isDisabled()) {
@@ -592,20 +580,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
   }
-
-  /*public Pose2d getFuelPosition() {
-    if (limelightLeft.getPipeline() == 1) {
-      Pose3d limelightRobotPose = LimelightHelpers.getCameraPose3d_RobotSpace(limelightLeft.getName());
-      Pose2d limelightPose = getPose().transformBy(new Transform2d(limelightRobotPose.getX(), limelightRobotPose.getY(), new Rotation2d()));
-
-      double distance = limelightLeft.getTargetArea();
-      double angle = (limelightLeft.getXOffset() / 12) * (41);
-
-      return limelightPose.transformBy(new Transform2d(distance * Math.cos(angle), distance * Math.sin(angle), new Rotation2d()));
-    } else {
-      return new Pose2d();
-    }
-  }*/
 
   public void setSlowMode(boolean yeah) {
     slowMode = yeah;
