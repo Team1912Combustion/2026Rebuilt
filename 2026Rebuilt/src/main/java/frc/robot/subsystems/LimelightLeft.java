@@ -20,7 +20,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 
-public class LimelightLeft extends SubsystemBase {
+public class LimelightShooter extends SubsystemBase {
   private final NetworkTable table =
 	  NetworkTableInstance.getDefault().getTable(getName());
   private final NetworkTableEntry pipeline = table.getEntry("pipeline");
@@ -36,8 +36,8 @@ public class LimelightLeft extends SubsystemBase {
   private int currentPipeline = 0;
   private int currentTagId = 0;
 
-  /** Creates a new LimelightFrontLeft. */
-  public LimelightLeft() {
+  /** Creates a new LimelightShooter. */
+  public LimelightShooter () {
     setPipeline(0);
 
     //LimelightHelpers.setRewindEnabled(getName(), true);
@@ -59,8 +59,6 @@ public class LimelightLeft extends SubsystemBase {
     SmartDashboard.putNumber(getPosition()+"Latency: ",(double) latency.getNumber(0));
     SmartDashboard.putNumber(getPosition()+"TagID: ",tagId.getInteger(-1));
     SmartDashboard.putBoolean(getPosition()+"HasBotPose: ",(currentTagId>0));
-    //SmartDashboard.putNumber(getPosition()+"Limelight Xoffset: ",getXOffset());
-    //SmartDashboard.putNumber(getPosition()+"Limelight Yoffset: ",getYOffset());
 
     // This method will be called once per scheduler run
   }
@@ -71,7 +69,7 @@ public class LimelightLeft extends SubsystemBase {
    * @return The name of the limelight as a string
    */
   public String getName() {
-    return "limelight-l";
+    return "limelight-s";
   }
 
   /**
@@ -79,7 +77,7 @@ public class LimelightLeft extends SubsystemBase {
    * @return The position of the limelight as a string
    */
   public String getPosition() {
-    return "left";
+    return "shooter";
   }
   /**
    * Toggles between pipeline 0 and 1.
