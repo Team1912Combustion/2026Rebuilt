@@ -20,6 +20,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 
+/** v1 of the LimelightShooter implementation, runs into loop overrun bug */
 public class LimelightShooter extends SubsystemBase {
   private final NetworkTable table =
 	  NetworkTableInstance.getDefault().getTable(getName());
@@ -55,7 +56,7 @@ public class LimelightShooter extends SubsystemBase {
 
       //SmartDashboard.putNumber(getPosition()+"Botpose Yaw: ",lastBotPose[5]);
 
-    }       
+    }
     SmartDashboard.putNumber(getPosition()+"Latency: ",(double) latency.getNumber(0));
     SmartDashboard.putNumber(getPosition()+"TagID: ",tagId.getInteger(-1));
     SmartDashboard.putBoolean(getPosition()+"HasBotPose: ",(currentTagId>0));
@@ -115,7 +116,7 @@ public class LimelightShooter extends SubsystemBase {
   }
 
   /**
-   * Returns the latency of the pipeline 
+   * Returns the latency of the pipeline
    * @return
    */
   public double getLatency() {

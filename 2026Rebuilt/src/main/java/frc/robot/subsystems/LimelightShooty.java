@@ -15,6 +15,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 
+/** v2 of LimelightShooter, initializes network table instances in the constructor without extra variables */
 public class LimelightShooty extends SubsystemBase {
   private final NetworkTable table;
   private final NetworkTableEntry tagId;
@@ -92,7 +93,7 @@ public class LimelightShooty extends SubsystemBase {
   }
 
   /**
-   * Returns the latency of the pipeline 
+   * Returns the latency of the pipeline
    * @return
    */
   public double getLatency() {
