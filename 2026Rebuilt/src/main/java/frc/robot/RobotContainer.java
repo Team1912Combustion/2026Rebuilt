@@ -6,7 +6,6 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmWiggle;
-import frc.robot.commands.AutoIntake;
 import frc.robot.commands.Autos;
 import frc.robot.commands.BoostDown;
 import frc.robot.commands.BoostUp;
@@ -92,7 +91,6 @@ public class RobotContainer {
   ZeroHeading zeroHeading;
   ZeroGyro zeroGyro;
   SlowMode slowMode;
-  //AutoIntake autoIntake;
   ResetPose resetPose;
 
   ShootFuel shootFuel;
@@ -139,7 +137,6 @@ public class RobotContainer {
     zeroHeading = new ZeroHeading(driveTrain);
     zeroGyro = new ZeroGyro(driveTrain);
     slowMode = new SlowMode(driveTrain);
-    //autoIntake = new AutoIntake(driveTrain, intakeRollers, intakeArm, limelightLeft);
     resetPose = new ResetPose(driveTrain);
 
     shootFuel = new ShootFuel(shooter, floor, driveTrain, hood, intakeRollers, intakeArm);
