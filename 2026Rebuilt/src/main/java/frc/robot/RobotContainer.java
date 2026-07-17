@@ -219,8 +219,8 @@ public class RobotContainer {
     operatorController.rightBumper().whileTrue(shootFuel);
     operatorController.leftBumper().whileTrue(intakeArmToggle);
     operatorController.leftTrigger(0.2).whileTrue(armWiggle);
-    operatorController.leftStick().whileTrue(resetLeftOffset);
-    operatorController.rightStick().whileTrue(resetRightOffset);
+    //operatorController.leftStick().whileTrue(resetLeftOffset);
+    //operatorController.rightStick().whileTrue(resetRightOffset);
     operatorController.x().whileTrue(runIntake);
     operatorController.y().whileTrue(runReverseIntake);
 

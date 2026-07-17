@@ -554,7 +554,6 @@ public class DriveTrain extends SubsystemBase {
    * Measurements are weighted based on target area.
    */
   public void processFrame() {
-
     double x = 0;
     double y = 0;
     double yaw = 0;
@@ -562,11 +561,13 @@ public class DriveTrain extends SubsystemBase {
     isVisionValid = false;
 
     if (limelightShooter.acceptPose()) {
-      if (limelightShooter.getTargetArea() > VisionConstants.TARGET_AREA_THRESHHOLD) {
-        totalArea += limelightShooter.getTargetArea();
-        x += limelightShooter.getBotPose2dMT2().getX() * limelightShooter.getTargetArea();
-        y += limelightShooter.getBotPose2dMT2().getY() * limelightShooter.getTargetArea();
-        yaw += limelightShooter.getBotPose2dMT2().getRotation().getDegrees() * limelightShooter.getTargetArea();
+      double targetArea = limelightShooter.getTargetArea();
+      if (targetArea > VisionConstants.TARGET_AREA_THRESHHOLD) {
+        Pose2d pose = limelightShooter.getBotPose2dMT2();
+        totalArea += targetArea;
+        x += pose.getX() * targetArea;
+        y += pose.getY() * targetArea;
+        yaw += pose.getRotation().getDegrees() * targetArea;
         compositeLatency += limelightShooter.getLatency();
       }
     } 

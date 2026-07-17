@@ -43,6 +43,8 @@ public class IntakeArm extends SubsystemBase {
 
   double stall_current = 15.;
   double stall_velocity = 1.;
+  
+  final static double ARM_OFFSET_ROTATIONS = .2;
 
   /** Creates a new IntakeArm. */
   public IntakeArm() {
@@ -164,11 +166,11 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public static void offsetIn(TalonFX arm){
-    arm.setPosition(arm.getPosition().getValueAsDouble() - .05);
+    arm.setPosition(arm.getPosition().getValueAsDouble() - ARM_OFFSET_ROTATIONS);
   }
 
   public static void offsetOut(TalonFX arm){
-    arm.setPosition(arm.getPosition().getValueAsDouble() + .05);
+    arm.setPosition(arm.getPosition().getValueAsDouble() + ARM_OFFSET_ROTATIONS);
   }
 
   public void leftOffsetIn() {

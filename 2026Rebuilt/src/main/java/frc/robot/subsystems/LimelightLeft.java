@@ -132,6 +132,7 @@ public class LimelightLeft extends SubsystemBase {
   public int getTagId() {
     return (int) tagId.getInteger(0);
   }
+
   /**
    * Gets the number of tags that the limelight can see.
    * @return The number of tags
@@ -143,20 +144,31 @@ public class LimelightLeft extends SubsystemBase {
   public boolean acceptPose() {
     if (!LimelightHelpers.getTV(getName())) {
       return false;
-    //} else if (Math.abs(getBotPoseMT1()[3]) > 1) {
-      //return false;
-    } else if (getBotPose2dMT2().getY() < 0) {
-      return false;
-    } else if (getBotPose2dMT2().getX() < 0) {
-      return false;
-    } else if (getBotPose2dMT2().getY() > VisionConstants.aprilTagLayout.getFieldWidth()) {
-      return false;
-    } else if (getBotPose2dMT2().getX() > VisionConstants.aprilTagLayout.getFieldLength()) {
-      return false;
-    } else {
-      return true;
     }
+
+    Pose2d pose = getBotPose2dMT2();
+    double poseY = pose.getY();
+    double poseX = pose.getX();
+
+    if (poseY < 0) {
+      return false;
+    }
+
+    if (poseX < 0) {
+      return false;
+    }
+
+    if (poseY > VisionConstants.aprilTagLayout.getFieldWidth()) {
+      return false;
+    }
+
+    if (poseX > VisionConstants.aprilTagLayout.getFieldLength()) {
+      return false;
+    }
+
+    return true;
   }
+
   /**
    * Gets the X Offset of the tag from the center of the frame.
    * @return The X Offset
@@ -164,6 +176,7 @@ public class LimelightLeft extends SubsystemBase {
   public double getXOffset() {
     return LimelightHelpers.getTX(getName());
   }
+
   /**
    * Gets the Y Offset of the tag from the center of frame.
    * @return The Y Offset
@@ -178,6 +191,7 @@ public class LimelightLeft extends SubsystemBase {
   public double getTargetArea() {
     return LimelightHelpers.getTA(getName());
   }
+
   /**
    * Turns the limelight LEDs on
    */
