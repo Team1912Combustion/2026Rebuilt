@@ -173,26 +173,6 @@ public class IntakeArm extends SubsystemBase {
     arm.setPosition(arm.getPosition().getValueAsDouble() + ARM_OFFSET_ROTATIONS);
   }
 
-  public void leftOffsetIn() {
-    resetStallState();
-    offsetIn(left_arm);
-  }
-
-  public void leftOffsetOut() {
-    resetStallState();
-    offsetOut(left_arm);
-  }
-
-  public void rightOffsetIn() {
-    resetStallState();
-    offsetIn(right_arm);
-  }
-
-  public void rightOffsetOut() {
-    resetStallState();
-    offsetOut(right_arm);
-  }
-
   public void stopArmIfStalling(TalonFX arm) {
     double newPosition = arm.getPosition().getValueAsDouble();
     setArmPosition(arm, newPosition);

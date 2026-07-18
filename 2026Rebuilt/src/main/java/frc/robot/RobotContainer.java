@@ -4,23 +4,16 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ArmWiggle;
-import frc.robot.commands.AutoIntake;
-import frc.robot.commands.Autos;
 import frc.robot.commands.BoostDown;
 import frc.robot.commands.BoostUp;
-import frc.robot.commands.CandleCommand;
 import frc.robot.commands.DuckHood;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeAdjustIn;
 import frc.robot.commands.IntakeAdjustOut;
 import frc.robot.commands.IntakeArmToggle;
 import frc.robot.commands.MoveHood;
 import frc.robot.commands.PointAtTarget;
-import frc.robot.commands.ResetLeftOffset;
 import frc.robot.commands.ResetPose;
-import frc.robot.commands.ResetRightOffset;
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunReverseIntake;
 import frc.robot.commands.ShootFuel;
@@ -112,9 +105,6 @@ public class RobotContainer {
   MoveHood moveHood;
   DuckHood duckHood;
 
-  ResetLeftOffset resetLeftOffset;
-  ResetRightOffset resetRightOffset;
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     limelightShooter = new LimelightShooter();
@@ -160,9 +150,6 @@ public class RobotContainer {
     hood.setDefaultCommand(moveHood);
 
     duckHood = new DuckHood(hood);
-
-    resetLeftOffset = new ResetLeftOffset(intakeArm);
-    resetRightOffset = new ResetRightOffset(intakeArm);
 
     NamedCommands.registerCommand("RunIntake", runIntake);
     NamedCommands.registerCommand("ArmToggle", intakeArmToggle);
@@ -219,8 +206,6 @@ public class RobotContainer {
     operatorController.rightBumper().whileTrue(shootFuel);
     operatorController.leftBumper().whileTrue(intakeArmToggle);
     operatorController.leftTrigger(0.2).whileTrue(armWiggle);
-    //operatorController.leftStick().whileTrue(resetLeftOffset);
-    //operatorController.rightStick().whileTrue(resetRightOffset);
     operatorController.x().whileTrue(runIntake);
     operatorController.y().whileTrue(runReverseIntake);
 
