@@ -224,16 +224,28 @@ public class RobotContainer {
     operatorController.x().whileTrue(runIntake);
     operatorController.y().whileTrue(runReverseIntake);
 
-    Command leftOffsetIn = new InstantCommand(()->IntakeArm.offsetIn(intakeArm.left_arm),intakeArm);
+    Command leftOffsetIn = new InstantCommand(()-> {
+      IntakeArm.offsetIn(intakeArm.left_arm);
+      intakeArm.resetStallState();
+    }, intakeArm);
     operatorController.axisLessThan(1, -.2).whileTrue(leftOffsetIn);
 
-    Command rightOffsetIn = new InstantCommand(()->IntakeArm.offsetIn(intakeArm.right_arm),intakeArm);
+    Command rightOffsetIn = new InstantCommand(()-> {
+      IntakeArm.offsetIn(intakeArm.right_arm);
+      intakeArm.resetStallState();
+    },intakeArm);
     operatorController.axisLessThan(5, -.2).whileTrue(rightOffsetIn);
 
-    Command leftOffsetOut = new InstantCommand(()->IntakeArm.offsetOut(intakeArm.left_arm),intakeArm);
+    Command leftOffsetOut = new InstantCommand(()-> {
+      IntakeArm.offsetOut(intakeArm.left_arm);
+      intakeArm.resetStallState();
+    }, intakeArm);
     operatorController.axisGreaterThan(1, .2).whileTrue(leftOffsetOut);
 
-    Command rightOffsetOut = new InstantCommand(()->IntakeArm.offsetOut(intakeArm.right_arm),intakeArm);
+    Command rightOffsetOut = new InstantCommand(()-> {
+      IntakeArm.offsetOut(intakeArm.right_arm);
+      intakeArm.resetStallState();
+    }, intakeArm);
     operatorController.axisGreaterThan(5, .2).whileTrue(rightOffsetOut);
 
     operatorController.start().onTrue(resetPose);

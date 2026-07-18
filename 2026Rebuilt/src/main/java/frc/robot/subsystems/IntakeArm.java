@@ -174,18 +174,22 @@ public class IntakeArm extends SubsystemBase {
   }
 
   public void leftOffsetIn() {
+    resetStallState();
     offsetIn(left_arm);
   }
 
   public void leftOffsetOut() {
+    resetStallState();
     offsetOut(left_arm);
   }
 
   public void rightOffsetIn() {
+    resetStallState();
     offsetIn(right_arm);
   }
 
   public void rightOffsetOut() {
+    resetStallState();
     offsetOut(right_arm);
   }
 
