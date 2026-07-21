@@ -9,8 +9,6 @@ import java.lang.reflect.Field;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -176,16 +174,6 @@ public final class Constants {
 
     public static final double SHOOTER_WHEEL_DIAMETER = Units.inchesToMeters(4);
     public static final double SHOOTER_WHEEL_CIRCUMFERENCE = SHOOTER_WHEEL_DIAMETER * Math.PI;
-
-  }
-
-  public static class VisionConstants {
-
-    public static final double TARGET_AREA_THRESHHOLD = 0.05;
-    public static final double TOTAL_TARGET_AREA_THRESHHOLD = 0.1;
-
-    public static AprilTagFieldLayout aprilTagLayout = 
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   }
 

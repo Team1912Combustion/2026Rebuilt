@@ -62,7 +62,6 @@ import frc.robot.Constants.DeviceIDs;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.Constants.SensorIDs;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.FieldZone;
 import frc.robot.LimelightHelpers.PoseEstimate;
 
@@ -562,7 +561,7 @@ public class DriveTrain extends SubsystemBase {
 
     if (limelightShooter.acceptPose()) {
       double targetArea = limelightShooter.getTargetArea();
-      if (targetArea > VisionConstants.TARGET_AREA_THRESHHOLD) {
+      if (targetArea > limelightShooter.vc.TARGET_AREA_THRESHHOLD) {
         Pose2d pose = limelightShooter.getBotPose2dMT2();
         totalArea += targetArea;
         x += pose.getX() * targetArea;
@@ -574,7 +573,7 @@ public class DriveTrain extends SubsystemBase {
 
     SmartDashboard.putNumber("Total tag area", totalArea);
 
-    if (totalArea < VisionConstants.TOTAL_TARGET_AREA_THRESHHOLD) {
+    if (totalArea < limelightShooter.vc.TOTAL_TARGET_AREA_THRESHHOLD) {
       isVisionValid = false;
       compositeLatency = 0;
     } else {
