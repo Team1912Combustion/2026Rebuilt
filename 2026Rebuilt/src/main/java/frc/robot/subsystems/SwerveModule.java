@@ -14,8 +14,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.CANConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule {
     public int moduleNumber;
@@ -25,7 +27,7 @@ public class SwerveModule {
     private TalonFX mDriveMotor;
     private CANcoder angleEncoder;
 
-    private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(Constants.DriveConstants.S_VOLTS, Constants.DriveConstants.V_VOLT_SECONDS_PER_METER, Constants.DriveConstants.A_VOLT_SECONDS_SQUARED_PER_METER);
+    private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(DriveConstants.S_VOLTS, DriveConstants.V_VOLT_SECONDS_PER_METER, DriveConstants.A_VOLT_SECONDS_SQUARED_PER_METER);
 
     /* drive motor control requests */
     private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0).withEnableFOC(true);
@@ -39,22 +41,18 @@ public class SwerveModule {
         this.angleOffset = moduleConstants.angleOffset;
         
         /* Angle Encoder Config */
-        angleEncoder = new CANcoder(moduleConstants.cancoderID, new CANBus("1912CANivore"));
-        //angleEncoder.getConfigurator().apply(Robot.ctreConfigs.swerveCANcoderConfig);
-
-       // this.angleOffset = Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValue());
+        angleEncoder = new CANcoder(moduleConstants.cancoderID, new CANBus(CANConstants.CANBUS_NAME));
 
         /* Angle Motor Config */
-        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, new CANBus("1912CANivore"));
+        mAngleMotor = new TalonFX(moduleConstants.angleMotorID, new CANBus(CANConstants.CANBUS_NAME));
         TalonFXConfiguration myAngleFXConfig = Robot.ctreConfigs.swerveAngleFXConfig;
         myAngleFXConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         myAngleFXConfig.Feedback.FeedbackRemoteSensorID = moduleConstants.cancoderID;
 
         mAngleMotor.getConfigurator().apply(myAngleFXConfig);
-        //resetToAbsolute();
 
         /* Drive Motor Config */
-        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, new CANBus("1912CANivore"));
+        mDriveMotor = new TalonFX(moduleConstants.driveMotorID, new CANBus(CANConstants.CANBUS_NAME));
         mDriveMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
     }
@@ -68,11 +66,11 @@ public class SwerveModule {
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
         if(isOpenLoop){
-            driveDutyCycle.Output = desiredState.speedMetersPerSecond / Constants.DriveConstants.MAX_SPEED_METERS_PER_SECOND;
+            driveDutyCycle.Output = desiredState.speedMetersPerSecond / DriveConstants.MAX_SPEED_METERS_PER_SECOND;
             mDriveMotor.setControl(driveDutyCycle.withEnableFOC(true));
         }
         else {
-            driveVelocity.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, Constants.ModuleConstants.WHEEL_CIRCRUMFERENCE_METERS);
+            driveVelocity.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, ModuleConstants.WHEEL_CIRCUMFERENCE_METERS);
             driveVelocity.FeedForward = driveFeedForward.calculate(desiredState.speedMetersPerSecond);
             mDriveMotor.setControl(driveVelocity.withEnableFOC(true));
         }
@@ -93,14 +91,14 @@ public class SwerveModule {
 
     public SwerveModuleState getState(){
         return new SwerveModuleState(
-            Conversions.RPSToMPS(mDriveMotor.getVelocity().getValueAsDouble(), Constants.ModuleConstants.WHEEL_CIRCRUMFERENCE_METERS), 
+            Conversions.RPSToMPS(mDriveMotor.getVelocity().getValueAsDouble(), ModuleConstants.WHEEL_CIRCUMFERENCE_METERS),
             Rotation2d.fromRotations(mAngleMotor.getPosition().getValueAsDouble())
         );
     }
 
     public SwerveModulePosition getPosition(){
         return new SwerveModulePosition(
-            Conversions.rotationsToMeters(mDriveMotor.getPosition().getValueAsDouble(), Constants.ModuleConstants.WHEEL_CIRCRUMFERENCE_METERS), 
+            Conversions.rotationsToMeters(mDriveMotor.getPosition().getValueAsDouble(), ModuleConstants.WHEEL_CIRCUMFERENCE_METERS),
             Rotation2d.fromRotations(mAngleMotor.getPosition().getValueAsDouble())
         );
     }

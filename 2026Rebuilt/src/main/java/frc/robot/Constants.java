@@ -229,7 +229,7 @@ public final class Constants {
     public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(4.0);
     public static final double TREAD_THICKNESS = 0.007557;
     public static final double FULL_WHEEL_DIAMETER = WHEEL_DIAMETER_METERS + (TREAD_THICKNESS * 2);
-    public static final double WHEEL_CIRCRUMFERENCE_METERS = (FULL_WHEEL_DIAMETER * Math.PI);
+    public static final double WHEEL_CIRCUMFERENCE_METERS = (FULL_WHEEL_DIAMETER * Math.PI);
     public static final double WHEEL_GEAR_RATIO = 6.75;
     public static final double DRIVE_ENCODER_DISTANCE_PER_ROTATION =
       (FULL_WHEEL_DIAMETER * Math.PI) / WHEEL_GEAR_RATIO;
