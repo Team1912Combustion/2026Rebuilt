@@ -35,26 +35,14 @@ public class LimelightShooter extends SubsystemBase {
     aprilTagLayout = AprilTagFieldLayout.loadField(VisionConstants.APRILTAG_FIELD);
     fieldWidth = aprilTagLayout.getFieldWidth();
     fieldLength = aprilTagLayout.getFieldLength();
-    //LimelightHelpers.setRewindEnabled(getName(), true);
-    //LimelightHelpers.triggerRewindCapture(getName(), 20);
   }
 
   @Override
   public void periodic() {
     currentTagId = getTagId();
-    if(currentTagId > 0) {
-      // double[] lastBotPose = new double[6];
-      // lastBotPose = getBotPoseMT1();
-      // // Pose2d lastPose2d = new Pose2d(lastBotPose[0],lastBotPose[1], new Rotation2d(lastBotPose[5]));
-      // SmartDashboard.putNumber(getPosition()+"Botpose X: ",lastBotPose[0]);
-      // SmartDashboard.putNumber(getPosition()+"Botpose Y: ",lastBotPose[1]);
-      // SmartDashboard.putNumber(getPosition()+"Botpose Yaw: ",lastBotPose[5]);
-    }
     SmartDashboard.putNumber(getPosition()+"Latency: ",(double) latency.getNumber(0));
     SmartDashboard.putNumber(getPosition()+"TagID: ",tagId.getInteger(-1));
     SmartDashboard.putBoolean(getPosition()+"HasBotPose: ",(currentTagId>0));
-    // SmartDashboard.putNumber(getPosition()+"Limelight Xoffset: ",getXOffset());
-    // SmartDashboard.putNumber(getPosition()+"Limelight Yoffset: ",getYOffset());
   }
   // IP IS - 10.19.12.11:5801 //
 
@@ -125,6 +113,7 @@ public class LimelightShooter extends SubsystemBase {
   public double[] getBotPoseMT1() {
     return LimelightHelpers.getBotPose_wpiBlue(getName());
   }
+
   /**
    * Gets the full array of bot pose values in target space
    * @return An array of all pose values
@@ -132,6 +121,7 @@ public class LimelightShooter extends SubsystemBase {
   public double[] getBotPoseTargetSpace() {
     return LimelightHelpers.getBotPose_TargetSpace(getName());
   }
+
   /**
    * Gets the ID of the biggest tag in frame.
    * @return The ID of the tag
@@ -148,6 +138,10 @@ public class LimelightShooter extends SubsystemBase {
     return LimelightHelpers.getTargetCount(getName());
   }
 
+  /**
+   * checks if the estimated bot pose is valid within the field.
+   * @return boolean - field pose is valid
+   */
   public boolean acceptPose() {
     if (!LimelightHelpers.getTV(getName())) {
       return false;
@@ -191,6 +185,7 @@ public class LimelightShooter extends SubsystemBase {
   public double getYOffset() {
     return LimelightHelpers.getTY(getName());
   }
+
   /**
    * Gets the area of the tag in frame
    * @return The area of the tag
@@ -206,8 +201,8 @@ public class LimelightShooter extends SubsystemBase {
     LimelightHelpers.setLEDMode_ForceOn(getName());
   }
 
+  // BFR - this appears to be unused
   public int getPipeline() {
     return (int) LimelightHelpers.getCurrentPipelineIndex(getName());
   }
-
 }
