@@ -34,8 +34,6 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeRollers;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.LimelightShooter;
-import frc.robot.subsystems.LimelightLeft;
-import frc.robot.subsystems.LimelightRight;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Hood;
@@ -198,7 +196,6 @@ public class RobotContainer {
     driverController.y().whileTrue(runReverseIntake);
 
     // OPERATOR //
-
     operatorController.rightBumper().whileTrue(shootFuel);
     operatorController.leftBumper().whileTrue(intakeArmToggle);
     operatorController.leftTrigger(0.2).whileTrue(armWiggle);
