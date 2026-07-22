@@ -67,9 +67,9 @@ public class RobotContainer {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController driverController =
-      new CommandXboxController(0);
+      new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
   private final CommandXboxController operatorController = 
-      new CommandXboxController(1);
+      new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
   DriveTrain driveTrain;
   LimelightShooter limelightShooter;
@@ -86,7 +86,6 @@ public class RobotContainer {
   ZeroHeading zeroHeading;
   ZeroGyro zeroGyro;
   SlowMode slowMode;
-  //AutoIntake autoIntake;
   ResetPose resetPose;
 
   ShootFuel shootFuel;
@@ -124,13 +123,12 @@ public class RobotContainer {
         -driverController.getLeftY(), 
         -driverController.getLeftX(), 
         -driverController.getRightX(), 
-        driveTrain.fieldRelative),
-      driveTrain));
+        driveTrain.fieldRelative
+      ), driveTrain));
 
     zeroHeading = new ZeroHeading(driveTrain);
     zeroGyro = new ZeroGyro(driveTrain);
     slowMode = new SlowMode(driveTrain);
-    //autoIntake = new AutoIntake(driveTrain, intakeRollers, intakeArm, limelightLeft);
     resetPose = new ResetPose(driveTrain);
 
     shootFuel = new ShootFuel(shooter, floor, driveTrain, hood, intakeRollers, intakeArm);
@@ -199,8 +197,6 @@ public class RobotContainer {
     driverController.x().whileTrue(runIntake);
     driverController.y().whileTrue(runReverseIntake);
 
-    //driverController.pov(180).whileTrue(autoIntake);
-
     // OPERATOR //
 
     operatorController.rightBumper().whileTrue(shootFuel);
@@ -245,14 +241,13 @@ public class RobotContainer {
     operatorController.b().onTrue(toggleTargetMode);
     // INSERT MANUAL COMMANDS FOR TUNING SPEEDS, HOOD ANGLES, AND TIMES
 
-    /*driverController.pov(0).whileTrue(new ShooterSpeedUp(shooter));
+    /*
+     * BFR - do we need these?
+    driverController.pov(0).whileTrue(new ShooterSpeedUp(shooter));
     driverController.pov(180).whileTrue(new ShooterSpeedDown(shooter));
     driverController.pov(90).whileTrue(new ManualHoodUp(hood));
     driverController.pov(270).whileTrue(new ManualHoodDown(hood));
-
-    driverController.rightBumper().whileTrue(shootFuel);
-    driverController.start().onTrue(zeroHeading);*/
-
+    */
   }
 
   /**

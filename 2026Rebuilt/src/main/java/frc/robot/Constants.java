@@ -34,7 +34,8 @@ public final class Constants {
   }
 
   public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
+    public static final int DRIVER_CONTROLLER_PORT = 0;
+    public static final int OPERATOR_CONTROLLER_PORT = 1;
   }
 
   public static class MotorIDs {
@@ -118,7 +119,6 @@ public final class Constants {
     /*
      * TRENCH ZONES
      */
-
     public static final double WALL_TO_TRENCH = 3.977;
     public static final double TRENCH_WIDTH = 1.285;
     public static final double TRENCH_LENGTH = 1.194;
@@ -219,7 +219,6 @@ public final class Constants {
     }
   }
   public static final class ModuleConstants {
-
     public static final COTSTalonFXSwerveConstants chosenModule =
         COTSTalonFXSwerveConstants.SDS.MK4i.KrakenX60(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
 
@@ -293,5 +292,9 @@ public final class Constants {
     public static final double MAX_SPEED_METERS_PER_SECOND = 5;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = Math.PI;
+  }
+
+  public static class CANConstants {
+    public static final CANBUS_NAME = "1912CANivore";
   }
 }
