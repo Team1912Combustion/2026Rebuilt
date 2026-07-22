@@ -124,14 +124,4 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
-
-  /**
-   * Begins logging REV hardware to NetworkTables using URCL
-   * (see docs.advantagescope.org/more-features/urcl)
-   */
-  private void start_rev_log() {
-    if (this.urcl_is_logging) { return; }
-    this.urcl_is_logging = true;
-    //URCL.start();
-  }
 }

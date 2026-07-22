@@ -69,18 +69,10 @@ public class PointAtTarget extends Command {
       goalPose.relativeTo(originPose).getY(), 
       goalPose.relativeTo(originPose).getX()
       )); 
-    //angle.plus(Rotation2d.fromDegrees(180));
-
-    double tx = limelightShooter.getXOffset();
 
     if (driveTrain.isHubTag(limelightShooter.getTagId())) {
       driveTrain.fixPose();
     }
-
-    /*if (timer.get() > 2 && poseFixed) {
-      poseFixed = false;
-      timer.reset();
-    }*/
 
     double output = rotPID.calculate(driveTrain.angleModulus(driveTrain.getPose().getRotation().getDegrees() + 180), angle.getDegrees());
 
@@ -91,8 +83,6 @@ public class PointAtTarget extends Command {
     }
 
     driveTrain.isAimed = (rotPID.atSetpoint() ? true : false);
-    //driveTrain.drive(-driveTrain.driverController.getLeftY(), -driveTrain.driverController.getLeftX(), rotPID.calculate((driveTrain.getPose().getRotation().getDegrees()), angle.getDegrees()), true);
-
     poseFixed = false;
   }
 

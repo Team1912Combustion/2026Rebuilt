@@ -81,7 +81,6 @@ public class DriveTrain extends SubsystemBase {
 
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(.1));
   private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.35, 0.35, Units.degreesToRadians(999.));
-  private static final Vector<N3> visionStdDevsDisabled = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(1));
 
   public SendableChooser<Command> autoChooser;
 
