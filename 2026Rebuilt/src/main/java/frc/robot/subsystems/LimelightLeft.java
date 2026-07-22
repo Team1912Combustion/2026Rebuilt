@@ -73,6 +73,7 @@ public class LimelightLeft extends SubsystemBase {
   public String getPosition() {
     return "left";
   }
+
   /**
    * Toggles between pipeline 0 and 1.
    */

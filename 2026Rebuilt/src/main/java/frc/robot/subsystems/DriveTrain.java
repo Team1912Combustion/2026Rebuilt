@@ -59,6 +59,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.DeviceIDs;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldZoneConstants;
@@ -73,7 +74,7 @@ public class DriveTrain extends SubsystemBase {
   private final SwerveModule rearLeft = new SwerveModule(2, DeviceIDs.REAR_LEFT.constants);
   private final SwerveModule rearRight = new SwerveModule(3, DeviceIDs.REAR_RIGHT.constants);
 
-  public final Pigeon2 gyro = new Pigeon2(SensorIDs.GYRO, new CANBus("1912CANivore"));
+  public final Pigeon2 gyro = new Pigeon2(SensorIDs.GYRO, new CANBus(CANConstants.CANBUS_NAME));
   Pigeon2Configuration gyroConfig;
 
   public double driveYaw;
@@ -174,7 +175,7 @@ public class DriveTrain extends SubsystemBase {
       new Pose2d(),
       stateStdDevs,
       visionMeasurementStdDevs
-      );
+    );
 
     poseX = 0;
     poseY = 0;
@@ -238,7 +239,7 @@ public class DriveTrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
+
     // update drive yaw
     driveYaw = gyro.getYaw().getValueAsDouble() + driveYawOffset;
     driveYaw = MathUtil.angleModulus(Math.toRadians(driveYaw));
@@ -247,21 +248,9 @@ public class DriveTrain extends SubsystemBase {
     // update pose estimator
     poseEstimator.update(getRotation2d(), get_positions());
 
-    /*if (DriverStation.isFMSAttached() && DriverStation.isAutonomousEnabled()) {
-      if ((Timer.getFPGATimestamp() - lastVisionUpdate) > 0.05) {
+    LimelightHelpers.SetRobotOrientation(limelightShooter.getName(), getHeading(), 0, 0, 0, 0, 0);
 
-      LimelightHelpers.SetRobotOrientation(limelightClimberLeft.getName(), getHeading(), 0, 0, 0, 0, 0);
-      LimelightHelpers.SetRobotOrientation(limelightClimberRight.getName(), getHeading(), 0, 0, 0, 0, 0);
-
-      processFrame();
-
-      lastVisionUpdate = Timer.getFPGATimestamp();
-      }
-    } else {*/
-      LimelightHelpers.SetRobotOrientation(limelightShooter.getName(), getHeading(), 0, 0, 0, 0, 0);
-
-      processFrame();
-    //}
+    processFrame();
 
     // update drive yaw while disabled
     if (DriverStation.isDisabled()) {
@@ -273,12 +262,7 @@ public class DriveTrain extends SubsystemBase {
         driveYawOffset = 0;
       }
 
-      //driveYawOffset = 0 - (getHeading() + driveYawDirection);
-      
       fixPose();
-
-      //poseEstimator.resetPose(new Pose2d(compositeVisionPose.getTranslation(), Rotation2d.fromDegrees(getHeading())));
-      //poseEstimator.addVisionMeasurement(compositeVisionPose, Timer.getFPGATimestamp() - (compositeLatency / 1000), visionStdDevsDisabled);
     }
 
     // add pose to pose estimator
@@ -295,7 +279,7 @@ public class DriveTrain extends SubsystemBase {
       speedXFilter.calculate((poseEstimator.getEstimatedPosition().getX() - poseX) * 50) * calculateTravelTime(getCurrentFieldZone().getDistanceFromShotPoint(getPose())),
       speedYFilter.calculate((poseEstimator.getEstimatedPosition().getY() - poseY) * 50) * calculateTravelTime(getCurrentFieldZone().getDistanceFromShotPoint(getPose())),
       speedRotFilter.calculate((poseEstimator.getEstimatedPosition().getRotation().getDegrees() - poseYaw) * 0)
-      );
+    );
 
     // update pose variables
     poseX = poseEstimator.getEstimatedPosition().getX();
@@ -322,7 +306,7 @@ public class DriveTrain extends SubsystemBase {
    */
   public void drive(double xSpeed, double ySpeed, double rot,
     boolean fieldRelative) {
-      
+
       double m_xSpeed;
       double m_ySpeed;
       double m_rot;
@@ -356,7 +340,7 @@ public class DriveTrain extends SubsystemBase {
    */
   public void driveAuto(double xSpeed, double ySpeed, double rot,
     boolean fieldRelative) {
-      
+
       double m_xSpeed;
       double m_ySpeed;
       double m_rot;
@@ -378,6 +362,7 @@ public class DriveTrain extends SubsystemBase {
 
     setModuleStates(swerveModuleStates, true);
   }
+
   /**
    * Applies chassis speeds directly to the swerve modules.
    * @param chassisSpeeds The desired chassis speeds
@@ -388,6 +373,7 @@ public class DriveTrain extends SubsystemBase {
       DriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(swerveModuleStates, false);
   }
+
   /**
    * Gets all the swerve module states.
    * @return An array of all 4 swerve module states
@@ -400,6 +386,7 @@ public class DriveTrain extends SubsystemBase {
     myModuleStates[3] = rearRight.getState();
     return myModuleStates;
   }
+
   /**
    * Set the swerve modules to the desired states.
    * @param desiredStates The desired swerve modules states
@@ -431,6 +418,7 @@ public class DriveTrain extends SubsystemBase {
   public ChassisSpeeds getChassisSpeeds() {
     return DriveConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates());
   }
+
   /**
    * Resets the encoders on the angle motors of each swerve to 0.
    */
@@ -440,6 +428,7 @@ public class DriveTrain extends SubsystemBase {
     rearLeft.reset();
     rearRight.reset();
   }
+
   /**
    * Sets all swerve modules to 0 speed.
    */
@@ -449,6 +438,7 @@ public class DriveTrain extends SubsystemBase {
         new ChassisSpeeds(0., 0., 0.));
     setModuleStates(swerveModuleStates, false);
   }
+
   /**
    * Gets the gyro's yaw.
    * @return The gyro's yaw as a Rotation2d
@@ -456,6 +446,7 @@ public class DriveTrain extends SubsystemBase {
   public Rotation2d getRotation2d() {
     return Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble());
   }
+
   /**
    * Gets the drive yaw.
    * @return The drive yaw as a Rotation2d
@@ -463,6 +454,7 @@ public class DriveTrain extends SubsystemBase {
   public Rotation2d getRotation2dDriver() {
     return Rotation2d.fromDegrees(driveYaw);
   }
+
   /**
    * Gets the gyro's yaw.
    * @return The gyro's yaw in degrees
@@ -470,6 +462,7 @@ public class DriveTrain extends SubsystemBase {
   public double getHeading() {
     return gyro.getYaw().getValueAsDouble();
   }
+
   /**
    * Gets the direction from one pose to another.
    * @param origin The pose to start from
@@ -482,6 +475,7 @@ public class DriveTrain extends SubsystemBase {
       origin.relativeTo(goal).getX()
       )); 
   }
+
   /**
    * Loops a value between -180 and 180.
    * @param value The value to loop
@@ -490,6 +484,7 @@ public class DriveTrain extends SubsystemBase {
   public double angleModulus(double value) {
     return MathUtil.inputModulus(value, -180, 180);
   }
+
   /**
    * Gets the estimated field pose from the pose estimator.
    * @return The pose of the robot
@@ -497,6 +492,7 @@ public class DriveTrain extends SubsystemBase {
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition(); 
   }
+
   /**
    * Resets the pose estimator to a new pose.
    * @param pose The pose to reset to
@@ -511,6 +507,7 @@ public class DriveTrain extends SubsystemBase {
   public void fixPose() {
     poseEstimator.resetPose(new Pose2d(compositeVisionPose.getTranslation(), Rotation2d.fromDegrees(getHeading())));
   }
+
   /**
    * Resets the gyro's yaw to 0.
    */
@@ -518,6 +515,7 @@ public class DriveTrain extends SubsystemBase {
     //resetPose(new Pose2d(getPose().getTranslation(), new Rotation2d(0.)));
     gyro.reset();
   }
+
   /**
    * Gets the swerve module positions.
    * @return An array of all 4 swerve module positions
@@ -527,9 +525,11 @@ public class DriveTrain extends SubsystemBase {
     rearLeft.getPosition(),rearRight.getPosition()};
     return m_positions;
   }
+
   public Twist2d getRobotSpeed(){
     return robotSpeed;
   }
+
   /**
    * Gets whether or not to flip autonomous p aths.
    * @return True means paths should be flipped, false means not
@@ -550,6 +550,7 @@ public class DriveTrain extends SubsystemBase {
   public Pose2d flipCoordinates(Pose2d pose) {
     return pose.rotateAround(new Translation2d(8.1, 4.05), Rotation2d.fromDegrees(180));
   }
+
   /**
    * Compiles all limelight pose measurements into a single pose called compositeVisionPose.
    * Measurements are weighted based on target area.
@@ -593,20 +594,6 @@ public class DriveTrain extends SubsystemBase {
     }
 
   }
-
-  /*public Pose2d getFuelPosition() {
-    if (limelightLeft.getPipeline() == 1) {
-      Pose3d limelightRobotPose = LimelightHelpers.getCameraPose3d_RobotSpace(limelightLeft.getName());
-      Pose2d limelightPose = getPose().transformBy(new Transform2d(limelightRobotPose.getX(), limelightRobotPose.getY(), new Rotation2d()));
-
-      double distance = limelightLeft.getTargetArea();
-      double angle = (limelightLeft.getXOffset() / 12) * (41);
-
-      return limelightPose.transformBy(new Transform2d(distance * Math.cos(angle), distance * Math.sin(angle), new Rotation2d()));
-    } else {
-      return new Pose2d();
-    }
-  }*/
 
   public void setSlowMode(boolean yeah) {
     slowMode = yeah;

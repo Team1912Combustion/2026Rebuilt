@@ -38,6 +38,10 @@ public final class Constants {
     public static final int OPERATOR_CONTROLLER_PORT = 1;
   }
 
+  public static class CANConstants {
+    public static final CANBUS_NAME = "1912CANivore";
+  }
+
   public static class MotorIDs {
 
     public static final int HOOD = 9;
@@ -292,9 +296,5 @@ public final class Constants {
     public static final double MAX_SPEED_METERS_PER_SECOND = 5;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 2 * Math.PI;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = Math.PI;
-  }
-
-  public static class CANConstants {
-    public static final CANBUS_NAME = "1912CANivore";
   }
 }
