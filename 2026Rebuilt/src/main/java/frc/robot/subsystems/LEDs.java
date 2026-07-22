@@ -14,9 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
 public class LEDs extends SubsystemBase {
-  //CANdle candle;
-  //CANdleConfiguration config;
-
   DriveTrain driveTrain;
 
   int matchPeriod;
@@ -28,6 +25,7 @@ public class LEDs extends SubsystemBase {
 
   List<Integer> allHubsActive = Arrays.asList(allHubsActiveArray);
 
+  // BFR - what is this for?
   // 1 - AUTO
   // 2 - TRANSITION SHIFT
   // 3 - SHIFT 1
@@ -37,24 +35,12 @@ public class LEDs extends SubsystemBase {
   // 7 - END GAME
   /** Creates a new LEDs. */
   public LEDs(DriveTrain dt) {
-    //candle = new CANdle(9, "1912CANivore");
-    //config = new CANdleConfiguration();
-    //config.stripType = LEDStripType.GRB;
-    //candle.configAllSettings(config);
-    /*config = new CANdleConfiguration();
-    config.LED.BrightnessScalar = 1;
-    config.LED.StripType = StripTypeValue.RGB;
-    candle.getConfigurator().apply(config);*/
-
     driveTrain = dt;
 
     matchPeriod = 1;
     alliance = "B";
 
-    //setBlueStatic();
-
     distanceFromStart = 0;
-
   }
 
   @Override
@@ -78,45 +64,7 @@ public class LEDs extends SubsystemBase {
       SmartDashboard.putNumber("Current Shift", getMatchPeriod());
       SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
-
-    /*if (DriverStation.isDisabled()) {
-      if (isPoseWithinTranslationError() && isPoseWithinRotationError(driveTrain.getPose())) {
-        setGreenStatic();
-      } else if (isPoseWithinTranslationMediumError() && isPoseWithinRotationError(driveTrain.getPose())) {
-        setOrangeStatic();
-      } else {
-        setRedStatic();
-      }
-    }*/
-
-    //distanceFromStart = driveTrain.getPose().getTranslation().getDistance(driveTrain.autoChooser.getSelected().getStartingPose().getTranslation());
-
-    // This method will be called once per scheduler run
   }
-  /* 
-  public void setBlueStatic() {
-    candle.clearAnimation(0);
-    candle.setLEDs(0, 0, 255);
-  }
-
-  public void setOrangeStatic() {
-    candle.clearAnimation(0);
-    candle.setLEDs(230, 40, 0);
-  }
-
-  public void setOrangeFlashing() {
-    candle.animate(new ColorFlowAnimation(230, 40, 0, 255, 1, 300, Direction.Forward));
-  }
-
-  public void setRedStatic() {
-    candle.clearAnimation(0);
-    candle.setLEDs(230, 40, 0);
-  }
-
-  public void setGreenStatic() {
-    candle.clearAnimation(0);
-    candle.setLEDs(10, 230, 20);
-  }*/
 
   public int getMatchPeriod() {
     return matchPeriod;
@@ -145,9 +93,4 @@ public class LEDs extends SubsystemBase {
   public boolean isPoseWithinTranslationMediumError() {
     return (Math.abs(distanceFromStart) < DriveConstants.AUTO_TRANSLATION_MEDIUM_ERROR);
   }
-
-  /*public boolean isPoseWithinRotationError(Pose2d pose) {
-    return (Math.abs(pose.getRotation().getDegrees() - driveTrain.autoChooser.getSelected().getStartingPose().getRotation().getDegrees()) < DriveConstants.AUTO_ROTATION_ERROR);
-  }*/
-
 }
