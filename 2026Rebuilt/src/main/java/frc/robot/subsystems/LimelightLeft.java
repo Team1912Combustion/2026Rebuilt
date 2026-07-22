@@ -12,9 +12,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 
 public class LimelightLeft extends SubsystemBase {
 
@@ -22,25 +22,19 @@ public class LimelightLeft extends SubsystemBase {
   private final NetworkTableEntry latency;
   private final NetworkTableEntry tagId;
   private int currentTagId = 0;
-  public VisionConstants vc;
+  private AprilTagFieldLayout aprilTagLayout;
+  private double fieldWidth;
+  private double fieldLength;
 
-  public  class VisionConstants {
-    public  final double TARGET_AREA_THRESHHOLD = 0.05;
-    public  final double TOTAL_TARGET_AREA_THRESHHOLD = 0.1;
-    public  AprilTagFieldLayout aprilTagLayout = 
-      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
-      public VisionConstants() {
-        double dummy = aprilTagLayout.getFieldLength();
-      }
-  }
   /** Creates a new LimelightFrontLeft. */
   public LimelightLeft() {
     setPipeline(0);
     table = NetworkTableInstance.getDefault().getTable(getName());
     latency = table.getEntry("tl");
     tagId = table.getEntry("tid");
-    vc = new VisionConstants();
-
+    aprilTagLayout = AprilTagFieldLayout.loadField(VisionConstants.APRILTAG_FIELD);
+    fieldWidth = aprilTagLayout.getFieldWidth();
+    fieldLength = aprilTagLayout.getFieldLength();
     //LimelightHelpers.setRewindEnabled(getName(), true);
     //LimelightHelpers.triggerRewindCapture(getName(), 20);
   }
@@ -170,11 +164,11 @@ public class LimelightLeft extends SubsystemBase {
       return false;
     }
 
-    if (poseY > vc.aprilTagLayout.getFieldWidth()) {
+    if (poseY > fieldWidth) {
       return false;
     }
 
-    if (poseX > vc.aprilTagLayout.getFieldLength()) {
+    if (poseX > fieldLength) {
       return false;
     }
 

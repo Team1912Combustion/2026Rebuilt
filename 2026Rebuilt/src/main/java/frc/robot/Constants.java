@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,6 +27,12 @@ import frc.lib.util.SwerveModuleConstants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static class VisionConstants {
+    public static final double TARGET_AREA_THRESHHOLD = 0.05;
+    public static final double TOTAL_TARGET_AREA_THRESHHOLD = 0.1;
+    public static final AprilTagFields APRILTAG_FIELD = AprilTagFields.k2026RebuiltWelded;
+  }
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
