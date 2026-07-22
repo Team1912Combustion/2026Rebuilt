@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FieldZone;
+import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.FieldZoneConstants;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.TurretConstants;
@@ -35,7 +36,7 @@ public class Hood extends SubsystemBase {
   public Hood(DriveTrain dt) {
     driveTrain = dt;
 
-    hood = new TalonFX(MotorIDs.HOOD, new CANBus("1912CANivore"));
+    hood = new TalonFX(MotorIDs.HOOD, new CANBus(CANConstants.CANBUS_NAME));
     
     config = new TalonFXConfiguration();
     config.Slot0.kP = 7;

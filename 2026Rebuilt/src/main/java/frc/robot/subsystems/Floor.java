@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.MotorIDs;
 
 public class Floor extends SubsystemBase {
@@ -23,8 +24,8 @@ public class Floor extends SubsystemBase {
   public double floorSpeed;
   /** Creates a new Floor. */
   public Floor() {
-    floor1 = new TalonFX(MotorIDs.FLOOR_1, new CANBus("1912CANivore"));
-    floor2 = new TalonFX(MotorIDs.FLOOR_2, new CANBus("1912CANivore"));
+    floor1 = new TalonFX(MotorIDs.FLOOR_1, new CANBus(CANConstants.CANBUS_NAME));
+    floor2 = new TalonFX(MotorIDs.FLOOR_2, new CANBus(CANConstants.CANBUS_NAME));
     floorConfig = new TalonFXConfiguration();
 
     floorConfig.Slot0.kS = 1.2;

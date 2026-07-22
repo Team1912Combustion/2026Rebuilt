@@ -18,6 +18,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.MotorIDs;
 
 public class IntakeArm extends SubsystemBase {
@@ -48,8 +49,8 @@ public class IntakeArm extends SubsystemBase {
 
   /** Creates a new IntakeArm. */
   public IntakeArm() {
-    left_arm = new TalonFX(MotorIDs.INTAKE_ARM_LEFT, new CANBus("1912CANivore"));
-    right_arm = new TalonFX(MotorIDs.INTAKE_ARM_RIGHT, new CANBus("1912CANivore"));
+    left_arm = new TalonFX(MotorIDs.INTAKE_ARM_LEFT, new CANBus(CANConstants.CANBUS_NAME));
+    right_arm = new TalonFX(MotorIDs.INTAKE_ARM_RIGHT, new CANBus(CANConstants.CANBUS_NAME));
 
     armConfig = new TalonFXConfiguration();
     armConfig.Slot0.kS = 1;

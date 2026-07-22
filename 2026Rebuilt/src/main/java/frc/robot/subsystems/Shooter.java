@@ -17,6 +17,7 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.QuadraticSolver;
+import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.MotorIDs;
 import frc.robot.Constants.TurretConstants;
 
@@ -38,11 +39,11 @@ public class Shooter extends SubsystemBase {
   public Shooter(DriveTrain dt) {
     driveTrain = dt;
 
-    shooter1 = new TalonFX(MotorIDs.SHOOTER_1, new CANBus("1912CANivore"));
-    shooter2 = new TalonFX(MotorIDs.SHOOTER_2, new CANBus("1912CANivore"));
-    shooter3 = new TalonFX(MotorIDs.SHOOTER_3, new CANBus("1912CANivore"));
-    shooter4 = new TalonFX(MotorIDs.SHOOTER_4, new CANBus("1912CANivore"));
-    kicker = new TalonFX(MotorIDs.KICKER, new CANBus("1912CANivore"));
+    shooter1 = new TalonFX(MotorIDs.SHOOTER_1, new CANBus(CANConstants.CANBUS_NAME));
+    shooter2 = new TalonFX(MotorIDs.SHOOTER_2, new CANBus(CANConstants.CANBUS_NAME));
+    shooter3 = new TalonFX(MotorIDs.SHOOTER_3, new CANBus(CANConstants.CANBUS_NAME));
+    shooter4 = new TalonFX(MotorIDs.SHOOTER_4, new CANBus(CANConstants.CANBUS_NAME));
+    kicker = new TalonFX(MotorIDs.KICKER, new CANBus(CANConstants.CANBUS_NAME));
 
     shooterConfig = new TalonFXConfiguration();
     shooterConfig.Slot0.kS = 0.25;

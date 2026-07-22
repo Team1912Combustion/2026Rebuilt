@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.MotorIDs;
 
 public class IntakeRollers extends SubsystemBase {
@@ -25,8 +26,8 @@ public class IntakeRollers extends SubsystemBase {
 
   /** Creates a new IntakeRollers. */
   public IntakeRollers() {
-    rollersLeft = new TalonFX(MotorIDs.INTAKE_ROLLERS_LEFT,  new CANBus("1912CANivore"));
-    rollersRight = new TalonFX(MotorIDs.INTAKE_ROLLERS_RIGHT,  new CANBus("1912CANivore"));
+    rollersLeft = new TalonFX(MotorIDs.INTAKE_ROLLERS_LEFT,  new CANBus(CANConstants.CANBUS_NAME));
+    rollersRight = new TalonFX(MotorIDs.INTAKE_ROLLERS_RIGHT,  new CANBus(CANConstants.CANBUS_NAME));
     rollerConfig = new TalonFXConfiguration();
     rollerConfig.Slot0.kS = 0.35;
     rollerConfig.Slot0.kV = 0.12;
