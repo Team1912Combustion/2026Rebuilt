@@ -16,8 +16,6 @@ import frc.lib.math.Conversions;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule {
     public int moduleNumber;
@@ -114,6 +112,4 @@ public class SwerveModule {
     public double getCurrentTurn() {
         return mAngleMotor.getSupplyCurrent().getValueAsDouble();
     }
-
-
 }

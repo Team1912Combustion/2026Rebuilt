@@ -4,13 +4,10 @@
 
 package frc.robot;
 
-import java.lang.reflect.Field;
-
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -39,7 +36,7 @@ public final class Constants {
   }
 
   public static class CANConstants {
-    public static final CANBUS_NAME = "1912CANivore";
+    public static final String CANBUS_NAME = "1912CANivore";
   }
 
   public static class MotorIDs {
