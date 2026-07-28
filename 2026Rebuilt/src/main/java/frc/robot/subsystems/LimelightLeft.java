@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
 public class LimelightLeft extends SubsystemBase {
 
@@ -21,6 +22,9 @@ public class LimelightLeft extends SubsystemBase {
   private final NetworkTableEntry latency;
   private final NetworkTableEntry tagId;
   private int currentTagId = 0;
+  private AprilTagFieldLayout aprilTagLayout;
+  private double fieldWidth;
+  private double fieldLength;
 
   /** Creates a new LimelightFrontLeft. */
   public LimelightLeft() {
@@ -28,7 +32,9 @@ public class LimelightLeft extends SubsystemBase {
     table = NetworkTableInstance.getDefault().getTable(getName());
     latency = table.getEntry("tl");
     tagId = table.getEntry("tid");
-
+    aprilTagLayout = AprilTagFieldLayout.loadField(VisionConstants.APRILTAG_FIELD);
+    fieldWidth = aprilTagLayout.getFieldWidth();
+    fieldLength = aprilTagLayout.getFieldLength();
     //LimelightHelpers.setRewindEnabled(getName(), true);
     //LimelightHelpers.triggerRewindCapture(getName(), 20);
   }
@@ -158,11 +164,11 @@ public class LimelightLeft extends SubsystemBase {
       return false;
     }
 
-    if (poseY > VisionConstants.aprilTagLayout.getFieldWidth()) {
+    if (poseY > fieldWidth) {
       return false;
     }
 
-    if (poseX > VisionConstants.aprilTagLayout.getFieldLength()) {
+    if (poseX > fieldLength) {
       return false;
     }
 
