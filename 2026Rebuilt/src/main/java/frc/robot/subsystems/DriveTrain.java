@@ -197,6 +197,8 @@ public class DriveTrain extends SubsystemBase {
     autoBuilderConfigured = false;
 
     Logger.recordOutput("Pose", poseEstimator.getEstimatedPosition());
+    Logger.recordOutput("CompositePose", new Pose2d());
+    Logger.recordOutput("botPose2dMT2", new Pose2d());
 
     field = new Field2d();
 
@@ -274,6 +276,8 @@ public class DriveTrain extends SubsystemBase {
     field.setRobotPose(getPose());
     field.getObject("target").setPose(getTarget());
     SmartDashboard.putData(field);
+
+    Logger.recordOutput("Pose", poseEstimator.getEstimatedPosition());
 
     // This method will be called once per scheduler run
   }
@@ -554,6 +558,7 @@ public class DriveTrain extends SubsystemBase {
         y += pose.getY() * targetArea;
         yaw += pose.getRotation().getDegrees() * targetArea;
         compositeLatency += limelightShooter.getLatency();
+        Logger.recordOutput("botPose2dMT2", pose);
       }
     } 
 
@@ -574,6 +579,7 @@ public class DriveTrain extends SubsystemBase {
         limelightYFilter.calculate(y),
         Rotation2d.fromDegrees(limelightYawFilter.calculate(yaw))
       );
+      Logger.recordOutput("CompositePose", compositeVisionPose);
     }
 
   }
