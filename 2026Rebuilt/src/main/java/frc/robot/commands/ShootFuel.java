@@ -53,7 +53,7 @@ public class ShootFuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setSpeed(shooter.calculateSpeedContinuous(2));
+    shooter.setSpeed(shooter.calculateSpeedContinuous(1));
     //shooter.setSpeed(shooter.calculateSpeedContinuous(driveTrain.getDistance(driveTrain.getPose().getTranslation(), driveTrain.getTarget().getTranslation())));
     //if (hood.isInPosiiton() && shooter.shooterAtSpeed() && !hood.duckHood()) {
     if (shooter.shooterAtSpeed()) {
